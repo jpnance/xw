@@ -1,3 +1,7 @@
+body {
+	font-family: helvetica, sans-serif;
+}
+
 div.grid {
 	border: 1px solid black;
 	display: inline-block;
@@ -11,12 +15,26 @@ div.grid div.row div.cell {
 	background-color: white;
 	border: 1px solid black;
 	display: inline-block;
+	font-weight: bold;
 	height: 2em;
+	line-height: 2em;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	text-transform: uppercase;
 	width: 2.2em;
+}
+
+div.grid div.row div.cell.filled {
+	background-color: black;
 }
 
 div.grid div.row div.cell.cursor {
 	background-color: lightgray;
+}
+
+div.grid div.row div.cell.filled.cursor {
+	background-color: gray;
 }
 
 div.grid.editing div.row div.cell.cursor {

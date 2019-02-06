@@ -50,8 +50,11 @@ div.grid div.row div.cell.filled.cursor {
 }
 
 div.grid div.row div.cell.cursor,
-div.grid div.row div.cell.filled.cursor,
-div.grid.editing div.row div.cell.cursor,
-div.grid.editing div.row div.cell.filled.cursor {
+div.grid.editing div.row div.cell.cursor {
 	background-color: gold;
+}
+
+div.grid div.row div.cell.filled.cursor,
+div.grid.editing div.row div.cell.filled.cursor {
+	background-color: darkorange;
 }

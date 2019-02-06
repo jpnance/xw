@@ -44,6 +44,19 @@ var editor = {
 					}
 
 					break;
+
+				// i is for 'switch to insert mode'
+				case 73:
+					editor.mode = 'insert';
+					break;
+			}
+		}
+		else if (editor.mode == 'insert') {
+			switch (e.keyCode) {
+				// esc is for 'exit insert mode and re-enter command mode'
+				case 27:
+					editor.mode = 'command';
+					break;
 			}
 		}
 
@@ -52,6 +65,10 @@ var editor = {
 
 	renderGrid: () => {
 		var domGrid = $('<div>').addClass('grid');
+
+		if (editor.mode == 'insert') {
+			domGrid.addClass('editing');
+		}
 
 		for (var i = 0; i < editor.grid.height; i++) {
 			var gridRow = $('<div>').addClass('row');

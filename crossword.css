@@ -16,5 +16,9 @@ div.grid div.row div.cell {
 }
 
 div.grid div.row div.cell.cursor {
-	background-color: gray;
+	background-color: lightgray;
+}
+
+div.grid.editing div.row div.cell.cursor {
+	background-color: lightblue;
 }

@@ -29,14 +29,29 @@ div.grid div.row div.cell.filled {
 	background-color: black;
 }
 
-div.grid div.row div.cell.cursor {
+div.grid div.row div.cell.shaded {
 	background-color: lightgray;
 }
 
-div.grid div.row div.cell.filled.cursor {
-	background-color: gray;
+div.grid div.row div.cell.shaded.filled {
+	background-color: dimgray;
 }
 
-div.grid.editing div.row div.cell.cursor {
+div.grid.editing div.row div.cell.shaded {
 	background-color: lightblue;
+}
+
+div.grid.editing div.row div.cell.shaded.filled {
+	background-color: dodgerblue;
+}
+
+div.grid div.row div.cell.filled.cursor {
+	background-color: darkorange;
+}
+
+div.grid div.row div.cell.cursor,
+div.grid div.row div.cell.filled.cursor,
+div.grid.editing div.row div.cell.cursor,
+div.grid.editing div.row div.cell.filled.cursor {
+	background-color: gold;
 }

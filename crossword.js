@@ -1,6 +1,6 @@
 var editor = {
 	mode: 'command',
-	direction: null,
+	direction: 'horizontal',
 
 	grid: {
 		height: 15,
@@ -32,6 +32,12 @@ var editor = {
 			if (editor.grid.cursorPosition - editor.grid.height >= 0) {
 				editor.grid.cursorPosition -= editor.grid.height;
 			}
+		},
+
+		placeCharacter: (character) => {
+			var newSolution = editor.grid.solution.slice(0, editor.grid.cursorPosition) + character + editor.grid.solution.slice(editor.grid.cursorPosition + 1, editor.grid.height * editor.grid.width);
+
+			editor.grid.solution = newSolution;
 		}
 	},
 
@@ -40,7 +46,7 @@ var editor = {
 			editor.grid.solution = '';
 
 			for (var i = 0; i < editor.grid.height * editor.grid.width; i++) {
-				editor.grid.solution += ' ';
+				editor.grid.solution += '-';
 			}
 		}
 	},
@@ -75,10 +81,32 @@ var editor = {
 					editor.grid.cursorRight();
 					break;
 
-				// i is for 'switch to horizontal insert mode'
+				// i is for 'switch to insert mode'
 				case 73:
 					editor.mode = 'insert';
-					editor.direction = 'horizontal';
+					break;
+
+				case 88:
+					editor.grid.placeCharacter('-');
+
+					if (editor.direction == 'horizontal') {
+						editor.grid.cursorRight();
+					}
+					else if (editor.direction == 'vertical') {
+						editor.grid.cursorDown();
+					}
+
+					break;
+
+				// space is for 'change editor direction'
+				case 32:
+					if (editor.direction == 'horizontal') {
+						editor.direction = 'vertical';
+					}
+					else {
+						editor.direction = 'horizontal';
+					}
+
 					break;
 
 				// v is for 'switch to vertical insert mode'
@@ -121,10 +149,9 @@ var editor = {
 				case 88:
 				case 89:
 				case 90:
+				case 173:
 				case 190:
-					var newSolution = editor.grid.solution.slice(0, editor.grid.cursorPosition) + e.originalEvent.key + editor.grid.solution.slice(editor.grid.cursorPosition + 1, editor.grid.height * editor.grid.width);
-
-					editor.grid.solution = newSolution;
+					editor.grid.placeCharacter(e.originalEvent.key);
 
 					if (editor.direction == 'horizontal') {
 						editor.grid.cursorRight();
@@ -162,6 +189,17 @@ var editor = {
 					}
 
 					break;
+
+				case 8:
+					if (editor.direction == 'horizontal') {
+						editor.grid.cursorLeft();
+					}
+					else {
+						editor.grid.cursorUp();
+					}
+
+					editor.grid.placeCharacter('-');
+					break;
 			}
 		}
 
@@ -186,7 +224,14 @@ var editor = {
 					gridCell.addClass('cursor');
 				}
 
-				if (editor.grid.solution[cellIndex] == ' ') {
+				if (editor.direction == 'horizontal' && Math.floor(cellIndex / editor.grid.width) == Math.floor(editor.grid.cursorPosition / editor.grid.width)) {
+					gridCell.addClass('shaded');
+				}
+				else if (editor.direction == 'vertical' && Math.floor(cellIndex % editor.grid.height) == Math.floor(editor.grid.cursorPosition % editor.grid.height)) {
+					gridCell.addClass('shaded');
+				}
+
+				if (editor.grid.solution[cellIndex] == '-') {
 					gridCell.append('&nbsp;');
 				}
 				else if (editor.grid.solution[cellIndex] == '.') {

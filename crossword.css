@@ -1,0 +1,16 @@
+.grid {
+	border: 1px solid black;
+	display: inline-block;
+}
+
+.row {
+	line-height: 0;
+}
+
+.cell {
+	background-color: white;
+	border: 1px solid black;
+	display: inline-block;
+	height: 2em;
+	width: 2.2em;
+}

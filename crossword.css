@@ -1,16 +1,20 @@
-.grid {
+div.grid {
 	border: 1px solid black;
 	display: inline-block;
 }
 
-.row {
+div.grid div.row {
 	line-height: 0;
 }
 
-.cell {
+div.grid div.row div.cell {
 	background-color: white;
 	border: 1px solid black;
 	display: inline-block;
 	height: 2em;
 	width: 2.2em;
+}
+
+div.grid div.row div.cell.cursor {
+	background-color: gray;
 }

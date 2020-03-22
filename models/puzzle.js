@@ -196,6 +196,17 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 Puzzle.prototype.showSolverState = function(mode, clue, words) {
 	let color;
 
+	console.log(this.title);
+	console.log(this.author);
+	console.log(this.copyright);
+
+	console.log();
+
+	if (this.notes.length > 0) {
+		console.log(this.notes);
+		console.log();
+	}
+
 	for (let y = 0; y < this.solverGrid.length; y++) {
 		let output = '';
 

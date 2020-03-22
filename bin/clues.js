@@ -59,7 +59,19 @@ function nextClue(mode) {
 	query += "> ";
 
 	rl.question(query, function(guess) {
-		correctOrNot(mode, clue, guess);
+		if (guess.length && guess[0] == '!') {
+			if (mode == 'across') {
+				acrossIndex -= 2;
+			}
+			else if (mode == 'down') {
+				downIndex -= 2;
+			}
+		}
+		else {
+			correctOrNot(mode, clue, guess);
+		}
+
+		nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));
 	});
 }
 
@@ -82,9 +94,6 @@ function correctOrNot(mode, clue, guess) {
 		console.log();
 		console.log('Completed in ' + formatTimer(timer) + '!');
 		process.exit();
-	}
-	else {
-		nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));
 	}
 }
 

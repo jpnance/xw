@@ -43,7 +43,7 @@ function Puzzle(puzFile) {
 	}
 
 	let puzzleStateOffset = 0x34 + (2 * this.width * this.height);
-	let stringIndex = puzzleStateOffset + 1;
+	let stringIndex = puzzleStateOffset - 1;
 
 	this.title = "";
 

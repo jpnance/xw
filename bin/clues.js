@@ -54,7 +54,7 @@ function nextClue(mode) {
 
 	let query = "";
 
-	query += words.guess + ' (' + words.answer.length + ' letters) ' + "\n\n";
+	query += words.guess + ' (' + words.answer.length + ') ' + "\n\n";
 	query += clue.clue + "\n";
 	query += "> ";
 

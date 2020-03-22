@@ -1,3 +1,11 @@
+const BACKGROUND_BLACK = "\x1b[40m";
+const BACKGROUND_CYAN = "\x1b[46m";
+const BACKGROUND_WHITE = "\x1b[47m";
+const FOREGROUND_BLACK = "\x1b[30m";
+const FOREGROUND_CYAN = "\x1b[36m";
+const FOREGROUND_WHITE = "\x1b[37m";
+const RESET = "\x1b[0m";
+
 function Puzzle(puzFile) {
 	this.checksum = (puzFile[0x01] << 4) | puzFile[0x00];
 	this.fileMagic = puzFile.slice(0x02, 0x0C + 1);
@@ -82,7 +90,8 @@ function Puzzle(puzFile) {
 			if (this.needsAcrossNumber(x, y)) {
 				let clue = clues.shift();
 				this.acrosses.push({
-					clue: clueNumber + '. ' + clue
+					clue: clueNumber + '. ' + clue,
+					origin: { x: x, y: y }
 				});
 
 				newClue = true;
@@ -91,7 +100,8 @@ function Puzzle(puzFile) {
 			if (this.needsDownNumber(x, y)) {
 				let clue = clues.shift();
 				this.downs.push({
-					clue: clueNumber + '. ' + clue
+					clue: clueNumber + '. ' + clue,
+					origin: { x: x, y: y }
 				});
 
 				newClue = true;
@@ -129,8 +139,9 @@ Puzzle.prototype.getAcrossWord = function(x, y) {
 	let answerWord = "";
 
 	do {
-		solverWord += this.solverGrid[y][x++];
-		answerWord += this.answerGrid[y][x++];
+		solverWord += this.solverGrid[y][x];
+		answerWord += this.answerGrid[y][x];
+		x++;
 	} while (x < this.width && this.answerGrid[y][x] != '.');
 
 	return { guess: solverWord, answer: answerWord };
@@ -141,11 +152,76 @@ Puzzle.prototype.getDownWord = function(x, y) {
 	let answerWord = "";
 
 	do {
-		solverWord += this.solverGrid[y++][x];
-		answerWord += this.answerGrid[y++][x];
+		solverWord += this.solverGrid[y][x];
+		answerWord += this.answerGrid[y][x];
+		y++;
 	} while (y < this.height && this.answerGrid[y][x] != '.');
 
 	return { guess: solverWord, answer: answerWord };
 }
+
+Puzzle.prototype.logAcrossGuess = function(clue, guess) {
+	for (let i = 0; i < guess.length; i++) {
+		if (this.solverGrid[clue.origin.y][clue.origin.x + i] == '.') {
+			break;
+		}
+
+		if (guess[i] == ' ') {
+			continue;
+		}
+
+		this.solverGrid[clue.origin.y] = this.solverGrid[clue.origin.y].substring(0, clue.origin.x + i) + guess[i].toUpperCase() + this.solverGrid[clue.origin.y].substring(clue.origin.x + i + 1, this.solverGrid[clue.origin.y].length);
+	}
+};
+
+Puzzle.prototype.logDownGuess = function(clue, guess) {
+	for (let i = 0; i < guess.length; i++) {
+		if (this.solverGrid[clue.origin.y + i][clue.origin.x] == '.') {
+			break;
+		}
+
+		if (guess[i] == ' ') {
+			continue;
+		}
+
+		this.solverGrid[clue.origin.y + i] = this.solverGrid[clue.origin.y + i].substring(0, clue.origin.x) + guess[i].toUpperCase() + this.solverGrid[clue.origin.y + i].substring(clue.origin.x + 1, this.solverGrid[clue.origin.y + i].length);
+	}
+};
+
+Puzzle.prototype.showSolverState = function(mode, clue, words) {
+	let color;
+
+	for (let y = 0; y < this.solverGrid.length; y++) {
+		let output = '';
+
+		for (let x = 0; x < this.solverGrid[y].length; x++) {
+			if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+				color = BACKGROUND_CYAN + FOREGROUND_BLACK;
+			}
+			else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
+				color = BACKGROUND_CYAN + FOREGROUND_BLACK;
+			}
+			else {
+				color = BACKGROUND_WHITE + FOREGROUND_BLACK;
+			}
+
+			switch (this.solverGrid[y][x]) {
+				case '.':
+					output += BACKGROUND_BLACK + FOREGROUND_WHITE + ' ' + RESET;
+					break;
+
+				case '-':
+					output += color + ' ' + RESET;
+					break;
+
+				default:
+					output += color + this.solverGrid[y][x] + RESET;
+					break;
+			}
+		}
+
+		console.log(output);
+	}
+};
 
 module.exports = Puzzle;

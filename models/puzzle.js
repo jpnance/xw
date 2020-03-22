@@ -224,4 +224,11 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 	}
 };
 
+Puzzle.prototype.isComplete = function() {
+	let solverGridString = this.solverGrid.join('');
+	let answerGridString = this.answerGrid.join('');
+
+	return solverGridString == answerGridString;
+};
+
 module.exports = Puzzle;

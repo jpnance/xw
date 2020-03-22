@@ -15,6 +15,7 @@ let puzzle = new Puzzle(puzFile);
 let acrossIndex = 0;
 let downIndex = 0;
 
+let timer = new Date();
 nextClue('across');
 
 function nextClue(mode) {
@@ -64,5 +65,43 @@ function correctOrNot(mode, clue, guess) {
 		}
 	}
 
-	nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));
+	if (puzzle.isComplete()) {
+		timer = (new Date()) - timer;
+		timer = Math.floor(timer / 1000);
+
+		console.log();
+		puzzle.showSolverState(mode, clue, words);
+		console.log();
+		console.log('Completed in ' + formatTimer(timer) + '!');
+		process.exit();
+	}
+	else {
+		nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));
+	}
+}
+
+function formatTimer(timer) {
+	let hours = Math.floor(timer / 3600);
+	let minutes = Math.floor((timer - (3600 * hours)) / 60);
+	let seconds = timer % 60;
+
+	let formattedTimer = '';
+
+	if (hours > 0) {
+		formattedTimer += hours + ':';
+
+		if (minutes < 10) {
+			formattedTimer += '0';
+		}
+	}
+
+	formattedTimer += minutes + ':';
+
+	if (seconds < 10) {
+		formattedTimer += '0';
+	}
+
+	formattedTimer += seconds;
+
+	return formattedTimer;
 }

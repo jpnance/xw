@@ -29,6 +29,14 @@ function nextClue(mode) {
 		downIndex = 0;
 	}
 
+	if (acrossIndex < 0) {
+		acrossIndex = 0;
+	}
+
+	if (downIndex < 0) {
+		downIndex = 0;
+	}
+
 	let clue, across;
 
 	if (mode == 'across') {

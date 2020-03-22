@@ -10,6 +10,11 @@ function Puzzle(puzFile) {
 	this.checksum = (puzFile[0x01] << 4) | puzFile[0x00];
 	this.fileMagic = puzFile.slice(0x02, 0x0C + 1);
 
+	if (this.fileMagic != 'ACROSS&DOWN') {
+		console.error('Invalid puzzle file.');
+		process.exit(1);
+	}
+
 	this.cibChecksum = (puzFile[0x0F] << 4) | puzFile[0x0E];
 	this.maskedLowChecksum = puzFile[0x10] & puzFile[0x11] & puzFile[0x12] & puzFile[0x13];
 	this.maskedHighChecksum = puzFile[0x14] & puzFile[0x15] & puzFile[0x16] & puzFile[0x17];
@@ -162,7 +167,7 @@ Puzzle.prototype.getDownWord = function(x, y) {
 
 Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 	for (let i = 0; i < guess.length; i++) {
-		if (this.solverGrid[clue.origin.y][clue.origin.x + i] == '.') {
+		if (this.solverGrid[clue.origin.y][clue.origin.x + i] == '.' || clue.origin.x + i >= this.width) {
 			break;
 		}
 
@@ -176,7 +181,7 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 
 Puzzle.prototype.logDownGuess = function(clue, guess) {
 	for (let i = 0; i < guess.length; i++) {
-		if (this.solverGrid[clue.origin.y + i][clue.origin.x] == '.') {
+		if (this.solverGrid[clue.origin.y + i][clue.origin.x] == '.' || clue.origin.y + i >= this.height) {
 			break;
 		}
 

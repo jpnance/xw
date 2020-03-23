@@ -59,12 +59,29 @@ function nextClue(mode) {
 	query += "> ";
 
 	rl.question(query, function(guess) {
-		if (guess.length && guess[0] == '!') {
-			if (mode == 'across') {
-				acrossIndex -= 2;
-			}
-			else if (mode == 'down') {
-				downIndex -= 2;
+		if (guess.length == 1 && ['!', '\\'].includes(guess[0])) {
+			switch (guess[0]) {
+				case '!':
+					if (mode == 'across') {
+						acrossIndex -= 2;
+					}
+					else if (mode == 'down') {
+						downIndex -= 2;
+					}
+
+					break;
+
+				case '\\':
+					if (mode == 'across') {
+						mode = 'down';
+						downIndex -= 1;
+					}
+					else if (mode == 'down') {
+						mode = 'across';
+						acrossIndex -= 1;
+					}
+
+					break;
 			}
 		}
 		else {

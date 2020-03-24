@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
@@ -69,6 +71,10 @@ function nextClue(mode) {
 		}
 		else if (guess[0] == '/') {
 			if (guess.length > 1) {
+				if (guess == '/exit') {
+					process.exit();
+				}
+
 				let jumpClueMatches = guess.substring(1).match(/(\d+)([AaDd])?/);
 				let searchFor = mode;
 

@@ -1,9 +1,10 @@
 const BACKGROUND_BLACK = "\x1b[40m";
-const BACKGROUND_CYAN = "\x1b[46m";
-const BACKGROUND_WHITE = "\x1b[47m";
+const BACKGROUND_BRIGHT_CYAN = "\x1b[106m";
+const BACKGROUND_BRIGHT_WHITE = "\x1b[107m";
 const FOREGROUND_BLACK = "\x1b[30m";
 const FOREGROUND_CYAN = "\x1b[36m";
 const FOREGROUND_WHITE = "\x1b[37m";
+const FOREGROUND_GRAY = "\u001b[38;5;250m";
 const RESET = "\x1b[0m";
 
 function Puzzle(puzFile) {
@@ -194,7 +195,8 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 };
 
 Puzzle.prototype.showSolverState = function(mode, clue, words) {
-	let color;
+	let colorLine1;
+	let colorLine2;
 
 	console.log(this.title);
 	console.log(this.author);
@@ -207,36 +209,54 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 		console.log();
 	}
 
+	let clues = 1;
+
 	for (let y = 0; y < this.solverGrid.length; y++) {
-		let output = '';
+		let outputLine1 = '';
+		let outputLine2 = '';
 
 		for (let x = 0; x < this.solverGrid[y].length; x++) {
 			if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
-				color = BACKGROUND_CYAN + FOREGROUND_BLACK;
+				colorLine1 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_CYAN;
+				colorLine2 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_BLACK;
 			}
 			else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
-				color = BACKGROUND_CYAN + FOREGROUND_BLACK;
+				colorLine1 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_CYAN;
+				colorLine2 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_BLACK;
 			}
 			else {
-				color = BACKGROUND_WHITE + FOREGROUND_BLACK;
+				colorLine1 = BACKGROUND_BRIGHT_WHITE + FOREGROUND_GRAY;
+				colorLine2 = BACKGROUND_BRIGHT_WHITE + FOREGROUND_BLACK;
+			}
+
+			if (this.solverGrid[y][x] == '.') {
+				outputLine1 += BACKGROUND_BLACK + FOREGROUND_WHITE + '   ' + RESET;
+			}
+			else if (this.needsAcrossNumber(x, y) || this.needsDownNumber(x, y)) {
+				outputLine1 += colorLine1 + clues + (clues < 10 ? ' ' : '') + (clues < 100 ? ' ' : '') + RESET;
+				clues++;
+			}
+			else {
+				outputLine1 += colorLine1 + '   ' + RESET;
 			}
 
 			switch (this.solverGrid[y][x]) {
 				case '.':
-					output += BACKGROUND_BLACK + FOREGROUND_WHITE + ' ' + RESET;
+					outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
 					break;
 
 				case '-':
-					output += color + ' ' + RESET;
+					outputLine2 += colorLine2 + '   ' + RESET;
 					break;
 
 				default:
-					output += color + this.solverGrid[y][x] + RESET;
+					outputLine2 += colorLine2 + ' ' + this.solverGrid[y][x] + ' ' + RESET;
 					break;
 			}
 		}
 
-		console.log(output);
+		console.log(outputLine1);
+		console.log(outputLine2);
 	}
 };
 

@@ -1,4 +1,3 @@
-* Circled/shaded squares
 * Rebuses
 	* Input syntax: "in[deli]ble" will input "IN*BLE"
 	* Elsewhere on the screen, "* DELI" should be displayed
@@ -6,3 +5,6 @@
 	* Ideally, we'd be able to reuse rebuses (this might be required by the PUZ format)
 * Inline jumps, e.g. "maori/4d" will input "MAORI" for the current clue and jump to 4D
 * Mark a square as "unsure", e.g. "s?agat" will input "SAGAT" but color the S differently so as to visually suggest returning to it later
+* "Downs only" mode
+* "Gridless" mode
+* Reveal answers

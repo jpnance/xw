@@ -227,8 +227,9 @@ The header contains two pieces related to scrambled puzzles. The short at 0x32 r
 Scrambling Algorithm
 ====================
 The algorithm used to scramble the puzzles, discovered by Mike Richards, is documented in his comments below. Eventually, they will be migrated to the main body of the document.
-Extra Sections
 
+Extra Sections
+==============
 The known extra sections are:
 
 	Section Name	Description 

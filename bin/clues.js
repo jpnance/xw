@@ -40,11 +40,11 @@ function nextClue(mode) {
 	let clue, across;
 
 	if (mode == 'across') {
-		clue = puzzle.acrosses[acrossIndex++];
+		clue = puzzle.acrosses[acrossIndex];
 		words = puzzle.getAcrossWord(clue.origin.x, clue.origin.y);
 	}
 	else if (mode == 'down') {
-		clue = puzzle.downs[downIndex++];
+		clue = puzzle.downs[downIndex];
 		words = puzzle.getDownWord(clue.origin.x, clue.origin.y);
 	}
 
@@ -59,32 +59,78 @@ function nextClue(mode) {
 	query += "> ";
 
 	rl.question(query, function(guess) {
-		if (guess.length == 1 && ['!', '\\'].includes(guess[0])) {
-			switch (guess[0]) {
-				case '!':
-					if (mode == 'across') {
-						acrossIndex -= 2;
+		if (guess[0] == '!') {
+			if (mode == 'across') {
+				acrossIndex -= 1;
+			}
+			else if (mode == 'down') {
+				downIndex -= 1;
+			}
+		}
+		else if (guess[0] == '/') {
+			if (guess.length > 1) {
+				let jumpClueMatches = guess.substring(1).match(/(\d+)([AaDd])?/);
+				let searchFor = mode;
+
+				if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'A') {
+					searchFor = 'across';
+				}
+				else if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'D') {
+					searchFor = 'down';
+				}
+
+				if (jumpClueMatches[1]) {
+					let found = false;
+
+					if (searchFor == 'across') {
+						for (let i = 0; i < puzzle.acrosses.length; i++) {
+							if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+								mode = 'across';
+								acrossIndex = i;
+								found = true;
+							}
+						}
 					}
-					else if (mode == 'down') {
-						downIndex -= 2;
+					else if (searchFor == 'down') {
+						for (let i = 0; i < puzzle.downs.length; i++) {
+							if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+								mode = 'down';
+								downIndex = i;
+								found = true;
+							}
+						}
 					}
 
-					break;
-
-				case '\\':
-					if (mode == 'across') {
-						mode = 'down';
-						downIndex -= 1;
-					}
-					else if (mode == 'down') {
-						mode = 'across';
-						acrossIndex -= 1;
+					if (!found) {
+						for (let i = 0; i < puzzle.acrosses.length; i++) {
+							if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+								mode = 'across';
+								acrossIndex = i;
+								found = true;
+							}
+						}
 					}
 
-					break;
+					if (!found) {
+						for (let i = 0; i < puzzle.downs.length; i++) {
+							if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+								mode = 'down';
+								downIndex = i;
+								found = true;
+							}
+						}
+					}
+				}
 			}
 		}
 		else {
+			if (mode == 'across') {
+				acrossIndex += 1;
+			}
+			else if (mode == 'down') {
+				downIndex += 1;
+			}
+
 			correctOrNot(mode, clue, guess);
 		}
 

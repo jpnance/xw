@@ -30,16 +30,16 @@ function Puzzle(puzFile) {
 	this.unknownBitmask = (puzFile[0x31] << 4) | puzFile[0x30];
 	this.scrambledTag = (puzFile[0x33] << 4) | puzFile[0x32];
 
-	this.answerGrid = [];
-	this.solverGrid = [];
+	this.grid = [];
 
 	for (let y = 0; y < this.height; y++) {
-		this.answerGrid[y] = ""
-		this.solverGrid[y] = ""
+		this.grid[y] = [];
 
 		for (let x = 0; x < this.width; x++) {
-			this.answerGrid[y] += String.fromCharCode(puzFile[0x34 + x + (y * this.width)]);
-			this.solverGrid[y] += String.fromCharCode(puzFile[0x34 + x + (y * this.width) + (this.width * this.height)]);
+			this.grid[y][x] = {
+				answer: String.fromCharCode(puzFile[0x34 + x + (y * this.width)]),
+				guess: String.fromCharCode(puzFile[0x34 + x + (y * this.width) + (this.width * this.height)])
+			};
 		}
 	}
 
@@ -121,7 +121,7 @@ function Puzzle(puzFile) {
 }
 
 Puzzle.prototype.blackCellAt = function(x, y) {
-	return this.answerGrid[y][x] == '.';
+	return this.grid[y][x].answer == '.';
 }
 
 Puzzle.prototype.needsAcrossNumber = function(x, y) {
@@ -145,10 +145,10 @@ Puzzle.prototype.getAcrossWord = function(x, y) {
 	let answerWord = "";
 
 	do {
-		solverWord += this.solverGrid[y][x];
-		answerWord += this.answerGrid[y][x];
+		solverWord += this.grid[y][x].guess;
+		answerWord += this.grid[y][x].answer;
 		x++;
-	} while (x < this.width && this.answerGrid[y][x] != '.');
+	} while (x < this.width && this.grid[y][x].answer != '.');
 
 	return { guess: solverWord, answer: answerWord };
 }
@@ -158,17 +158,17 @@ Puzzle.prototype.getDownWord = function(x, y) {
 	let answerWord = "";
 
 	do {
-		solverWord += this.solverGrid[y][x];
-		answerWord += this.answerGrid[y][x];
+		solverWord += this.grid[y][x].guess;
+		answerWord += this.grid[y][x].answer;
 		y++;
-	} while (y < this.height && this.answerGrid[y][x] != '.');
+	} while (y < this.height && this.grid[y][x].answer != '.');
 
 	return { guess: solverWord, answer: answerWord };
 }
 
 Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 	for (let i = 0; i < guess.length; i++) {
-		if (this.solverGrid[clue.origin.y][clue.origin.x + i] == '.' || clue.origin.x + i >= this.width) {
+		if (this.grid[clue.origin.y][clue.origin.x + i].guess == '.' || clue.origin.x + i >= this.width) {
 			break;
 		}
 
@@ -176,13 +176,13 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 			continue;
 		}
 
-		this.solverGrid[clue.origin.y] = this.solverGrid[clue.origin.y].substring(0, clue.origin.x + i) + guess[i].toUpperCase() + this.solverGrid[clue.origin.y].substring(clue.origin.x + i + 1, this.solverGrid[clue.origin.y].length);
+		this.grid[clue.origin.y][clue.origin.x + i].guess = guess[i].toUpperCase();
 	}
 };
 
 Puzzle.prototype.logDownGuess = function(clue, guess) {
 	for (let i = 0; i < guess.length; i++) {
-		if (this.solverGrid[clue.origin.y + i][clue.origin.x] == '.' || clue.origin.y + i >= this.height) {
+		if (this.grid[clue.origin.y + i][clue.origin.x].guess == '.' || clue.origin.y + i >= this.height) {
 			break;
 		}
 
@@ -190,7 +190,7 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 			continue;
 		}
 
-		this.solverGrid[clue.origin.y + i] = this.solverGrid[clue.origin.y + i].substring(0, clue.origin.x) + guess[i].toUpperCase() + this.solverGrid[clue.origin.y + i].substring(clue.origin.x + 1, this.solverGrid[clue.origin.y + i].length);
+		this.grid[clue.origin.y + i][clue.origin.x].guess = guess[i].toUpperCase();
 	}
 };
 
@@ -211,11 +211,11 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 
 	let clues = 1;
 
-	for (let y = 0; y < this.solverGrid.length; y++) {
+	for (let y = 0; y < this.grid.length; y++) {
 		let outputLine1 = '';
 		let outputLine2 = '';
 
-		for (let x = 0; x < this.solverGrid[y].length; x++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
 			if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
 				colorLine1 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_CYAN;
 				colorLine2 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_BLACK;
@@ -229,7 +229,7 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 				colorLine2 = BACKGROUND_BRIGHT_WHITE + FOREGROUND_BLACK;
 			}
 
-			if (this.solverGrid[y][x] == '.') {
+			if (this.grid[y][x].guess == '.') {
 				outputLine1 += BACKGROUND_BLACK + FOREGROUND_WHITE + '   ' + RESET;
 			}
 			else if (this.needsAcrossNumber(x, y) || this.needsDownNumber(x, y)) {
@@ -240,7 +240,7 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 				outputLine1 += colorLine1 + '   ' + RESET;
 			}
 
-			switch (this.solverGrid[y][x]) {
+			switch (this.grid[y][x].guess) {
 				case '.':
 					outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
 					break;
@@ -250,7 +250,7 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 					break;
 
 				default:
-					outputLine2 += colorLine2 + ' ' + this.solverGrid[y][x] + ' ' + RESET;
+					outputLine2 += colorLine2 + ' ' + this.grid[y][x].guess + ' ' + RESET;
 					break;
 			}
 		}
@@ -261,10 +261,15 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 };
 
 Puzzle.prototype.isComplete = function() {
-	let solverGridString = this.solverGrid.join('');
-	let answerGridString = this.answerGrid.join('');
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.grid[y][x].guess != this.grid[y][x].answer) {
+				return false;
+			}
+		}
+	}
 
-	return solverGridString == answerGridString;
+	return true;
 };
 
 module.exports = Puzzle;

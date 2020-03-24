@@ -37,7 +37,7 @@ function nextClue(mode) {
 		downIndex = 0;
 	}
 
-	let clue, across;
+	let clue, words;
 
 	if (mode == 'across') {
 		clue = puzzle.acrosses[acrossIndex];
@@ -131,14 +131,14 @@ function nextClue(mode) {
 				downIndex += 1;
 			}
 
-			correctOrNot(mode, clue, guess);
+			correctOrNot(mode, clue, guess, words);
 		}
 
 		nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));
 	});
 }
 
-function correctOrNot(mode, clue, guess) {
+function correctOrNot(mode, clue, guess, words) {
 	if (guess.length > 0) {
 		if (mode == 'across') {
 			puzzle.logAcrossGuess(clue, guess);

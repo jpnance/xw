@@ -1,10 +1,12 @@
-const BACKGROUND_BLACK = "\x1b[40m";
-const BACKGROUND_BRIGHT_CYAN = "\x1b[106m";
-const BACKGROUND_BRIGHT_WHITE = "\x1b[107m";
-const FOREGROUND_BLACK = "\x1b[30m";
-const FOREGROUND_CYAN = "\x1b[36m";
-const FOREGROUND_WHITE = "\x1b[37m";
-const FOREGROUND_GRAY = "\u001b[38;5;250m";
+const BACKGROUND_BLACK = "\033[48;5;0m";
+const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
+const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
+const BACKGROUND_WHITE = "\033[48;5;15m";
+const BACKGROUND_GRAY_93 = "\033[48;5;255m";
+const FOREGROUND_BLACK = "\033[38;5;0m";
+const FOREGROUND_TEAL = "\033[38;5;6m";
+const BACKGROUND_WHITE = "\033[38;5;15m";
+const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const RESET = "\x1b[0m";
 
 function Puzzle(puzFile) {
@@ -78,6 +80,35 @@ function Puzzle(puzFile) {
 
 	while (puzFile[++stringIndex] != 0x00) {
 		this.notes += String.fromCharCode(puzFile[stringIndex]);
+	}
+
+	stringIndex++;
+
+	while (puzFile[stringIndex]) {
+		let sectionName = String.fromCharCode(puzFile[stringIndex]) + String.fromCharCode(puzFile[stringIndex + 1]) + String.fromCharCode(puzFile[stringIndex + 2]) + String.fromCharCode(puzFile[stringIndex + 3]);
+		stringIndex += 4;
+
+		let sectionLength = (puzFile[stringIndex + 1] << 4) | puzFile[stringIndex];
+
+		stringIndex += 2;
+
+		let sectionChecksum = (puzFile[stringIndex + 1] << 4) | puzFile[stringIndex];
+
+		stringIndex += 2;
+
+		if (sectionName == 'GEXT') {
+			for (let i = 0; i < sectionLength; i++) {
+				if (puzFile[stringIndex + i] == 0x80) {
+					for (let y = 0; y < this.grid.length; y++) {
+						for (let x = 0; x < this.grid[y].length; x++) {
+							if ((x + (y * this.width)) == i) {
+								this.grid[y][x].circled = true;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	this.acrosses = [];
@@ -217,16 +248,34 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 
 		for (let x = 0; x < this.grid[y].length; x++) {
 			if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
-				colorLine1 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_CYAN;
-				colorLine2 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_BLACK;
+				if (this.grid[y][x].circled) {
+					colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
+					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_BLACK;
+				}
+				else {
+					colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+					colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_BLACK;
+				}
 			}
 			else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
-				colorLine1 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_CYAN;
-				colorLine2 = BACKGROUND_BRIGHT_CYAN + FOREGROUND_BLACK;
+				if (this.grid[y][x].circled) {
+					colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
+					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_BLACK;
+				}
+				else {
+					colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+					colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_BLACK;
+				}
 			}
 			else {
-				colorLine1 = BACKGROUND_BRIGHT_WHITE + FOREGROUND_GRAY;
-				colorLine2 = BACKGROUND_BRIGHT_WHITE + FOREGROUND_BLACK;
+				if (this.grid[y][x].circled) {
+					colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
+					colorLine2 = BACKGROUND_GRAY_93 + FOREGROUND_BLACK;
+				}
+				else {
+					colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
+					colorLine2 = BACKGROUND_WHITE + FOREGROUND_BLACK;
+				}
 			}
 
 			if (this.grid[y][x].guess == '.') {

@@ -5,7 +5,7 @@ const BACKGROUND_WHITE = "\033[48;5;15m";
 const BACKGROUND_GRAY_93 = "\033[48;5;255m";
 const FOREGROUND_BLACK = "\033[38;5;0m";
 const FOREGROUND_TEAL = "\033[38;5;6m";
-const BACKGROUND_WHITE = "\033[38;5;15m";
+const FOREGROUND_WHITE = "\033[38;5;15m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const RESET = "\x1b[0m";
 

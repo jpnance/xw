@@ -302,7 +302,7 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 			continue;
 		}
 
-		if (guess[i] == '1') {
+		if (guess[i] == '!') {
 			delete this.grid[clue.origin.y + wordIndex][clue.origin.x].unsure;
 			continue;
 		}

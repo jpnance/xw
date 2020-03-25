@@ -59,20 +59,28 @@ function nextClue(mode) {
 	query += clue.clue + "\n";
 	query += "> ";
 
-	rl.question(query, function(guess) {
-		if (guess == '!@#$%') {
+	rl.question(query, function(input) {
+		if (input == '!@#$%') {
 			puzzle.fillIn();
 		}
-		else if (guess[0] == '!') {
+		else if (input[0] == '!') {
 			index -= 1;
 		}
-		else if (guess[0] == '/') {
-			if (guess.length > 1) {
-				if (guess == '/exit') {
-					process.exit();
-				}
+		else if (input == '/exit') {
+			process.exit();
+		}
+		else {
+			let slashIndex = input.indexOf('/');
+			let guess = input;
 
-				let jumpClueMatches = guess.substring(1).match(/(\d+)([AaDd])?/);
+			if (slashIndex != -1) {
+				guess = input.substring(0, slashIndex);
+			}
+
+			correctOrNot(mode, clue, guess, words);
+
+			if (slashIndex != -1) {
+				let jumpClueMatches = input.substring(slashIndex).match(/(\d+)([AaDd])?/);
 				let searchFor = mode;
 
 				if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'A') {
@@ -125,11 +133,9 @@ function nextClue(mode) {
 					}
 				}
 			}
-		}
-		else {
-			index += 1;
-
-			correctOrNot(mode, clue, guess, words);
+			else {
+				index += 1;
+			}
 		}
 
 		nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));

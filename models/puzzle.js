@@ -162,6 +162,7 @@ function Puzzle(puzFile) {
 
 							if (this.grid[y][x].rebus.id == rebus.id) {
 								this.grid[y][x].rebus.text = rebus.text;
+								this.grid[y][x].answer = rebus.text.toUpperCase();
 							}
 						};
 					}
@@ -237,8 +238,14 @@ Puzzle.prototype.getAcrossWord = function(x, y) {
 	let answerWord = "";
 
 	do {
-		solverWord += this.grid[y][x].guess;
-		answerWord += this.grid[y][x].answer;
+		if (this.grid[y][x].guess.length > 1) {
+			solverWord += '[' + this.grid[y][x].guess + ']';
+		}
+		else {
+			solverWord += this.grid[y][x].guess;
+		}
+
+		answerWord += this.grid[y][x].answer[0];
 		x++;
 	} while (x < this.width && this.grid[y][x].answer != '.');
 
@@ -250,8 +257,14 @@ Puzzle.prototype.getDownWord = function(x, y) {
 	let answerWord = "";
 
 	do {
-		solverWord += this.grid[y][x].guess;
-		answerWord += this.grid[y][x].answer;
+		if (this.grid[y][x].guess.length > 1) {
+			solverWord += '[' + this.grid[y][x].guess + ']';
+		}
+		else {
+			solverWord += this.grid[y][x].guess;
+		}
+
+		answerWord += this.grid[y][x].answer[0];
 		y++;
 	} while (y < this.height && this.grid[y][x].answer != '.');
 
@@ -260,6 +273,8 @@ Puzzle.prototype.getDownWord = function(x, y) {
 
 Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 	let wordIndex = 0;
+	let openRebus = false;
+	let rebusGuess = '';
 
 	for (let i = 0; i < guess.length; i++) {
 		if (guess[i] != '?' && guess[i] != '!' && (clue.origin.x + wordIndex >= this.width || this.grid[clue.origin.y][clue.origin.x + wordIndex].guess == '.')) {
@@ -280,6 +295,27 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 			continue;
 		}
 
+		if (guess[i] == '[') {
+			openRebus = true;
+			continue;
+		}
+
+		if (guess[i] == ']') {
+			this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = rebusGuess;
+
+			openRebus = false;
+			rebusGuess = '';
+
+			wordIndex++;
+
+			continue;
+		}
+
+		if (openRebus) {
+			rebusGuess += guess[i].toUpperCase();
+			continue;
+		}
+
 		this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = guess[i].toUpperCase();
 		wordIndex++;
 	}
@@ -287,6 +323,8 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 
 Puzzle.prototype.logDownGuess = function(clue, guess) {
 	let wordIndex = 0;
+	let openRebus = false;
+	let rebusGuess = '';
 
 	for (let i = 0; i < guess.length; i++) {
 		if (guess[i] != '?' && guess[i] != '!' && (clue.origin.y + wordIndex >= this.height || this.grid[clue.origin.y + wordIndex][clue.origin.x].guess == '.')) {
@@ -307,7 +345,28 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 			continue;
 		}
 
-		this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = guess[wordIndex].toUpperCase();
+		if (guess[i] == '[') {
+			openRebus = true;
+			continue;
+		}
+
+		if (guess[i] == ']') {
+			this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = rebusGuess;
+
+			openRebus = false;
+			rebusGuess = '';
+
+			wordIndex++;
+
+			continue;
+		}
+
+		if (openRebus) {
+			rebusGuess += guess[i].toUpperCase();
+			continue;
+		}
+
+		this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = guess[i].toUpperCase();
 		wordIndex++;
 	}
 };
@@ -376,18 +435,23 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 				outputLine1 += colorLine1 + '   ' + RESET;
 			}
 
-			switch (this.grid[y][x].guess) {
-				case '.':
-					outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
-					break;
+			if (this.grid[y][x].guess.length > 1) {
+				outputLine2 += colorLine2 + ' * ' + RESET;
+			}
+			else {
+				switch (this.grid[y][x].guess) {
+					case '.':
+						outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
+						break;
 
-				case '-':
-					outputLine2 += colorLine2 + '   ' + RESET;
-					break;
+					case '-':
+						outputLine2 += colorLine2 + '   ' + RESET;
+						break;
 
-				default:
-					outputLine2 += colorLine2 + ' ' + this.grid[y][x].guess + ' ' + RESET;
-					break;
+					default:
+						outputLine2 += colorLine2 + ' ' + this.grid[y][x].guess + ' ' + RESET;
+						break;
+				}
 			}
 		}
 

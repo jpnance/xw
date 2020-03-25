@@ -162,6 +162,7 @@ function correctOrNot(mode, clue, guess, words) {
 		puzzle.showSolverState(mode, clue, words);
 		console.log();
 		console.log('Completed in ' + formatTimer(timer) + '!');
+
 		process.exit();
 	}
 }

@@ -1,4 +1,3 @@
-* Inline jumps, e.g. "maori/4d" will input "MAORI" for the current clue and jump to 4D
 * "Downs only" mode
 * "Gridless" mode
 * Reveal answers

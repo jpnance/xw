@@ -258,8 +258,10 @@ Puzzle.prototype.getDownWord = function(x, y) {
 }
 
 Puzzle.prototype.logAcrossGuess = function(clue, guess) {
+	let wordIndex = 0;
+
 	for (let i = 0; i < guess.length; i++) {
-		if (this.grid[clue.origin.y][clue.origin.x + i].guess == '.' || clue.origin.x + i >= this.width) {
+		if (clue.origin.x + wordIndex >= this.width || this.grid[clue.origin.y][clue.origin.x + wordIndex].guess == '.') {
 			break;
 		}
 
@@ -267,13 +269,16 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 			continue;
 		}
 
-		this.grid[clue.origin.y][clue.origin.x + i].guess = guess[i].toUpperCase();
+		this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = guess[i].toUpperCase();
+		wordIndex++;
 	}
 };
 
 Puzzle.prototype.logDownGuess = function(clue, guess) {
+	let wordIndex = 0;
+
 	for (let i = 0; i < guess.length; i++) {
-		if (this.grid[clue.origin.y + i][clue.origin.x].guess == '.' || clue.origin.y + i >= this.height) {
+		if (clue.origin.y + wordIndex >= this.height || this.grid[clue.origin.y + wordIndex][clue.origin.x].guess == '.') {
 			break;
 		}
 
@@ -281,7 +286,8 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 			continue;
 		}
 
-		this.grid[clue.origin.y + i][clue.origin.x].guess = guess[i].toUpperCase();
+		this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = guess[wordIndex].toUpperCase();
+		wordIndex++;
 	}
 };
 

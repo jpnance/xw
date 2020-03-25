@@ -14,39 +14,38 @@ const Puzzle = require('../models/puzzle');
 let puzFile = fs.readFileSync(path.resolve(process.argv[2]));
 let puzzle = new Puzzle(puzFile);
 
-let acrossIndex = 0;
-let downIndex = 0;
+let index = 0;
 
 let timer = new Date();
 nextClue('across');
 
 function nextClue(mode) {
-	if (acrossIndex >= puzzle.acrosses.length) {
+	if (mode == 'across' && index >= puzzle.acrosses.length) {
 		mode = 'down';
-		acrossIndex = 0;
+		index = 0;
 	}
-
-	if (downIndex >= puzzle.downs.length) {
+	else if (mode == 'down' && index >= puzzle.downs.length) {
 		mode = 'across';
-		downIndex = 0;
+		index = 0;
 	}
 
-	if (acrossIndex < 0) {
-		acrossIndex = 0;
+	if (mode == 'across' && index < 0) {
+		mode = 'down';
+		index = puzzle.downs.length - 1;
 	}
-
-	if (downIndex < 0) {
-		downIndex = 0;
+	else if (mode == 'down' && index < 0) {
+		mode = 'across';
+		index = puzzle.acrosses.length - 1;
 	}
 
 	let clue, words;
 
 	if (mode == 'across') {
-		clue = puzzle.acrosses[acrossIndex];
+		clue = puzzle.acrosses[index];
 		words = puzzle.getAcrossWord(clue.origin.x, clue.origin.y);
 	}
 	else if (mode == 'down') {
-		clue = puzzle.downs[downIndex];
+		clue = puzzle.downs[index];
 		words = puzzle.getDownWord(clue.origin.x, clue.origin.y);
 	}
 
@@ -61,13 +60,11 @@ function nextClue(mode) {
 	query += "> ";
 
 	rl.question(query, function(guess) {
-		if (guess[0] == '!') {
-			if (mode == 'across') {
-				acrossIndex -= 1;
-			}
-			else if (mode == 'down') {
-				downIndex -= 1;
-			}
+		if (guess == '!@#$%') {
+			puzzle.fillIn();
+		}
+		else if (guess[0] == '!') {
+			index -= 1;
 		}
 		else if (guess[0] == '/') {
 			if (guess.length > 1) {
@@ -92,7 +89,7 @@ function nextClue(mode) {
 						for (let i = 0; i < puzzle.acrosses.length; i++) {
 							if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
 								mode = 'across';
-								acrossIndex = i;
+								index = i;
 								found = true;
 							}
 						}
@@ -101,7 +98,7 @@ function nextClue(mode) {
 						for (let i = 0; i < puzzle.downs.length; i++) {
 							if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
 								mode = 'down';
-								downIndex = i;
+								index = i;
 								found = true;
 							}
 						}
@@ -111,7 +108,7 @@ function nextClue(mode) {
 						for (let i = 0; i < puzzle.acrosses.length; i++) {
 							if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
 								mode = 'across';
-								acrossIndex = i;
+								index = i;
 								found = true;
 							}
 						}
@@ -121,7 +118,7 @@ function nextClue(mode) {
 						for (let i = 0; i < puzzle.downs.length; i++) {
 							if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
 								mode = 'down';
-								downIndex = i;
+								index = i;
 								found = true;
 							}
 						}
@@ -130,12 +127,7 @@ function nextClue(mode) {
 			}
 		}
 		else {
-			if (mode == 'across') {
-				acrossIndex += 1;
-			}
-			else if (mode == 'down') {
-				downIndex += 1;
-			}
+			index += 1;
 
 			correctOrNot(mode, clue, guess, words);
 		}

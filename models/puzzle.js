@@ -472,4 +472,13 @@ Puzzle.prototype.isComplete = function() {
 	return true;
 };
 
+Puzzle.prototype.fillIn = function() {
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (Math.random() < 0.95) {
+				this.grid[y][x].guess = this.grid[y][x].answer;
+			}
+		}
+	}
+};
 module.exports = Puzzle;

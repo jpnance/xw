@@ -108,6 +108,66 @@ function Puzzle(puzFile) {
 					}
 				}
 			}
+
+			stringIndex += sectionLength + 1;
+		}
+
+		if (sectionName == 'GRBS') {
+			for (let i = 0; i < sectionLength; i++) {
+				if (puzFile[stringIndex + i] != 0x00) {
+					let rebusId = puzFile[stringIndex + i] - 1;
+
+					for (let y = 0; y < this.grid.length; y++) {
+						for (let x = 0; x < this.grid[y].length; x++) {
+							if ((x + (y * this.width)) == i) {
+								if (!this.grid[y][x].rebus) {
+									this.grid[y][x].rebus = {};
+								}
+
+								this.grid[y][x].rebus.id = rebusId;
+							}
+						}
+					}
+				}
+			}
+
+			stringIndex += sectionLength + 1;
+		}
+
+		if (sectionName == 'RTBL') {
+			let gridIndex = 0;
+			let rawRebuses = '';
+			let rebuses = [];
+
+			for (let i = 0; i < sectionLength; i++) {
+				rawRebuses += String.fromCharCode(puzFile[stringIndex + i]);
+			}
+
+			rawRebuses.split(/;/).forEach(function(rawRebus) {
+				if (rawRebus.length) {
+					let splitRebus = rawRebus.split(/:/);
+					let rebusId = parseInt(splitRebus[0]);
+					let rebusText = splitRebus[1];
+
+					rebuses.push({ id: rebusId, text: rebusText });
+				}
+			});
+
+			for (let y = 0; y < this.grid.length; y++) {
+				for (let x = 0; x < this.grid[y].length; x++) {
+					if (this.grid[y][x].rebus) {
+						for (let i = 0; i < rebuses.length; i++) {
+							let rebus = rebuses[i];
+
+							if (this.grid[y][x].rebus.id == rebus.id) {
+								this.grid[y][x].rebus.text = rebus.text;
+							}
+						};
+					}
+				}
+			}
+
+			stringIndex += sectionLength;
 		}
 	}
 

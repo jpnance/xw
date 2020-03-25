@@ -6,6 +6,7 @@ const BACKGROUND_GRAY_93 = "\033[48;5;255m";
 const FOREGROUND_BLACK = "\033[38;5;0m";
 const FOREGROUND_TEAL = "\033[38;5;6m";
 const FOREGROUND_WHITE = "\033[38;5;15m";
+const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const RESET = "\x1b[0m";
 
@@ -261,11 +262,21 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 	let wordIndex = 0;
 
 	for (let i = 0; i < guess.length; i++) {
-		if (clue.origin.x + wordIndex >= this.width || this.grid[clue.origin.y][clue.origin.x + wordIndex].guess == '.') {
+		if (guess[i] != '?' && guess[i] != '!' && (clue.origin.x + wordIndex >= this.width || this.grid[clue.origin.y][clue.origin.x + wordIndex].guess == '.')) {
 			break;
 		}
 
 		if (guess[i] == ' ') {
+			continue;
+		}
+
+		if (guess[i] == '?') {
+			this.grid[clue.origin.y][clue.origin.x + wordIndex - 1].unsure = true;
+			continue;
+		}
+
+		if (guess[i] == '!') {
+			delete this.grid[clue.origin.y][clue.origin.x + wordIndex - 1].unsure;
 			continue;
 		}
 
@@ -278,11 +289,21 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 	let wordIndex = 0;
 
 	for (let i = 0; i < guess.length; i++) {
-		if (clue.origin.y + wordIndex >= this.height || this.grid[clue.origin.y + wordIndex][clue.origin.x].guess == '.') {
+		if (guess[i] != '?' && guess[i] != '!' && (clue.origin.y + wordIndex >= this.height || this.grid[clue.origin.y + wordIndex][clue.origin.x].guess == '.')) {
 			break;
 		}
 
 		if (guess[i] == ' ') {
+			continue;
+		}
+
+		if (guess[i] == '?') {
+			this.grid[clue.origin.y + wordIndex][clue.origin.x].unsure = true;
+			continue;
+		}
+
+		if (guess[i] == '1') {
+			delete this.grid[clue.origin.y + wordIndex][clue.origin.x].unsure;
 			continue;
 		}
 
@@ -316,31 +337,31 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 			if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
 				if (this.grid[y][x].circled) {
 					colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_BLACK;
+					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 				else {
 					colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_BLACK;
+					colorLine2 = BACKGROUND_PALE_TURQUOISE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 			}
 			else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
 				if (this.grid[y][x].circled) {
 					colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_BLACK;
+					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 				else {
 					colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_BLACK;
+					colorLine2 = BACKGROUND_PALE_TURQUOISE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 			}
 			else {
 				if (this.grid[y][x].circled) {
 					colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-					colorLine2 = BACKGROUND_GRAY_93 + FOREGROUND_BLACK;
+					colorLine2 = BACKGROUND_GRAY_93 + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 				else {
 					colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-					colorLine2 = BACKGROUND_WHITE + FOREGROUND_BLACK;
+					colorLine2 = BACKGROUND_WHITE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 			}
 

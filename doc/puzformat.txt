@@ -255,9 +255,9 @@ The format of the data for each section is described below.
 
 GRBS
 ----
-The GRBS data is a "board" of one byte per square, similar to the strings for the solution and user state tables except that black squares, letters, etc. are not indicated. The byte for each square of this board indicates whether or not that square is a rebus. Possible values are:
+The GRBS data is a "board" of one byte per square, similar to the strings for the solution and user state tables. The byte for each square of this board (which includes bytes for black squares) indicates whether or not that square is a rebus. Possible values are:
 
-	* 0 indicates a non-rebus square.
+	* 0 indicates a non-rebus (or black) square.
 	* 1+n indicates a rebus square, the solution for which is given by the entry with key n in the RTBL section.
 
 If a square is a rebus, only the first letter will be given by the solution board and only the first letter of any fill will be given in the user state board.
@@ -299,7 +299,9 @@ None, some, or all of these bits may be set for each square. It is possible that
 
 RUSR
 ----
-The RUSR section is currently undocumented.
+The RUSR data section can be thought of as a "board" of null-terminated strings for each square (including black squares) on the grid. Each of these strings will represent the rebus the user currently has at that respective board position. If the user hasn't yet placed a rebus on the board, the data of the RUSR section will simply be the \0 character repeated a number of times equal to the number of squares (again, including black squares) on the grid.
+
+If the user has placed a rebus of "HELLO" in the sixth cell of a grid, the RUSR data section will begin with "\0\0\0\0\0HELLO\0...".
 
 What Remains
 ============

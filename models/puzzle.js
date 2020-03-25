@@ -336,7 +336,7 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 		}
 
 		if (guess[i] == '?') {
-			this.grid[clue.origin.y + wordIndex][clue.origin.x].unsure = true;
+			this.grid[clue.origin.y + wordIndex - 1][clue.origin.x].unsure = true;
 			continue;
 		}
 

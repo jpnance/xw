@@ -157,7 +157,7 @@ function correctOrNot(mode, clue, guess, words) {
 		timer = Math.floor(timer / 1000);
 
 		console.log();
-		puzzle.showSolverState(mode, clue, words);
+		puzzle.showSolverState(mode, clue, words, true);
 		console.log();
 		console.log('Completed in ' + formatTimer(timer) + '!');
 

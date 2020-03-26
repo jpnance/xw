@@ -470,18 +470,10 @@ Puzzle.prototype.showSolverState = function(mode, clue, words, finalize) {
 					colorLine2 = BACKGROUND_GRAY_93 + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 				else if (finalize) {
-					if (this.grid[y][x].percentile > 0.90) {
-						colorLine1 = "\033[48;5;196m";
-						colorLine2 = "\033[48;5;196m";
-					}
-					else if (this.grid[y][x].percentile > 0.50) {
-						colorLine1 = "\033[48;5;220m";
-						colorLine2 = "\033[48;5;220m";
-					}
-					else {
-						colorLine1 = "\033[48;5;153m";
-						colorLine2 = "\033[48;5;153m";
-					}
+					let redValue = 255 - Math.round(Math.pow(this.grid[y][x].percentile, 2) * 128);
+
+					colorLine1 = "\033[48;2;255;" + redValue + ";" + redValue + "m";
+					colorLine2 = "\033[48;2;255;" + redValue + ";" + redValue + "m";
 
 					colorLine1 += FOREGROUND_GRAY_74;
 					colorLine2 += (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
@@ -543,7 +535,7 @@ Puzzle.prototype.isComplete = function() {
 Puzzle.prototype.fillIn = function() {
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (this.grid[y][x].guess != this.grid[y][x].answer && Math.random() < 0.80) {
+			if (this.grid[y][x].guess != this.grid[y][x].answer && Math.random() < 0.50) {
 				this.grid[y][x].guess = this.grid[y][x].answer;
 				this.grid[y][x].order = ++(this.guessCount);
 			}

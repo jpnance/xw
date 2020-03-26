@@ -2,6 +2,8 @@ const BACKGROUND_BLACK = "\033[48;5;0m";
 const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
 const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
 const BACKGROUND_WHITE = "\033[48;5;15m";
+const BACKGROUND_LIGHT_PINK = "\033[48;5;217m";
+const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
 const BACKGROUND_GRAY_93 = "\033[48;5;255m";
 const FOREGROUND_BLACK = "\033[38;5;0m";
 const FOREGROUND_TEAL = "\033[38;5;6m";
@@ -470,10 +472,18 @@ Puzzle.prototype.showSolverState = function(mode, clue, words, finalize) {
 					colorLine2 = BACKGROUND_GRAY_93 + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 				}
 				else if (finalize) {
-					let redValue = 255 - Math.round(Math.pow(this.grid[y][x].percentile, 2) * 128);
-
-					colorLine1 = "\033[48;2;255;" + redValue + ";" + redValue + "m";
-					colorLine2 = "\033[48;2;255;" + redValue + ";" + redValue + "m";
+					if (this.grid[y][x].percentile < 0.5) {
+						colorLine1 = BACKGROUND_WHITE;
+						colorLine2 = BACKGROUND_WHITE;
+					}
+					else if (this.grid[y][x].percentile < 0.9) {
+						colorLine1 = BACKGROUND_MISTY_ROSE;
+						colorLine2 = BACKGROUND_MISTY_ROSE;
+					}
+					else {
+						colorLine1 = BACKGROUND_LIGHT_PINK;
+						colorLine2 = BACKGROUND_LIGHT_PINK;
+					}
 
 					colorLine1 += FOREGROUND_GRAY_74;
 					colorLine2 += (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);

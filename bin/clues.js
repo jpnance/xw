@@ -83,51 +83,61 @@ function nextClue(mode) {
 				let jumpClueMatches = input.substring(slashIndex).match(/(\d+)([AaDd])?/);
 				let searchFor = mode;
 
-				if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'A') {
-					searchFor = 'across';
+				if (!jumpClueMatches) {
+					if (mode == 'across') {
+						mode = 'down';
+					}
+					else if (mode == 'down') {
+						mode = 'across';
+					}
 				}
-				else if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'D') {
-					searchFor = 'down';
-				}
-
-				if (jumpClueMatches[1]) {
-					let found = false;
-
-					if (searchFor == 'across') {
-						for (let i = 0; i < puzzle.acrosses.length; i++) {
-							if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
-								mode = 'across';
-								index = i;
-								found = true;
-							}
-						}
+				else {
+					if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'A') {
+						searchFor = 'across';
 					}
-					else if (searchFor == 'down') {
-						for (let i = 0; i < puzzle.downs.length; i++) {
-							if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
-								mode = 'down';
-								index = i;
-								found = true;
-							}
-						}
+					else if (jumpClueMatches[2] && jumpClueMatches[2].toUpperCase() == 'D') {
+						searchFor = 'down';
 					}
 
-					if (!found) {
-						for (let i = 0; i < puzzle.acrosses.length; i++) {
-							if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
-								mode = 'across';
-								index = i;
-								found = true;
+					if (jumpClueMatches[1]) {
+						let found = false;
+
+						if (searchFor == 'across') {
+							for (let i = 0; i < puzzle.acrosses.length; i++) {
+								if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+									mode = 'across';
+									index = i;
+									found = true;
+								}
 							}
 						}
-					}
+						else if (searchFor == 'down') {
+							for (let i = 0; i < puzzle.downs.length; i++) {
+								if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+									mode = 'down';
+									index = i;
+									found = true;
+								}
+							}
+						}
 
-					if (!found) {
-						for (let i = 0; i < puzzle.downs.length; i++) {
-							if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
-								mode = 'down';
-								index = i;
-								found = true;
+						if (!found) {
+							for (let i = 0; i < puzzle.acrosses.length; i++) {
+								if (puzzle.acrosses[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+									mode = 'across';
+									index = i;
+									found = true;
+								}
+							}
+						}
+
+						if (!found) {
+							for (let i = 0; i < puzzle.downs.length; i++) {
+								if (puzzle.downs[i].clue.startsWith(jumpClueMatches[1] + '.')) {
+									mode = 'down';
+									index = i;
+									found = true;
+								}
 							}
 						}
 					}

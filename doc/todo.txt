@@ -1,3 +1,10 @@
 * "Downs only" mode
 * "Gridless" mode
-* Reveal answers
+* Save progress / write PUZ file
+* Parse base64 strings
+* "Check" letter / word / puzzle
+* "Reveal" letter / word / puzzle
+* Metrics minimap
+	* Time
+* Make clues browsable after you're done
+* Be able to jot down notes afterwards (and during?)

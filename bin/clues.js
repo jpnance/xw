@@ -12,11 +12,20 @@ const rl = readline.createInterface({
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
 
-let puzFile = fs.readFileSync(path.resolve(process.argv[2]));
+let options = process.argv.filter(function(option) { return option.startsWith('--'); });
+let nonOptions = process.argv.filter(function(option) { return !option.startsWith('--'); });
+
+let puzFile = fs.readFileSync(path.resolve(nonOptions.pop()));
 let puzzle = new Puzzle(puzFile);
 
 let index = 0;
 let timer = null;
+
+let downsOnly = false;
+
+if (options.includes('--downs-only')) {
+	downsOnly = true;
+}
 
 titleScreen();
 
@@ -26,7 +35,7 @@ function titleScreen() {
 
 	rl.question('Press ENTER to begin.', function() {
 		timer = new Date();
-		nextClue('across');
+		nextClue(downsOnly ? 'down' : 'across');
 	});
 }
 
@@ -68,7 +77,14 @@ function nextClue(mode) {
 	let clueIndentation = clue.clue.indexOf(' ') + 1;
 
 	query += words.guess + ' (' + words.answer.length + ') ' + "\n\n";
-	query += Util.formatString(clue.clue, puzzle.width * 3, clueIndentation) + "\n";
+
+	if (!downsOnly || mode == 'down') {
+		query += Util.formatString(clue.clue, puzzle.width * 3, clueIndentation) + "\n";
+	}
+	else {
+		query += Util.formatString('', puzzle.width * 3, clueIndentation) + "\n";
+	}
+
 	query += "> ";
 
 	rl.question(query, function(input) {

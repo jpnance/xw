@@ -239,7 +239,9 @@ Puzzle.prototype.needsAcrossNumber = function(x, y) {
 
 Puzzle.prototype.needsDownNumber = function(x, y) {
 	if (y == 0 || this.blackCellAt(x, y - 1)) {
-		return true;
+		if (!this.blackCellAt(x, y + 1) && !this.blackCellAt(x, y + 2)) {
+			return true;
+		}
 	}
 
 	return false;

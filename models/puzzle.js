@@ -12,6 +12,8 @@ const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const RESET = "\x1b[0m";
 
+const Util = require('./util');
+
 function Puzzle(puzFile) {
 	this.checksum = (puzFile[0x01] << 8) | puzFile[0x00];
 	this.fileMagic = puzFile.slice(0x02, 0x0C + 1);
@@ -414,7 +416,7 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 	console.log();
 
 	if (this.notes.length > 0) {
-		console.log(this.notes);
+		console.log(Util.formatString(this.notes, this.width * 3, 0));
 		console.log();
 	}
 

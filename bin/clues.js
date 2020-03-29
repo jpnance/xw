@@ -9,6 +9,7 @@ const rl = readline.createInterface({
 	output: process.stdout
 });
 
+const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
 
 let puzFile = fs.readFileSync(path.resolve(process.argv[2]));
@@ -64,9 +65,10 @@ function nextClue(mode) {
 	console.log();
 
 	let query = "";
+	let clueIndentation = clue.clue.indexOf(' ') + 1;
 
 	query += words.guess + ' (' + words.answer.length + ') ' + "\n\n";
-	query += clue.clue + "\n";
+	query += Util.formatString(clue.clue, puzzle.width * 3, clueIndentation) + "\n";
 	query += "> ";
 
 	rl.question(query, function(input) {
@@ -184,34 +186,8 @@ function correctOrNot(mode, clue, guess, words) {
 		puzzle.showMinimaps();
 
 		console.log();
-		console.log('Completed in ' + formatTimer(timer) + '!');
+		console.log('Completed in ' + Util.formatTimer(timer) + '!');
 
 		process.exit();
 	}
-}
-
-function formatTimer(timer) {
-	let hours = Math.floor(timer / 3600);
-	let minutes = Math.floor((timer - (3600 * hours)) / 60);
-	let seconds = timer % 60;
-
-	let formattedTimer = '';
-
-	if (hours > 0) {
-		formattedTimer += hours + ':';
-
-		if (minutes < 10) {
-			formattedTimer += '0';
-		}
-	}
-
-	formattedTimer += minutes + ':';
-
-	if (seconds < 10) {
-		formattedTimer += '0';
-	}
-
-	formattedTimer += seconds;
-
-	return formattedTimer;
 }

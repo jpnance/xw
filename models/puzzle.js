@@ -220,12 +220,18 @@ function Puzzle(puzFile) {
 }
 
 Puzzle.prototype.blackCellAt = function(x, y) {
+	if (x >= this.width || y >= this.height) {
+		return true;
+	}
+
 	return this.grid[y][x].answer == '.';
 }
 
 Puzzle.prototype.needsAcrossNumber = function(x, y) {
 	if (x == 0 || this.blackCellAt(x - 1, y)) {
-		return true;
+		if (!this.blackCellAt(x + 1, y) && !this.blackCellAt(x + 2, y)) {
+			return true;
+		}
 	}
 
 	return false;

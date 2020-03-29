@@ -13,7 +13,7 @@ const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const RESET = "\x1b[0m";
 
 function Puzzle(puzFile) {
-	this.checksum = (puzFile[0x01] << 4) | puzFile[0x00];
+	this.checksum = (puzFile[0x01] << 8) | puzFile[0x00];
 	this.fileMagic = puzFile.slice(0x02, 0x0C + 1);
 
 	if (this.fileMagic != 'ACROSS&DOWN') {
@@ -21,19 +21,19 @@ function Puzzle(puzFile) {
 		process.exit(1);
 	}
 
-	this.cibChecksum = (puzFile[0x0F] << 4) | puzFile[0x0E];
+	this.cibChecksum = (puzFile[0x0F] << 8) | puzFile[0x0E];
 	this.maskedLowChecksum = puzFile[0x10] & puzFile[0x11] & puzFile[0x12] & puzFile[0x13];
 	this.maskedHighChecksum = puzFile[0x14] & puzFile[0x15] & puzFile[0x16] & puzFile[0x17];
 
 	this.versionString = String.fromCharCode(puzFile[0x18]) + String.fromCharCode(puzFile[0x19]) + String.fromCharCode(puzFile[0x1A]);
-	this.reserved1C = (puzFile[0x1D] << 4) | puzFile[0x1C];
-	this.scrambledChecksum = (puzFile[0x1F] << 4) | puzFile[0x1E];
+	this.reserved1C = (puzFile[0x1D] << 8) | puzFile[0x1C];
+	this.scrambledChecksum = (puzFile[0x1F] << 8) | puzFile[0x1E];
 	this.reserved20 = 0; // bytes from 0x20 to 0x2B; probably garbage
 	this.width = puzFile[0x2C];
 	this.height = puzFile[0x2D];
-	this.numberOfClues = (puzFile[0x2F] << 4) | puzFile[0x2E];
-	this.unknownBitmask = (puzFile[0x31] << 4) | puzFile[0x30];
-	this.scrambledTag = (puzFile[0x33] << 4) | puzFile[0x32];
+	this.numberOfClues = (puzFile[0x2F] << 8) | puzFile[0x2E];
+	this.unknownBitmask = (puzFile[0x31] << 8) | puzFile[0x30];
+	this.scrambledTag = (puzFile[0x33] << 8) | puzFile[0x32];
 
 	this.grid = [];
 
@@ -93,11 +93,11 @@ function Puzzle(puzFile) {
 		let sectionName = String.fromCharCode(puzFile[stringIndex]) + String.fromCharCode(puzFile[stringIndex + 1]) + String.fromCharCode(puzFile[stringIndex + 2]) + String.fromCharCode(puzFile[stringIndex + 3]);
 		stringIndex += 4;
 
-		let sectionLength = (puzFile[stringIndex + 1] << 4) | puzFile[stringIndex];
+		let sectionLength = (puzFile[stringIndex + 1] << 8) | puzFile[stringIndex];
 
 		stringIndex += 2;
 
-		let sectionChecksum = (puzFile[stringIndex + 1] << 4) | puzFile[stringIndex];
+		let sectionChecksum = (puzFile[stringIndex + 1] << 8) | puzFile[stringIndex];
 
 		stringIndex += 2;
 

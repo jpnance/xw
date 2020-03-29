@@ -15,7 +15,7 @@ let puzFile = fs.readFileSync(path.resolve(process.argv[2]));
 let puzzle = new Puzzle(puzFile);
 
 let index = 0;
-let timer = new Date();
+let timer = null;
 
 titleScreen();
 
@@ -24,6 +24,7 @@ function titleScreen() {
 	console.log();
 
 	rl.question('Press ENTER to begin.', function() {
+		timer = new Date();
 		nextClue('across');
 	});
 }

@@ -15,9 +15,18 @@ let puzFile = fs.readFileSync(path.resolve(process.argv[2]));
 let puzzle = new Puzzle(puzFile);
 
 let index = 0;
-
 let timer = new Date();
-nextClue('across');
+
+titleScreen();
+
+function titleScreen() {
+	puzzle.showSolverState('title');
+	console.log();
+
+	rl.question('Press ENTER to begin.', function() {
+		nextClue('across');
+	});
+}
 
 function nextClue(mode) {
 	if (mode == 'across' && index >= puzzle.acrosses.length) {
@@ -165,9 +174,14 @@ function correctOrNot(mode, clue, guess, words) {
 	if (puzzle.isComplete()) {
 		timer = (new Date()) - timer;
 		timer = Math.floor(timer / 1000);
+		puzzle.tabulateStats();
 
 		console.log();
-		puzzle.showSolverState(mode, clue, words, true);
+
+		puzzle.showSolverState(mode, clue, words);
+		console.log();
+		puzzle.showMinimaps();
+
 		console.log();
 		console.log('Completed in ' + formatTimer(timer) + '!');
 

@@ -43,7 +43,9 @@ function Puzzle(puzFile) {
 		for (let x = 0; x < this.width; x++) {
 			this.grid[y][x] = {
 				answer: String.fromCharCode(puzFile[0x34 + x + (y * this.width)]),
-				guess: String.fromCharCode(puzFile[0x34 + x + (y * this.width) + (this.width * this.height)])
+				guess: String.fromCharCode(puzFile[0x34 + x + (y * this.width) + (this.width * this.height)]),
+				order: 0,
+				changes: 0
 			};
 		}
 	}
@@ -307,6 +309,7 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 		if (guess[i] == ']') {
 			if (this.grid[clue.origin.y][clue.origin.x + wordIndex].guess != rebusGuess) {
 				this.grid[clue.origin.y][clue.origin.x + wordIndex].order = ++(this.guessCount);
+				this.grid[clue.origin.y][clue.origin.x + wordIndex].changes += 1;
 				this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = rebusGuess;
 			}
 
@@ -325,6 +328,7 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 
 		if (this.grid[clue.origin.y][clue.origin.x + wordIndex].guess != guess[i].toUpperCase()) {
 			this.grid[clue.origin.y][clue.origin.x + wordIndex].order = ++(this.guessCount);
+			this.grid[clue.origin.y][clue.origin.x + wordIndex].changes += 1;
 			this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = guess[i].toUpperCase();
 		}
 
@@ -364,6 +368,7 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 		if (guess[i] == ']') {
 			if (this.grid[clue.origin.y + wordIndex][clue.origin.x].guess != rebusGuess) {
 				this.grid[clue.origin.y + wordIndex][clue.origin.x].order = ++(this.guessCount);
+				this.grid[clue.origin.y + wordIndex][clue.origin.x].changes += 1;
 				this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = rebusGuess;
 			}
 
@@ -382,6 +387,7 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 
 		if (this.grid[clue.origin.y + wordIndex][clue.origin.x].guess != guess[i].toUpperCase()) {
 			this.grid[clue.origin.y + wordIndex][clue.origin.x].order = ++(this.guessCount);
+			this.grid[clue.origin.y + wordIndex][clue.origin.x].changes += 1;
 			this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = guess[i].toUpperCase();
 		}
 
@@ -389,7 +395,7 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 	}
 };
 
-Puzzle.prototype.showSolverState = function(mode, clue, words, finalize) {
+Puzzle.prototype.showSolverState = function(mode, clue, words) {
 	let colorLine1;
 	let colorLine2;
 
@@ -404,41 +410,6 @@ Puzzle.prototype.showSolverState = function(mode, clue, words, finalize) {
 		console.log();
 	}
 
-	if (finalize) {
-		let guessOrders = [];
-
-		for (let y = 0; y < this.grid.length; y++) {
-			for (let x = 0; x < this.grid[y].length; x++) {
-				if (this.grid[y][x].answer != '.') {
-					guessOrders.push(this.grid[y][x].order);
-				}
-			}
-		}
-
-		guessOrders.sort(function(a, b) {
-			let aInt = parseInt(a);
-			let bInt = parseInt(b);
-
-			if (aInt < bInt) {
-				return -1;
-			}
-			else if (aInt > bInt) {
-				return 1;
-			}
-			else {
-				return 0;
-			}
-		});
-
-		for (let y = 0; y < this.grid.length; y++) {
-			for (let x = 0; x < this.grid[y].length; x++) {
-				if (this.grid[y][x].answer != '.') {
-					this.grid[y][x].percentile = guessOrders.indexOf(this.grid[y][x].order) / guessOrders.length;
-				}
-			}
-		}
-	}
-
 	let clues = 1;
 
 	for (let y = 0; y < this.grid.length; y++) {
@@ -446,81 +417,70 @@ Puzzle.prototype.showSolverState = function(mode, clue, words, finalize) {
 		let outputLine2 = '';
 
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (!finalize && mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
-				if (this.grid[y][x].circled) {
-					colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
-				}
-				else {
-					colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_PALE_TURQUOISE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
-				}
-			}
-			else if (!finalize && mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
-				if (this.grid[y][x].circled) {
-					colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_DARK_SLATE_GRAY + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
-				}
-				else {
-					colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-					colorLine2 = BACKGROUND_PALE_TURQUOISE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
-				}
+			if (mode == 'title') {
+				outputLine1 += BACKGROUND_WHITE + '   ' + RESET;
+				outputLine2 += BACKGROUND_WHITE + '   ' + RESET;
 			}
 			else {
-				if (this.grid[y][x].circled) {
-					colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-					colorLine2 = BACKGROUND_GRAY_93 + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
-				}
-				else if (finalize) {
-					if (this.grid[y][x].percentile < 0.5) {
-						colorLine1 = BACKGROUND_WHITE;
-						colorLine2 = BACKGROUND_WHITE;
-					}
-					else if (this.grid[y][x].percentile < 0.9) {
-						colorLine1 = BACKGROUND_MISTY_ROSE;
-						colorLine2 = BACKGROUND_MISTY_ROSE;
+				if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+					if (this.grid[y][x].circled) {
+						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
+						colorLine2 = BACKGROUND_DARK_SLATE_GRAY + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 					}
 					else {
-						colorLine1 = BACKGROUND_LIGHT_PINK;
-						colorLine2 = BACKGROUND_LIGHT_PINK;
+						colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+						colorLine2 = BACKGROUND_PALE_TURQUOISE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
 					}
-
-					colorLine1 += FOREGROUND_GRAY_74;
-					colorLine2 += (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
+				}
+				else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
+					if (this.grid[y][x].circled) {
+						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
+						colorLine2 = BACKGROUND_DARK_SLATE_GRAY + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
+					}
+					else {
+						colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+						colorLine2 = BACKGROUND_PALE_TURQUOISE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
+					}
 				}
 				else {
-					colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-					colorLine2 = BACKGROUND_WHITE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
+					if (this.grid[y][x].circled) {
+						colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
+						colorLine2 = BACKGROUND_GRAY_93 + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
+					}
+					else {
+						colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
+						colorLine2 = BACKGROUND_WHITE + (this.grid[y][x].unsure ? FOREGROUND_DARK_ORANGE : FOREGROUND_BLACK);
+					}
 				}
-			}
 
-			if (this.grid[y][x].guess == '.') {
-				outputLine1 += BACKGROUND_BLACK + FOREGROUND_WHITE + '   ' + RESET;
-			}
-			else if (this.needsAcrossNumber(x, y) || this.needsDownNumber(x, y)) {
-				outputLine1 += colorLine1 + clues + (clues < 10 ? ' ' : '') + (clues < 100 ? ' ' : '') + RESET;
-				clues++;
-			}
-			else {
-				outputLine1 += colorLine1 + '   ' + RESET;
-			}
+				if (this.grid[y][x].guess == '.') {
+					outputLine1 += BACKGROUND_BLACK + FOREGROUND_WHITE + '   ' + RESET;
+				}
+				else if (this.needsAcrossNumber(x, y) || this.needsDownNumber(x, y)) {
+					outputLine1 += colorLine1 + clues + (clues < 10 ? ' ' : '') + (clues < 100 ? ' ' : '') + RESET;
+					clues++;
+				}
+				else {
+					outputLine1 += colorLine1 + '   ' + RESET;
+				}
 
-			if (this.grid[y][x].guess.length > 1) {
-				outputLine2 += colorLine2 + ' * ' + RESET;
-			}
-			else {
-				switch (this.grid[y][x].guess) {
-					case '.':
-						outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
-						break;
+				if (this.grid[y][x].guess.length > 1) {
+					outputLine2 += colorLine2 + ' * ' + RESET;
+				}
+				else {
+					switch (this.grid[y][x].guess) {
+						case '.':
+							outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
+							break;
 
-					case '-':
-						outputLine2 += colorLine2 + '   ' + RESET;
-						break;
+						case '-':
+							outputLine2 += colorLine2 + '   ' + RESET;
+							break;
 
-					default:
-						outputLine2 += colorLine2 + ' ' + this.grid[y][x].guess + ' ' + RESET;
-						break;
+						default:
+							outputLine2 += colorLine2 + ' ' + this.grid[y][x].guess + ' ' + RESET;
+							break;
+					}
 				}
 			}
 		}
@@ -543,13 +503,103 @@ Puzzle.prototype.isComplete = function() {
 };
 
 Puzzle.prototype.fillIn = function() {
+	let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (this.grid[y][x].guess != this.grid[y][x].answer && Math.random() < 0.50) {
+			if (this.grid[y][x].answer == '.') {
+				console.log('lol');
+				continue;
+			}
+
+			if (this.grid[y][x].guess != this.grid[y][x].answer) {
 				this.grid[y][x].guess = this.grid[y][x].answer;
 				this.grid[y][x].order = ++(this.guessCount);
+				this.grid[y][x].changes += 1;
 			}
 		}
 	}
 };
+
+Puzzle.prototype.tabulateStats = function() {
+	let guessOrders = [];
+
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.grid[y][x].answer != '.') {
+				guessOrders.push(this.grid[y][x].order);
+			}
+		}
+	}
+
+	guessOrders.sort(function(a, b) {
+		let aInt = parseInt(a);
+		let bInt = parseInt(b);
+
+		if (aInt < bInt) {
+			return -1;
+		}
+		else if (aInt > bInt) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	});
+
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.grid[y][x].answer != '.') {
+				this.grid[y][x].percentile = guessOrders.indexOf(this.grid[y][x].order) / guessOrders.length;
+			}
+		}
+	}
+};
+
+Puzzle.prototype.showMinimaps = function() {
+	let changesLine = '';
+	let orderLine = '';
+
+	for (let y = 0; y < this.grid.length; y++) {
+		changesLine = '';
+		orderLine = '';
+
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.grid[y][x].answer == '.') {
+				changesLine += BACKGROUND_BLACK;
+				orderLine += BACKGROUND_BLACK;
+			}
+			else {
+				if (this.grid[y][x].changes == 1) {
+					changesLine += BACKGROUND_WHITE;
+				}
+				else if (this.grid[y][x].changes == 2) {
+					changesLine += BACKGROUND_MISTY_ROSE;
+				}
+				else {
+					changesLine += BACKGROUND_LIGHT_PINK;
+				}
+
+				if (this.grid[y][x].percentile < 0.67) {
+					orderLine += BACKGROUND_WHITE;
+				}
+				else if (this.grid[y][x].percentile < 0.89) {
+					orderLine += BACKGROUND_MISTY_ROSE;
+				}
+				else {
+					orderLine += BACKGROUND_LIGHT_PINK;
+				}
+			}
+
+			changesLine += ' ';
+			orderLine += ' ';
+		}
+
+		changesLine += RESET;
+		orderLine += RESET;
+
+		console.log(changesLine + '   ' + orderLine);
+	}
+};
+
 module.exports = Puzzle;

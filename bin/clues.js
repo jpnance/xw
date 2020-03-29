@@ -79,10 +79,10 @@ function nextClue(mode) {
 	query += words.guess + ' (' + words.answer.length + ') ' + "\n\n";
 
 	if (!downsOnly || mode == 'down') {
-		query += Util.formatString(clue.clue, puzzle.width * 3, clueIndentation) + "\n";
+		query += Util.formatString(clue.clue, puzzle.width * 3, clueIndentation, 3) + "\n";
 	}
 	else {
-		query += Util.formatString('', puzzle.width * 3, clueIndentation) + "\n";
+		query += Util.formatString('', puzzle.width * 3, clueIndentation, 3) + "\n";
 	}
 
 	query += "> ";

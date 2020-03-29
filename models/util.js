@@ -27,7 +27,7 @@ Util.formatTimer = function(timer) {
 	return formattedTimer;
 };
 
-Util.formatString = function(string, width, indent) {
+Util.formatString = function(string, width, indent, padLines) {
 	let words = string.split(/ /);
 	let line = '';
 	let lines = [];
@@ -47,6 +47,10 @@ Util.formatString = function(string, width, indent) {
 
 	if (line.length > indent) {
 		lines.push(line);
+	}
+
+	while (lines.length < padLines) {
+		lines.push('');
 	}
 
 	return lines.join("\n");

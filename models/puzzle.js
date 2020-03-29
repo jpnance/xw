@@ -518,7 +518,6 @@ Puzzle.prototype.fillIn = function() {
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
 			if (this.grid[y][x].answer == '.') {
-				console.log('lol');
 				continue;
 			}
 

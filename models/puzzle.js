@@ -117,8 +117,6 @@ function Puzzle(puzFile) {
 					}
 				}
 			}
-
-			stringIndex += sectionLength + 1;
 		}
 
 		if (sectionName == 'GRBS') {
@@ -139,8 +137,6 @@ function Puzzle(puzFile) {
 					}
 				}
 			}
-
-			stringIndex += sectionLength + 1;
 		}
 
 		if (sectionName == 'RTBL') {
@@ -176,9 +172,9 @@ function Puzzle(puzFile) {
 					}
 				}
 			}
-
-			stringIndex += sectionLength;
 		}
+
+		stringIndex += sectionLength + 1;
 	}
 
 	this.acrosses = [];

@@ -31,6 +31,12 @@ titleScreen();
 
 function titleScreen() {
 	puzzle.showSolverState('title');
+
+	console.log();
+	console.log();
+	console.log();
+	console.log();
+	console.log();
 	console.log();
 
 	rl.question('Press ENTER to begin.', function() {

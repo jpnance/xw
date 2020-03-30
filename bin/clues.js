@@ -88,8 +88,8 @@ function nextClue(mode) {
 	query += "> ";
 
 	rl.question(query, function(input) {
-		if (input == '!@#$%') {
-			puzzle.fillIn();
+		if (input == '/reveal') {
+			puzzle.reveal();
 		}
 		else if (input[0] == '!') {
 			index -= 1;

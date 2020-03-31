@@ -320,6 +320,8 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 				this.grid[clue.origin.y][clue.origin.x + wordIndex].order = ++(this.guessCount);
 				this.grid[clue.origin.y][clue.origin.x + wordIndex].changes += 1;
 				this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = rebusGuess;
+
+				delete this.grid[clue.origin.y][clue.origin.x + wordIndex].incorrect;
 			}
 
 			openRebus = false;
@@ -339,6 +341,8 @@ Puzzle.prototype.logAcrossGuess = function(clue, guess) {
 			this.grid[clue.origin.y][clue.origin.x + wordIndex].order = ++(this.guessCount);
 			this.grid[clue.origin.y][clue.origin.x + wordIndex].changes += 1;
 			this.grid[clue.origin.y][clue.origin.x + wordIndex].guess = guess[i].toUpperCase();
+
+			delete this.grid[clue.origin.y][clue.origin.x + wordIndex].incorrect;
 		}
 
 		wordIndex++;
@@ -379,6 +383,8 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 				this.grid[clue.origin.y + wordIndex][clue.origin.x].order = ++(this.guessCount);
 				this.grid[clue.origin.y + wordIndex][clue.origin.x].changes += 1;
 				this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = rebusGuess;
+
+				delete this.grid[clue.origin.y + wordIndex][clue.origin.x].incorrect;
 			}
 
 			openRebus = false;
@@ -398,6 +404,8 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 			this.grid[clue.origin.y + wordIndex][clue.origin.x].order = ++(this.guessCount);
 			this.grid[clue.origin.y + wordIndex][clue.origin.x].changes += 1;
 			this.grid[clue.origin.y + wordIndex][clue.origin.x].guess = guess[i].toUpperCase();
+
+			delete this.grid[clue.origin.y + wordIndex][clue.origin.x].incorrect;
 		}
 
 		wordIndex++;

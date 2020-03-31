@@ -97,6 +97,9 @@ function nextClue(mode) {
 		if (input == '/reveal') {
 			puzzle.reveal();
 		}
+		else if (input == '/check') {
+			puzzle.check();
+		}
 		else if (input[0] == '!') {
 			index -= 1;
 		}

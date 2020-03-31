@@ -1,12 +1,10 @@
-* "Check" letter / word / puzzle
-* "Reveal" letter / word / puzzle
+* Make clues browsable after you're done
 * Save progress / write PUZ file
 * Implement checksums
 * Parse base64 strings
 * "Gridless" mode
 * Metrics minimap
 	* Time
-* Make clues browsable after you're done
 * Be able to jot down notes afterwards (and during?)
 * Creator mode
 * "Tournament" mode

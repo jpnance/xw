@@ -11,6 +11,7 @@ const FOREGROUND_TEAL = "\033[38;5;6m";
 const FOREGROUND_WHITE = "\033[38;5;15m";
 const FOREGROUND_RED = "\033[38;5;196m";
 const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
+const FOREGROUND_ORANGE = "\033[38;5;214m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const RESET = "\x1b[0m";
 
@@ -469,8 +470,11 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 					if (this.grid[y][x].revealed) {
 						colorLine2 += FOREGROUND_RED;
 					}
-					else if (this.grid[y][x].unsure) {
+					else if (this.grid[y][x].incorrect) {
 						colorLine2 += FOREGROUND_DARK_ORANGE;
+					}
+					else if (this.grid[y][x].unsure) {
+						colorLine2 += FOREGROUND_ORANGE;
 					}
 					else {
 						colorLine2 += FOREGROUND_BLACK;
@@ -537,6 +541,21 @@ Puzzle.prototype.reveal = function() {
 
 				delete this.grid[y][x].order;
 				delete this.grid[y][x].changes;
+			}
+		}
+	}
+};
+
+Puzzle.prototype.check = function() {
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.grid[y][x].answer == '.') {
+				continue;
+			}
+
+			if (this.grid[y][x].guess != this.grid[y][x].answer) {
+				this.grid[y][x].checked = true;
+				this.grid[y][x].incorrect = true;
 			}
 		}
 	}

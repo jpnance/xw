@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+const CURSOR_POSITION = (x, y) => { return "\033[" + x + ";" + y + "H"; };
+const CLEAR_SCREEN = "\033[2J";
+const SAVE_CURSOR = "\033[s";
+const RESTORE_CURSOR = "\033[u";
+
 const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
@@ -27,9 +32,13 @@ if (options.includes('--downs-only')) {
 	downsOnly = true;
 }
 
+process.stdout.write(CLEAR_SCREEN);
+process.stdout.write(CURSOR_POSITION(0, 0));
+process.stdout.write(SAVE_CURSOR);
 titleScreen();
 
 function titleScreen() {
+	process.stdout.write(RESTORE_CURSOR);
 	puzzle.showSolverState('title');
 
 	console.log();
@@ -75,7 +84,7 @@ function nextClue(mode) {
 		words = puzzle.getDownWord(clue.origin.x, clue.origin.y);
 	}
 
-	console.log();
+	process.stdout.write(RESTORE_CURSOR);
 	puzzle.showSolverState(mode, clue, words);
 	console.log();
 
@@ -204,8 +213,7 @@ function correctOrNot(mode, clue, guess, words) {
 		timer = Math.floor(timer / 1000);
 		puzzle.tabulateStats();
 
-		console.log();
-
+		process.stdout.write(RESTORE_CURSOR);
 		puzzle.showSolverState(mode, clue, words);
 		console.log();
 		puzzle.showMinimaps();

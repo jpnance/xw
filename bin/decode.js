@@ -22,7 +22,8 @@ let options = {
 
 let body = '';
 let encodedPuzzle, jsonPuzzle;
-let grid = [];
+
+let puzzle = {};
 
 const request = https.request(options, (response) => {
 	response.setEncoding('utf-8');
@@ -36,22 +37,57 @@ const request = https.request(options, (response) => {
 
 		jsonPuzzle = JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8'));
 
+		puzzle.title = jsonPuzzle.title;
+		puzzle.author = jsonPuzzle.author;
+		puzzle.copyright = jsonPuzzle.copyright;
+
+		puzzle.width = jsonPuzzle.w;
+		puzzle.height = jsonPuzzle.h;
+
+		puzzle.grid = [];
+
 		for (let i = 0; i < jsonPuzzle.box[0].length; i++) {
-			grid[i] = '';
+			puzzle.grid[i] = '';
 		}
 
 		jsonPuzzle.box.forEach(boxRow => {
 			boxRow.forEach((boxRowChar, i) => {
 				if (boxRowChar == '\u0000') {
-					grid[i] += '.';
+					puzzle.grid[i] += '.';
 				}
 				else {
-					grid[i] += boxRowChar;
+					puzzle.grid[i] += boxRowChar;
 				}
 			});
 		});
 
-		console.log(grid);
+		let maxClueNumber = 0;
+
+		jsonPuzzle.clueNums.forEach(clueNumRow => {
+			let clueNumRowMax = Math.max(...clueNumRow);
+
+			if (clueNumRowMax > maxClueNumber) {
+				maxClueNumber = clueNumRowMax;
+			}
+		});
+
+		puzzle.clues = [];
+
+		for (let i = 1; i <= maxClueNumber; i++) {
+			let acrossClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && element.acrossNotDown);
+			let downClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && !element.acrossNotDown);
+
+			if (acrossClue) {
+				puzzle.clues.push(acrossClue.clue.clue);
+			}
+
+			if (downClue) {
+				puzzle.clues.push(downClue.clue.clue);
+			}
+		}
+
+		//console.log(JSON.stringify(jsonPuzzle, null, "\t"));
+		console.log(puzzle);
 
 		process.exit();
 	});

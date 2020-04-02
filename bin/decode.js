@@ -9,7 +9,8 @@ let uris = [
 	'https://cdn1.amuselabs.com/wapo/crossword?id=ebirnholz_200329&set=wapo-eb', // wapo sunday
 	'https://cdn3.amuselabs.com/vox/crossword?id=vox_20200325_1000&set=vox', // vox
 	'https://cdn2.amuselabs.com/pmm/crossword?id=Creators_WEB_20200401&set=creatorsweb', // newsday
-	'https://cdn3.amuselabs.com/atlantic/crossword?id=atlantic_20200401&set=atlantic' // atlantic
+	'https://cdn3.amuselabs.com/atlantic/crossword?id=atlantic_20200401&set=atlantic', // atlantic
+	'https://cdn3.amuselabs.com/tny/crossword?id=23de3efb&set=tny-weekly', // new yorker
 ];
 
 let options = {

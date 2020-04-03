@@ -60,13 +60,57 @@ Util.dateFormat = function(date, format) {
 	let output = format;
 
 	if (!date) {
-		date = Date.now();
+		date = new Date();
 	}
 
+	if (output.includes('%b')) {
+		let month = date.getMonth();
+		let monthString;
+
+		if (month == 0) {
+			monthString = 'Jan';
+		}
+		else if (month == 1) {
+			monthString = 'Feb';
+		}
+		else if (month == 2) {
+			monthString = 'Mar';
+		}
+		else if (month == 3) {
+			monthString = 'Apr';
+		}
+		else if (month == 4) {
+			monthString = 'May';
+		}
+		else if (month == 5) {
+			monthString = 'Jun';
+		}
+		else if (month == 6) {
+			monthString = 'Jul';
+		}
+		else if (month == 7) {
+			monthString = 'Aug';
+		}
+		else if (month == 8) {
+			monthString = 'Sep';
+		}
+		else if (month == 9) {
+			monthString = 'Oct';
+		}
+		else if (month == 10) {
+			monthString = 'Nov';
+		}
+		else if (month == 11) {
+			monthString = 'Dec';
+		}
+
+		output = output.replace('%b', monthString);
+	}
+
+	output = output.replace('%d', (date.getDate() < 10 ? '0' : '') + date.getDate());
+	output = output.replace('%m', (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1));
 	output = output.replace('%y', date.getFullYear().toString().substring(2));
 	output = output.replace('%Y', date.getFullYear());
-	output = output.replace('%m', (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1));
-	output = output.replace('%d', (date.getDate() < 10 ? '0' : '') + date.getDate());
 
 	return output;
 };

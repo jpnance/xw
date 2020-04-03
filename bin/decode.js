@@ -8,7 +8,7 @@ let now = new Date();
 let puzzleServices = [
 	// puz files
 	{
-		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/Apr0120.puz', // nyt
+		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(now, '%b%d%y') + '.puz', // nyt
 		strategy: 'puz'
 	},
 	{

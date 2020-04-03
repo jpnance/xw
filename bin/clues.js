@@ -5,8 +5,6 @@ const CLEAR_SCREEN = "\033[2J";
 const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
 
-const path = require('path');
-const fs = require('fs');
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -20,8 +18,8 @@ const Puzzle = require('../models/puzzle');
 let options = process.argv.filter(function(option) { return option.startsWith('--'); });
 let nonOptions = process.argv.filter(function(option) { return !option.startsWith('--'); });
 
-let puzFile = fs.readFileSync(path.resolve(nonOptions.pop()));
-let puzzle = new Puzzle(puzFile);
+let puzzle = new Puzzle();
+puzzle.loadFromFile(nonOptions.pop());
 
 let index = 0;
 let timer = null;

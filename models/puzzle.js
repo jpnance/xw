@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const BACKGROUND_BLACK = "\033[48;5;0m";
 const BACKGROUND_WHITE = "\033[48;5;15m";
 const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
@@ -17,7 +20,12 @@ const RESET = "\x1b[0m";
 
 const Util = require('./util');
 
-function Puzzle(puzFile) {
+function Puzzle() {
+}
+
+Puzzle.prototype.loadFromFile = function(filename) {
+	let puzFile = fs.readFileSync(path.resolve(filename));
+
 	this.checksum = (puzFile[0x01] << 8) | puzFile[0x00];
 	this.fileMagic = puzFile.slice(0x02, 0x0C + 1);
 
@@ -218,7 +226,137 @@ function Puzzle(puzFile) {
 	}
 
 	this.guessCount = 0;
-}
+};
+
+Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
+	this.title = jsonPuzzle.title;
+	this.author = jsonPuzzle.author;
+	this.copyright = jsonPuzzle.copyright;
+
+	this.grid = [];
+
+	for (let i = 0; i < jsonPuzzle.box[0].length; i++) {
+		this.grid[i] = '';
+	}
+
+	jsonPuzzle.box.forEach(boxRow => {
+		boxRow.forEach((boxRowChar, i) => {
+			if (boxRowChar == '\u0000') {
+				this.grid[i] += { answer: '.' };
+			}
+			else {
+				this.grid[i] += { answer: boxRowChar };
+			}
+		});
+	});
+
+	let maxClueNumber = 0;
+
+	jsonPuzzle.clueNums.forEach(clueNumRow => {
+		let clueNumRowMax = Math.max(...clueNumRow);
+
+		if (clueNumRowMax > maxClueNumber) {
+			maxClueNumber = clueNumRowMax;
+		}
+	});
+
+	this.clues = [];
+
+	for (let i = 1; i <= maxClueNumber; i++) {
+		let acrossClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && element.acrossNotDown);
+		let downClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && !element.acrossNotDown);
+
+		if (acrossClue) {
+			this.clues.push(acrossClue.clue.clue);
+		}
+
+		if (downClue) {
+			this.clues.push(downClue.clue.clue);
+		}
+	}
+
+	this.width = this.grid[0].length;
+	this.height = this.grid.length;
+};
+
+Puzzle.prototype.writeToFile = function(filename) {
+	let data = new Uint8Array();
+
+	data[0x00] = 0x00; // checksum0
+	data[0x01] = 0x00; // checksum1
+
+	data.push(...('ACROSS&DOWN' + "\0")); // fileMagic
+
+	data[0x0E] = 0x00; // cibChecksum0
+	data[0x0F] = 0x00; // cibChecksum1
+
+	data[0x10] = 0x00; // maskedLowChecksum0
+	data[0x11] = 0x00; // maskedLowChecksum1
+	data[0x12] = 0x00; // maskedLowChecksum2
+	data[0x13] = 0x00; // maskedLowChecksum3
+
+	data[0x14] = 0x00; // maskedHighChecksum0
+	data[0x15] = 0x00; // maskedHighChecksum1
+	data[0x16] = 0x00; // maskedHighChecksum2
+	data[0x17] = 0x00; // maskedHighChecksum3
+
+	data.push(...('1.0' + "\0")); // versionString
+
+	data[0x1C] = 0x00; // reserved1C0
+	data[0x1D] = 0x00; // reserved1C1
+
+	data[0x1E] = 0x00; // scrambledChecksum0
+	data[0x1F] = 0x00; // scrambledChecksum1
+
+	data[0x20] = 0x00; // reserved200
+	data[0x21] = 0x00; // reserved201
+	data[0x22] = 0x00; // reserved202
+	data[0x23] = 0x00; // reserved203
+	data[0x24] = 0x00; // reserved204
+	data[0x25] = 0x00; // reserved205
+	data[0x26] = 0x00; // reserved206
+	data[0x27] = 0x00; // reserved207
+	data[0x28] = 0x00; // reserved208
+	data[0x29] = 0x00; // reserved209
+	data[0x2A] = 0x00; // reserved210
+	data[0x2B] = 0x00; // reserved211
+
+	data[0x2C] = this.width;
+	data[0x2D] = this.height;
+
+	data[0x2E] = this.clues.length & 0x00FF;
+	data[0x2F] = (this.clues.length & 0xFF00) >> 8;
+
+	data[0x30] = 0x00; // unknownBitmask0
+	data[0x31] = 0x00; // unknownBitmask1
+
+	data[0x32] = 0x00; // scrambledTag0
+	data[0x33] = 0x00; // scrambledTag0
+
+	for (let i = 0; i < this.grid.length; i++) {
+		data.push(...(this.grid[i]));
+	}
+
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.grid[y][x] != '.') {
+				data.push('-');
+			}
+			else {
+				data.push('.');
+			}
+		}
+	}
+
+	data.push(...(this.title + "\0"));
+	data.push(...(this.author + "\0"));
+	data.push(...(this.copyright + "\0"));
+
+	for (let i = 0; i < this.clues.length; i++) {
+		data.push(...(this.clues[i] + "\0"));
+	}
+	// fs.writeFileSync('filename.puz', data, { encoding: 'utf-8' });
+};
 
 Puzzle.prototype.blackCellAt = function(x, y) {
 	if (x >= this.width || y >= this.height) {

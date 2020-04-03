@@ -394,7 +394,7 @@ Puzzle.prototype.writeToFile = function(filename) {
 
 	data[offset++] = 0x00; // notes
 
-	fs.writeFileSync('testofile.puz', Uint8Array.from(data), { encoding: 'utf8' });
+	fs.writeFileSync(path.resolve(filename), Uint8Array.from(data), { encoding: 'utf8' });
 };
 
 Puzzle.prototype.blackCellAt = function(x, y) {

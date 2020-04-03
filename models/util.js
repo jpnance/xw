@@ -56,4 +56,19 @@ Util.formatString = function(string, width, indent, padLines) {
 	return lines.join("\n");
 };
 
+Util.dateFormat = function(date, format) {
+	let output = format;
+
+	if (!date) {
+		date = Date.now();
+	}
+
+	output = output.replace('%y', date.getFullYear().toString().substring(2));
+	output = output.replace('%Y', date.getFullYear());
+	output = output.replace('%m', (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1));
+	output = output.replace('%d', (date.getDate() < 10 ? '0' : '') + date.getDate());
+
+	return output;
+};
+
 module.exports = Util;

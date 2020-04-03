@@ -43,6 +43,7 @@ const request = https.request(options, (response) => {
 		encodedPuzzle = body.match(/window.rawc = '(.*?)';/);
 
 		puzzle.loadFromAmuseLabsJson(JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8')));
+		puzzle.writeToFile();
 
 		process.exit();
 	});

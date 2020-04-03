@@ -236,16 +236,16 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 	this.grid = [];
 
 	for (let i = 0; i < jsonPuzzle.box[0].length; i++) {
-		this.grid[i] = '';
+		this.grid[i] = [];
 	}
 
 	jsonPuzzle.box.forEach(boxRow => {
 		boxRow.forEach((boxRowChar, i) => {
 			if (boxRowChar == '\u0000') {
-				this.grid[i] += { answer: '.' };
+				this.grid[i].push({ answer: '.' });
 			}
 			else {
-				this.grid[i] += { answer: boxRowChar };
+				this.grid[i].push({ answer: boxRowChar });
 			}
 		});
 	});
@@ -280,12 +280,23 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 };
 
 Puzzle.prototype.writeToFile = function(filename) {
-	let data = new Uint8Array();
+	let data = [];
 
 	data[0x00] = 0x00; // checksum0
 	data[0x01] = 0x00; // checksum1
 
-	data.push(...('ACROSS&DOWN' + "\0")); // fileMagic
+	data[0x02] = 'A'.charCodeAt(0);
+	data[0x03] = 'C'.charCodeAt(0);
+	data[0x04] = 'R'.charCodeAt(0);
+	data[0x05] = 'O'.charCodeAt(0);
+	data[0x06] = 'S'.charCodeAt(0);
+	data[0x07] = 'S'.charCodeAt(0);
+	data[0x08] = '&'.charCodeAt(0);
+	data[0x09] = 'D'.charCodeAt(0);
+	data[0x0A] = 'O'.charCodeAt(0);
+	data[0x0B] = 'W'.charCodeAt(0);
+	data[0x0C] = 'N'.charCodeAt(0);
+	data[0x0D] = 0x00;
 
 	data[0x0E] = 0x00; // cibChecksum0
 	data[0x0F] = 0x00; // cibChecksum1
@@ -300,7 +311,10 @@ Puzzle.prototype.writeToFile = function(filename) {
 	data[0x16] = 0x00; // maskedHighChecksum2
 	data[0x17] = 0x00; // maskedHighChecksum3
 
-	data.push(...('1.0' + "\0")); // versionString
+	data[0x18] = '1'.charCodeAt(0);
+	data[0x19] = '.'.charCodeAt(0);
+	data[0x1A] = '0'.charCodeAt(0);
+	data[0x1B] = 0x00;
 
 	data[0x1C] = 0x00; // reserved1C0
 	data[0x1D] = 0x00; // reserved1C1
@@ -333,29 +347,54 @@ Puzzle.prototype.writeToFile = function(filename) {
 	data[0x32] = 0x00; // scrambledTag0
 	data[0x33] = 0x00; // scrambledTag0
 
-	for (let i = 0; i < this.grid.length; i++) {
-		data.push(...(this.grid[i]));
+	let offset = 0x34;
+
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			data[offset++] = this.grid[y][x].answer.charCodeAt(0);
+		}
 	}
 
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (this.grid[y][x] != '.') {
-				data.push('-');
+			if (this.grid[y][x].answer != '.') {
+				data[offset++] = '-'.charCodeAt(0);
 			}
 			else {
-				data.push('.');
+				data[offset++] = '.'.charCodeAt(0);
 			}
 		}
 	}
 
-	data.push(...(this.title + "\0"));
-	data.push(...(this.author + "\0"));
-	data.push(...(this.copyright + "\0"));
+	for (let i = 0; i < this.title.length; i++) {
+		data[offset++] = this.title.charCodeAt(i);
+	}
+
+	data[offset++] = 0x00;
+
+	for (let i = 0; i < this.author.length; i++) {
+		data[offset++] = this.author.charCodeAt(i);
+	}
+
+	data[offset++] = 0x00;
+
+	for (let i = 0; i < this.copyright.length; i++) {
+		data[offset++] = this.copyright.charCodeAt(i);
+	}
+
+	data[offset++] = 0x00;
 
 	for (let i = 0; i < this.clues.length; i++) {
-		data.push(...(this.clues[i] + "\0"));
+		for (let j = 0; j < this.clues[i].length; j++) {
+			data[offset++] = this.clues[i].charCodeAt(j);
+		}
+
+		data[offset++] = 0x00;
 	}
-	// fs.writeFileSync('filename.puz', data, { encoding: 'utf-8' });
+
+	data[offset++] = 0x00; // notes
+
+	fs.writeFileSync('testofile.puz', Uint8Array.from(data), { encoding: 'utf8' });
 };
 
 Puzzle.prototype.blackCellAt = function(x, y) {

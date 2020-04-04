@@ -35,7 +35,7 @@ let puzzleServices = [
 			set: 'latimes'
 		},
 		url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
-		strategy: 'aljson'
+		strategy: 'amuselabs-json'
 	},
 	{
 		shortName: 'wapo-sunday',
@@ -44,7 +44,7 @@ let puzzleServices = [
 			set: 'wapo-eb'
 		},
 		url: 'https://cdn1.amuselabs.com/wapo/crossword', // wapo sunday
-		strategy: 'aljson'
+		strategy: 'amuselabs-json'
 	},
 	{
 		shortName: 'vox',
@@ -53,7 +53,7 @@ let puzzleServices = [
 			set: 'vox'
 		},
 		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox
-		strategy: 'aljson'
+		strategy: 'amuselabs-json'
 	},
 	{
 		shortName: 'newsday',
@@ -62,7 +62,7 @@ let puzzleServices = [
 			set: 'creatorsweb'
 		},
 		url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
-		strategy: 'aljson'
+		strategy: 'amuselabs-json'
 	},
 	{
 		shortName: 'atlantic',
@@ -71,25 +71,26 @@ let puzzleServices = [
 			set: 'atlantic'
 		},
 		url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
-		strategy: 'aljson'
+		strategy: 'amuselabs-json'
 	},
 	{
 		shortName: 'new-yorker',
 		url: 'https://cdn3.amuselabs.com/tny/crossword?id=23de3efb&set=tny-weekly', // new yorker
-		strategy: 'aljson-but-more-complicated'
+		strategy: 'amuselabs-json-ish'
 	},
 
 	// jsonp
 	{
-		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/2020-04-01/data.json?callback=jQuery17204215043047595478_1585850392401&_=1585850393396', // usa today
-		strategy: 'somethingelse'
+		shortName: 'usa-today',
+		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(now, '%Y-%m-%d') + '/data.json', // usa today
+		strategy: 'usa-today-json'
 	}
 ];
 
 let servicePromises = [];
 
 puzzleServices.forEach(puzzleService => {
-	if (!['puz', 'aljson'].includes(puzzleService.strategy)) {
+	if (!['puz', 'amuselabs-json', 'usa-today-json'].includes(puzzleService.strategy)) {
 		return;
 	}
 
@@ -147,9 +148,12 @@ puzzleServices.forEach(puzzleService => {
 			});
 
 			response.on('end', () => {
-				if (puzzleService.strategy == 'aljson') {
+				if (puzzleService.strategy == 'amuselabs-json') {
 					encodedPuzzle = body.match(/window.rawc = '(.*?)';/);
 					puzzle.loadFromAmuseLabsJson(JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8')));
+				}
+				else if (puzzleService.strategy == 'usa-today-json') {
+					puzzle.loadFromUsaTodayJson(JSON.parse(body));
 				}
 				else if (puzzleService.strategy == 'puz') {
 					let puzFile = new Uint8Array(body.length);

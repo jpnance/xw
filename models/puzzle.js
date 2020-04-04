@@ -288,6 +288,81 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 	this.height = this.grid.length;
 };
 
+Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
+	this.title = jsonPuzzle.Title;
+	this.author = jsonPuzzle.Author;
+	this.copyright = jsonPuzzle.Copyright;
+
+	this.grid = [];
+
+	Object.keys(jsonPuzzle.Solution).forEach((rowKey, y) => {
+		let row = jsonPuzzle.Solution[rowKey];
+
+		this.grid[y] = [];
+
+		for (let x = 0; x < row.length; x++) {
+			if (row[x] == ' ') {
+				this.grid[y].push({ answer: '.' });
+			}
+			else {
+				this.grid[y].push({ answer: row[x] });
+			}
+		}
+	});
+
+	this.clues = [];
+
+	let acrosses = [];
+	let downs = [];
+
+	let rawAcrosses = jsonPuzzle.AcrossClue.split("\n");
+	let rawDowns = jsonPuzzle.DownClue.split("\n");
+
+	let maxClueNumber = 0;
+
+	for (let i = 0; i < rawAcrosses.length; i++) {
+		let clueSplit = rawAcrosses[i].split(/(\d\d\d?)\|(.*)/);
+		let clueNumber = parseInt(clueSplit[1]);
+		let clueText = clueSplit[2];
+
+		if (clueNumber > maxClueNumber) {
+			maxClueNumber = clueNumber;
+		}
+
+		acrosses.push({ number: clueNumber, clue: clueText });
+	}
+
+	for (let i = 0; i < rawDowns.length; i++) {
+		let clueSplit = rawDowns[i].split(/(\d\d\d?)\|(.*)/);
+		let clueNumber = parseInt(clueSplit[1]);
+		let clueText = clueSplit[2];
+
+		if (clueNumber) {
+			if (clueNumber > maxClueNumber) {
+				maxClueNumber = clueNumber;
+			}
+
+			downs.push({ number: clueNumber, clue: clueText });
+		}
+	}
+
+	for (let i = 0; i <= maxClueNumber; i++) {
+		let acrossClue = acrosses.find(element => element.number == i);
+		let downClue = downs.find(element => element.number == i);
+
+		if (acrossClue) {
+			this.clues.push(acrossClue.clue);
+		}
+
+		if (downClue) {
+			this.clues.push(downClue.clue);
+		}
+	}
+
+	this.width = this.grid[0].length;
+	this.height = this.grid.length;
+};
+
 Puzzle.prototype.writeToFile = function(filename) {
 	let data = [];
 

@@ -25,9 +25,16 @@ function Puzzle() {
 
 Puzzle.prototype.loadFromFile = function(filename) {
 	let puzFile = fs.readFileSync(path.resolve(filename));
+	this.loadFromPuzFile(puzFile);
+};
 
+Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 	this.checksum = (puzFile[0x01] << 8) | puzFile[0x00];
-	this.fileMagic = puzFile.slice(0x02, 0x0C + 1);
+	this.fileMagic = '';
+	
+	for (let i = 0; i < 0xB; i++) {
+		this.fileMagic += String.fromCharCode(puzFile[0x02 + i]);
+	}
 
 	if (this.fileMagic != 'ACROSS&DOWN') {
 		console.error('Invalid puzzle file.');
@@ -84,13 +91,13 @@ Puzzle.prototype.loadFromFile = function(filename) {
 		this.copyright += String.fromCharCode(puzFile[stringIndex]);
 	}
 
-	let clues = [];
+	this.clues = [];
 
 	for (let i = 0; i < this.numberOfClues; i++) {
-		clues[i] = "";
+		this.clues[i] = '';
 
 		while (puzFile[++stringIndex] != 0x00) {
-			clues[i] += String.fromCharCode(puzFile[stringIndex]);
+			this.clues[i] += String.fromCharCode(puzFile[stringIndex]);
 		}
 	}
 
@@ -200,7 +207,8 @@ Puzzle.prototype.loadFromFile = function(filename) {
 			}
 
 			if (this.needsAcrossNumber(x, y)) {
-				let clue = clues.shift();
+				let clue = this.clues[this.acrosses.length + this.downs.length];
+
 				this.acrosses.push({
 					clue: clueNumber + '. ' + clue,
 					origin: { x: x, y: y }
@@ -210,7 +218,8 @@ Puzzle.prototype.loadFromFile = function(filename) {
 			}
 
 			if (this.needsDownNumber(x, y)) {
-				let clue = clues.shift();
+				let clue = this.clues[this.acrosses.length + this.downs.length];
+
 				this.downs.push({
 					clue: clueNumber + '. ' + clue,
 					origin: { x: x, y: y }

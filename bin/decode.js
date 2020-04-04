@@ -1,3 +1,6 @@
+const dotenv = require('dotenv').config({ path: __dirname + '/../.env' });
+
+const http = require('http');
 const https = require('https');
 
 const Util = require('../models/util');
@@ -8,15 +11,19 @@ let now = new Date();
 let puzzleServices = [
 	// puz files
 	{
+		shortName: 'nyt',
 		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(now, '%b%d%y') + '.puz', // nyt
+		cookie: process.env.NYT_COOKIE,
 		strategy: 'puz'
 	},
 	{
-		url: 'https://herbach.dnsalias.com/wsj/wsj200331.puz', // wsj
+		shortName: 'wsj',
+		url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(now, '%y%m%d') + '.puz', // wsj
 		strategy: 'puz'
 	},
 	{
-		url: 'https://herbach.dnsalias.com/uc/uc200331.puz', // universal
+		shortName: 'universal',
+		url: 'http://herbach.dnsalias.com/uc/uc' + Util.dateFormat(now, '%y%m%d') + '.puz', // universal
 		strategy: 'puz'
 	},
 
@@ -82,13 +89,14 @@ let puzzleServices = [
 let servicePromises = [];
 
 puzzleServices.forEach(puzzleService => {
-	if (puzzleService.strategy != 'aljson') {
+	if (!['puz', 'aljson'].includes(puzzleService.strategy)) {
 		return;
 	}
 
 	servicePromises.push(new Promise(function(resolve, reject) {
-		let hostname = puzzleService.url.match(/https:\/\/(.*?)\/.*/)[1];
-		let path = puzzleService.url.match(/https:\/\/.*?(\/.*)/)[1];
+		let hostname = puzzleService.url.match(/https?:\/\/(.*?)\/.*/)[1];
+		let path = puzzleService.url.match(/https?:\/\/.*?(\/.*)/)[1];
+		let protocol = puzzleService.url.startsWith('https') ? https : http;
 
 		if (puzzleService.parameters) {
 			path += '?';
@@ -104,33 +112,55 @@ puzzleServices.forEach(puzzleService => {
 
 		let options = {
 			hostname: hostname,
-			port: 443,
+			port: puzzleService.url.startsWith('https') ? 443 : 80,
 			path: path,
 			method: 'GET'
 		};
+
+		if (puzzleService.cookie) {
+			options.headers = {
+				'Cookie': puzzleService.cookie
+			};
+		}
 
 		let body = '';
 		let encodedPuzzle, jsonPuzzle;
 
 		let puzzle = new Puzzle();
 
-		const request = https.request(options, (response) => {
+		const request = protocol.request(options, (response) => {
 			if (response.statusCode != 200) {
 				console.log(puzzleService.shortName + ': status code ' + response.statusCode);
 				resolve();
 				return;
 			}
 
-			response.setEncoding('utf-8');
+			if (puzzleService.strategy == 'puz') {
+				response.setEncoding('binary');
+			}
+			else {
+				response.setEncoding('utf8');
+			}
 
 			response.on('data', (chunk) => {
 				body += chunk;
 			});
 
 			response.on('end', () => {
-				encodedPuzzle = body.match(/window.rawc = '(.*?)';/);
+				if (puzzleService.strategy == 'aljson') {
+					encodedPuzzle = body.match(/window.rawc = '(.*?)';/);
+					puzzle.loadFromAmuseLabsJson(JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8')));
+				}
+				else if (puzzleService.strategy == 'puz') {
+					let puzFile = new Uint8Array(body.length);
 
-				puzzle.loadFromAmuseLabsJson(JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8')));
+					for (let i = 0; i < body.length; i++) {
+						puzFile[i] = body.charCodeAt(i);
+					}
+
+					puzzle.loadFromPuzFile(puzFile);
+				}
+
 				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + Util.dateFormat(now, '%Y-%m-%d.puz'));
 			});
 		});

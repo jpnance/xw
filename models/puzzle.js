@@ -73,19 +73,19 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 	let puzzleStateOffset = 0x34 + (2 * this.width * this.height);
 	let stringIndex = puzzleStateOffset - 1;
 
-	this.title = "";
+	this.title = '';
 
 	while (puzFile[++stringIndex] != 0x00) {
 		this.title += String.fromCharCode(puzFile[stringIndex]);
 	}
 
-	this.author = "";
+	this.author = '';
 
 	while (puzFile[++stringIndex] != 0x00) {
 		this.author += String.fromCharCode(puzFile[stringIndex]);
 	}
 
-	this.copyright = "";
+	this.copyright = '';
 
 	while (puzFile[++stringIndex] != 0x00) {
 		this.copyright += String.fromCharCode(puzFile[stringIndex]);
@@ -286,6 +286,8 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 
 	this.width = this.grid[0].length;
 	this.height = this.grid.length;
+
+	this.notes = '';
 };
 
 Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
@@ -361,6 +363,8 @@ Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
 
 	this.width = this.grid[0].length;
 	this.height = this.grid.length;
+
+	this.notes = '';
 };
 
 Puzzle.prototype.writeToFile = function(filename) {

@@ -52,7 +52,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 	this.width = puzFile[0x2C];
 	this.height = puzFile[0x2D];
 	this.numberOfClues = (puzFile[0x2F] << 8) | puzFile[0x2E];
-	this.unknownBitmask = (puzFile[0x31] << 8) | puzFile[0x30];
+	this.puzzleType = (puzFile[0x31] << 8) | puzFile[0x30];
 	this.scrambledTag = (puzFile[0x33] << 8) | puzFile[0x32];
 
 	this.grid = [];
@@ -238,6 +238,8 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 };
 
 Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
+	this.puzzleType = 1;
+
 	this.title = jsonPuzzle.title;
 	this.author = jsonPuzzle.author;
 	this.copyright = jsonPuzzle.copyright;
@@ -291,6 +293,8 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 };
 
 Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
+	this.puzzleType = 1;
+
 	this.title = jsonPuzzle.Title;
 	this.author = jsonPuzzle.Author;
 	this.copyright = jsonPuzzle.Copyright;
@@ -429,8 +433,8 @@ Puzzle.prototype.writeToFile = function(filename) {
 	data[0x2E] = this.clues.length & 0x00FF;
 	data[0x2F] = (this.clues.length & 0xFF00) >> 8;
 
-	data[0x30] = this.unknownBitmask & 0x00FF;
-	data[0x31] = (this.unknownBitmask & 0xFF00) >> 8;
+	data[0x30] = this.puzzleType & 0x00FF;
+	data[0x31] = (this.puzzleType & 0xFF00) >> 8;
 
 	data[0x32] = 0x00; // scrambledTag0
 	data[0x33] = 0x00; // scrambledTag0

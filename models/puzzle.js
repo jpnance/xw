@@ -250,13 +250,23 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		this.grid[i] = [];
 	}
 
-	jsonPuzzle.box.forEach(boxRow => {
-		boxRow.forEach((boxRowChar, i) => {
+	jsonPuzzle.box.forEach((boxRow, x) => {
+		boxRow.forEach((boxRowChar, y) => {
 			if (boxRowChar == '\u0000') {
-				this.grid[i].push({ answer: '.' });
+				this.grid[y].push({ answer: '.' });
 			}
 			else {
-				this.grid[i].push({ answer: boxRowChar });
+				this.grid[y].push({ answer: boxRowChar });
+			}
+
+			if (jsonPuzzle.cellInfos) {
+				let cellInfo = jsonPuzzle.cellInfos.find(element => { return element.x == x && element.y == y; })
+
+				if (cellInfo) {
+					if (cellInfo.isCircled) {
+						this.grid[y][x].circled = true;
+					}
+				}
 			}
 		});
 	});
@@ -301,7 +311,7 @@ Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
 
 	this.grid = [];
 
-	Object.keys(jsonPuzzle.Solution).forEach((rowKey, y) => {
+	Object.keys(jsonPuzzle.Solution).forEach((rowKey, x) => {
 		let row = jsonPuzzle.Solution[rowKey];
 
 		this.grid[y] = [];
@@ -442,9 +452,15 @@ Puzzle.prototype.writeToFile = function(filename) {
 	let offset = 0x34;
 	let solutionOffset = 0x34;
 
+	let circledSquares = false;
+
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
 			data[offset++] = this.grid[y][x].answer.charCodeAt(0);
+
+			if (this.grid[y][x].circled) {
+				circledSquares = true;
+			}
 		}
 	}
 
@@ -498,6 +514,39 @@ Puzzle.prototype.writeToFile = function(filename) {
 	let notesOffset = offset;
 
 	data[offset++] = 0x00; // notes
+
+	if (circledSquares) {
+		data[offset++] = 'G'.charCodeAt(0);
+		data[offset++] = 'E'.charCodeAt(0);
+		data[offset++] = 'X'.charCodeAt(0);
+		data[offset++] = 'T'.charCodeAt(0);
+
+		data[offset++] = (this.width * this.height) & 0x00FF;
+		data[offset++] = ((this.width * this.height) & 0xFF00) >> 8;
+
+		let gextChecksumOffset = offset;
+
+		data[offset++] = 0x00;
+		data[offset++] = 0x00;
+
+		for (let y = 0; y < this.grid.length; y++) {
+			for (let x = 0; x < this.grid[y].length; x++) {
+				if (this.grid[y][x].circled) {
+					data[offset++] = 0x80;
+				}
+				else {
+					data[offset++] = 0x00;
+				}
+			}
+		}
+
+		let gextChecksum = Util.computeChecksum(data.slice(gextChecksumOffset + 2, gextChecksumOffset + 2 + (this.width * this.height)), 0x0000);
+
+		data[gextChecksumOffset] = gextChecksum & 0x00FF;
+		data[gextChecksumOffset + 1] = (gextChecksum & 0xFF00) >> 8;
+
+		data[offset++] = 0x00;
+	}
 
 	this.cibChecksum = Util.computeChecksum(data.slice(0x2C, 0x2C + 8), 0x0000);
 

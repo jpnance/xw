@@ -1,7 +1,5 @@
 * Make clues browsable after you're done
-* Save progress / write PUZ file
-* Implement checksums
-* Parse base64 strings
+* Save progress
 * "Gridless" mode
 * Metrics minimap
 	* Time

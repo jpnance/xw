@@ -42,8 +42,8 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 	}
 
 	this.cibChecksum = (puzFile[0x0F] << 8) | puzFile[0x0E];
-	this.maskedLowChecksum = puzFile[0x10] & puzFile[0x11] & puzFile[0x12] & puzFile[0x13];
-	this.maskedHighChecksum = puzFile[0x14] & puzFile[0x15] & puzFile[0x16] & puzFile[0x17];
+	this.maskedLowChecksum = (puzFile[0x10] << 24) | (puzFile[0x11] << 16) | (puzFile[0x12] << 8) | puzFile[0x13];
+	this.maskedHighChecksum = (puzFile[0x14] << 24) | (puzFile[0x15] << 16) | (puzFile[0x16] << 8) | puzFile[0x17];
 
 	this.versionString = String.fromCharCode(puzFile[0x18]) + String.fromCharCode(puzFile[0x19]) + String.fromCharCode(puzFile[0x1A]);
 	this.reserved1C = (puzFile[0x1D] << 8) | puzFile[0x1C];
@@ -399,9 +399,9 @@ Puzzle.prototype.writeToFile = function(filename) {
 	data[0x16] = 0x00; // maskedHighChecksum2
 	data[0x17] = 0x00; // maskedHighChecksum3
 
-	data[0x18] = '1'.charCodeAt(0);
-	data[0x19] = '.'.charCodeAt(0);
-	data[0x1A] = '0'.charCodeAt(0);
+	data[0x18] = this.versionString ? this.versionString.charCodeAt(0) : 0x31;
+	data[0x19] = this.versionString ? this.versionString.charCodeAt(1) : 0x2E;
+	data[0x1A] = this.versionString ? this.versionString.charCodeAt(2) : 0x33;
 	data[0x1B] = 0x00;
 
 	data[0x1C] = 0x00; // reserved1C0
@@ -429,19 +429,22 @@ Puzzle.prototype.writeToFile = function(filename) {
 	data[0x2E] = this.clues.length & 0x00FF;
 	data[0x2F] = (this.clues.length & 0xFF00) >> 8;
 
-	data[0x30] = 0x00; // unknownBitmask0
-	data[0x31] = 0x00; // unknownBitmask1
+	data[0x30] = this.unknownBitmask & 0x00FF;
+	data[0x31] = (this.unknownBitmask & 0xFF00) >> 8;
 
 	data[0x32] = 0x00; // scrambledTag0
 	data[0x33] = 0x00; // scrambledTag0
 
 	let offset = 0x34;
+	let solutionOffset = 0x34;
 
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
 			data[offset++] = this.grid[y][x].answer.charCodeAt(0);
 		}
 	}
+
+	let gridOffset = offset;
 
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
@@ -454,11 +457,15 @@ Puzzle.prototype.writeToFile = function(filename) {
 		}
 	}
 
+	let titleOffset = offset;
+
 	for (let i = 0; i < this.title.length; i++) {
 		data[offset++] = this.title.charCodeAt(i);
 	}
 
 	data[offset++] = 0x00;
+
+	let authorOffset = offset;
 
 	for (let i = 0; i < this.author.length; i++) {
 		data[offset++] = this.author.charCodeAt(i);
@@ -466,11 +473,15 @@ Puzzle.prototype.writeToFile = function(filename) {
 
 	data[offset++] = 0x00;
 
+	let copyrightOffset = offset;
+
 	for (let i = 0; i < this.copyright.length; i++) {
 		data[offset++] = this.copyright.charCodeAt(i);
 	}
 
 	data[offset++] = 0x00;
+
+	let cluesOffset = offset;
 
 	for (let i = 0; i < this.clues.length; i++) {
 		for (let j = 0; j < this.clues[i].length; j++) {
@@ -480,7 +491,68 @@ Puzzle.prototype.writeToFile = function(filename) {
 		data[offset++] = 0x00;
 	}
 
+	let notesOffset = offset;
+
 	data[offset++] = 0x00; // notes
+
+	this.cibChecksum = Util.computeChecksum(data.slice(0x2C, 0x2C + 8), 0x0000);
+
+	data[0x0E] = this.cibChecksum & 0x00FF;
+	data[0x0F] = (this.cibChecksum & 0xFF00) >> 8;
+
+	this.checksum = this.cibChecksum;
+
+	this.checksum = Util.computeChecksum(data.slice(solutionOffset, solutionOffset + (this.width * this.height)), this.checksum);
+	this.solutionChecksum = Util.computeChecksum(data.slice(solutionOffset, solutionOffset + (this.width * this.height)), 0x0000);
+
+	this.checksum = Util.computeChecksum(data.slice(gridOffset, gridOffset + (this.width * this.height)), this.checksum);
+	this.gridChecksum = Util.computeChecksum(data.slice(gridOffset, gridOffset + (this.width * this.height)), 0x0000);
+
+	this.partialChecksum = 0x0000;
+
+	if (this.title.length) {
+		this.checksum = Util.computeChecksum(data.slice(titleOffset, titleOffset + this.title.length + 1), this.checksum);
+		this.partialChecksum = Util.computeChecksum(data.slice(titleOffset, titleOffset + this.title.length + 1), this.partialChecksum);
+	}
+
+	if (this.author.length) {
+		this.checksum = Util.computeChecksum(data.slice(authorOffset, authorOffset + this.author.length + 1), this.checksum);
+		this.partialChecksum = Util.computeChecksum(data.slice(authorOffset, authorOffset + this.author.length + 1), this.partialChecksum);
+	}
+
+	if (this.copyright.length) {
+		this.checksum = Util.computeChecksum(data.slice(copyrightOffset, copyrightOffset + this.copyright.length + 1), this.checksum);
+		this.partialChecksum = Util.computeChecksum(data.slice(copyrightOffset, copyrightOffset + this.copyright.length + 1), this.partialChecksum);
+	}
+
+	for (let i = 0; i < this.clues.length; i++) {
+		let clue = this.clues[i];
+		let clueCharCodes = [];
+
+		for (let j = 0; j < clue.length; j++) {
+			clueCharCodes.push(clue.charCodeAt(j) & 0xFF);
+		}
+
+		this.checksum = Util.computeChecksum(clueCharCodes, this.checksum);
+		this.partialChecksum = Util.computeChecksum(clueCharCodes, this.partialChecksum);
+	}
+
+	if (this.notes.length) {
+		this.checksum = Util.computeChecksum(data.slice(notesOffset, notesOffset + this.notes.length + 1), this.checksum);
+		this.partialChecksum = Util.computeChecksum(data.slice(notesOffset, notesOffset + this.notes.length + 1), this.partialChecksum);
+	}
+
+	data[0x00] = this.checksum & 0xFF;
+	data[0x01] = (this.checksum & 0xFF00) >> 8;
+
+	data[0x10] = 0x49 ^ (this.cibChecksum & 0xFF);
+	data[0x11] = 0x43 ^ (this.solutionChecksum & 0xFF);
+	data[0x12] = 0x48 ^ (this.gridChecksum & 0xFF);
+	data[0x13] = 0x45 ^ (this.partialChecksum & 0xFF);
+	data[0x14] = 0x41 ^ ((this.cibChecksum & 0xFF00) >> 8);
+	data[0x15] = 0x54 ^ ((this.solutionChecksum & 0xFF00) >> 8);
+	data[0x16] = 0x45 ^ ((this.gridChecksum & 0xFF00) >> 8);
+	data[0x17] = 0x44 ^ ((this.partialChecksum & 0xFF00) >> 8);
 
 	fs.writeFileSync(path.resolve(filename), Uint8Array.from(data), { encoding: 'utf8' });
 };

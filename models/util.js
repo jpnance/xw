@@ -115,4 +115,26 @@ Util.dateFormat = function(date, format) {
 	return output;
 };
 
+Util.computeChecksum = function(data, checksum, debug) {
+	if (debug) {
+		console.log(data);
+		console.log(String.fromCharCode.apply(null, data));
+	}
+
+	for (let i = 0; i < data.length; i++) {
+		checksum = checksum & 0xFFFF;
+
+		if (checksum & 0x0001) {
+			checksum = (checksum >> 1) + 0x8000
+		}
+		else {
+			checksum = checksum >> 1;
+		}
+
+		checksum += data[i];
+	}
+
+	return checksum;
+};
+
 module.exports = Util;

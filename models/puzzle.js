@@ -513,7 +513,11 @@ Puzzle.prototype.writeToFile = function(filename) {
 
 	let notesOffset = offset;
 
-	data[offset++] = 0x00; // notes
+	for (let i = 0; i < this.notes.length; i++) {
+		data[offset++] = this.notes.charCodeAt(i);
+	}
+
+	data[offset++] = 0x00;
 
 	if (circledSquares) {
 		data[offset++] = 'G'.charCodeAt(0);

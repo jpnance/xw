@@ -311,7 +311,7 @@ Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
 
 	this.grid = [];
 
-	Object.keys(jsonPuzzle.Solution).forEach((rowKey, x) => {
+	Object.keys(jsonPuzzle.Solution).forEach((rowKey, y) => {
 		let row = jsonPuzzle.Solution[rowKey];
 
 		this.grid[y] = [];

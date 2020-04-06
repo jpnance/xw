@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "follow-redirects": "^1.11.0",
     "jquery": "^3.3.1"
   }
 }

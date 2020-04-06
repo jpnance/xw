@@ -1,7 +1,6 @@
 const dotenv = require('dotenv').config({ path: __dirname + '/../.env' });
 
-const http = require('http');
-const https = require('https');
+const { http, https } = require('follow-redirects');
 
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
@@ -84,12 +83,22 @@ let puzzleServices = [
 		shortName: 'usa-today',
 		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(now, '%Y-%m-%d') + '/data.json', // usa today
 		strategy: 'usa-today-json'
+	},
+
+	// rss feeds
+	{
+		shortName: 'beq',
+		url: 'https://feeds.feedburner.com/BrendanEmmettQuigley--CanIHaveAWordWithYou',
+		regExp: /https?:\/\/www.brendanemmettquigley.com\/.*?\.puz/,
+		strategy: 'rss'
 	}
 ];
 
 let servicePromises = [];
 
-puzzleServices.forEach(puzzleService => {
+puzzleServices.forEach(fetchPuzzle);
+
+function fetchPuzzle(puzzleService) {
 	if (!['puz', 'amuselabs-json', 'usa-today-json'].includes(puzzleService.strategy)) {
 		return;
 	}
@@ -150,10 +159,28 @@ puzzleServices.forEach(puzzleService => {
 			response.on('end', () => {
 				if (puzzleService.strategy == 'amuselabs-json') {
 					encodedPuzzle = body.match(/window.rawc = '(.*?)';/);
+
+					if (!encodedPuzzle || !encodedPuzzle[1]) {
+						console.log(puzzleService.shortName + ': no puzzle found');
+						resolve();
+						return;
+					}
+
 					puzzle.loadFromAmuseLabsJson(JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8')));
 				}
 				else if (puzzleService.strategy == 'usa-today-json') {
 					puzzle.loadFromUsaTodayJson(JSON.parse(body));
+				}
+				else if (puzzleService.strategy == 'rss') {
+					let rssMatch = body.match(puzzleService.regExp);
+
+					fetchPuzzle({
+						shortName: puzzleService.shortName,
+						url: rssMatch[0],
+						strategy: 'puz'
+					});
+
+					return;
 				}
 				else if (puzzleService.strategy == 'puz') {
 					let puzFile = new Uint8Array(body.length);

@@ -74,8 +74,10 @@ let puzzleServices = [
 	},
 	{
 		shortName: 'new-yorker',
-		url: 'https://cdn3.amuselabs.com/tny/crossword?id=23de3efb&set=tny-weekly', // new yorker
-		strategy: 'amuselabs-json-ish'
+		url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(now, '%Y/%m/%d'),
+		regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,
+		strategy: 'scrape',
+		postScrapeStrategy: 'amuselabs-json'
 	},
 
 	// jsonp
@@ -182,6 +184,17 @@ function fetchPuzzle(puzzleService) {
 
 					return;
 				}
+				else if (puzzleService.strategy == 'scrape') {
+					let urlMatch = body.match(puzzleService.regExp);
+
+					fetchPuzzle({
+						shortName: puzzleService.shortName,
+						url: urlMatch[0],
+						strategy: puzzleService.postScrapeStrategy
+					});
+
+					return;
+				}
 				else if (puzzleService.strategy == 'puz') {
 					let puzFile = new Uint8Array(body.length);
 
@@ -202,7 +215,7 @@ function fetchPuzzle(puzzleService) {
 
 		request.end();
 	}));
-});
+}
 
 Promise.all(servicePromises).then(() => {
 	process.exit();

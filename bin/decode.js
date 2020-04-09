@@ -5,24 +5,24 @@ const { http, https } = require('follow-redirects');
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
 
-let now = new Date();
+let dateArg = process.argv[2] ? new Date(process.argv[2] + ' 00:00:00') : new Date();
 
 let puzzleServices = [
 	// puz files
 	{
 		shortName: 'nyt',
-		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(now, '%b%d%y') + '.puz', // nyt
+		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(dateArg, '%b%d%y') + '.puz', // nyt
 		cookie: process.env.NYT_COOKIE,
 		strategy: 'puz'
 	},
 	{
 		shortName: 'wsj',
-		url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(now, '%y%m%d') + '.puz', // wsj
+		url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(dateArg, '%y%m%d') + '.puz', // wsj
 		strategy: 'puz'
 	},
 	{
 		shortName: 'universal',
-		url: 'http://herbach.dnsalias.com/uc/uc' + Util.dateFormat(now, '%y%m%d') + '.puz', // universal
+		url: 'http://herbach.dnsalias.com/uc/uc' + Util.dateFormat(dateArg, '%y%m%d') + '.puz', // universal
 		strategy: 'puz'
 	},
 
@@ -30,7 +30,7 @@ let puzzleServices = [
 	{
 		shortName: 'lat',
 		parameters: {
-			id: 'tca' + Util.dateFormat(now, '%y%m%d'),
+			id: 'tca' + Util.dateFormat(dateArg, '%y%m%d'),
 			set: 'latimes'
 		},
 		url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
@@ -39,7 +39,7 @@ let puzzleServices = [
 	{
 		shortName: 'wapo-sunday',
 		parameters: {
-			id: 'ebirnholz_' + Util.dateFormat(now, '%y%m%d'),
+			id: 'ebirnholz_' + Util.dateFormat(dateArg, '%y%m%d'),
 			set: 'wapo-eb'
 		},
 		url: 'https://cdn1.amuselabs.com/wapo/crossword', // wapo sunday
@@ -48,7 +48,7 @@ let puzzleServices = [
 	{
 		shortName: 'vox',
 		parameters: {
-			id: 'vox_' + Util.dateFormat(now, '%Y%m%d') + '_1000',
+			id: 'vox_' + Util.dateFormat(dateArg, '%Y%m%d') + '_1000',
 			set: 'vox'
 		},
 		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox
@@ -57,7 +57,7 @@ let puzzleServices = [
 	{
 		shortName: 'newsday',
 		parameters: {
-			id: 'Creators_WEB_' + Util.dateFormat(now, '%Y%m%d'),
+			id: 'Creators_WEB_' + Util.dateFormat(dateArg, '%Y%m%d'),
 			set: 'creatorsweb'
 		},
 		url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
@@ -66,7 +66,7 @@ let puzzleServices = [
 	{
 		shortName: 'atlantic',
 		parameters: {
-			id: 'atlantic_' + Util.dateFormat(now, '%Y%m%d'),
+			id: 'atlantic_' + Util.dateFormat(dateArg, '%Y%m%d'),
 			set: 'atlantic'
 		},
 		url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
@@ -74,7 +74,7 @@ let puzzleServices = [
 	},
 	{
 		shortName: 'new-yorker',
-		url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(now, '%Y/%m/%d'),
+		url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(dateArg, '%Y/%m/%d'),
 		regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,
 		strategy: 'scrape',
 		postScrapeStrategy: 'amuselabs-json'
@@ -83,7 +83,7 @@ let puzzleServices = [
 	// jsonp
 	{
 		shortName: 'usa-today',
-		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(now, '%Y-%m-%d') + '/data.json', // usa today
+		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(dateArg, '%Y-%m-%d') + '/data.json', // usa today
 		strategy: 'usa-today-json'
 	},
 
@@ -94,9 +94,20 @@ let puzzleServices = [
 		regExps: {
 			item: /<entry>(.*?)<\/entry>/g,
 			date: /<published>(.*?)<\/published>/,
-			puzzle: /https?:\/\/www.brendanemmettquigley.com\/files\/.*?\.puz/,
+			puzzle: /(http:\/\/www.brendanemmettquigley.com\/files\/.*?\.puz)/,
 		},
 		strategy: 'rss'
+	},
+	{
+		shortName: 'square-pursuit',
+		url: 'https://squarepursuit.com/feed/',
+		regExps: {
+			item: /<item>(.*?)<\/item>/g,
+			date: /<pubDate>(.*?)<\/pubDate>/,
+			puzzle: /<a href="(https:\/\/drive.google.com\/open\?id=(.*?))">\.puz<\/a>/
+		},
+		strategy: 'rss',
+		subStrategy: 'google'
 	}
 ];
 
@@ -105,7 +116,7 @@ let servicePromises = [];
 puzzleServices.forEach(fetchPuzzle);
 
 function fetchPuzzle(puzzleService) {
-	if (!['puz', 'amuselabs-json', 'usa-today-json'].includes(puzzleService.strategy)) {
+	if (!['puz', 'amuselabs-json', 'usa-today-json', 'rss', 'scrape'].includes(puzzleService.strategy)) {
 		return;
 	}
 
@@ -179,6 +190,7 @@ function fetchPuzzle(puzzleService) {
 				}
 				else if (puzzleService.strategy == 'rss') {
 					body = body.replace(/\r\n/g, '');
+					body = body.replace(/\n/g, '');
 					let itemMatch;
 
 					while ((itemMatch = puzzleService.regExps.item.exec(body)) !== null) {
@@ -187,12 +199,18 @@ function fetchPuzzle(puzzleService) {
 						if (dateMatch[1]) {
 							let date = new Date(dateMatch[1]);
 
-							if (Util.dateFormat(date, '%Y-%m-%d') == Util.dateFormat(now, '%Y-%m-%d')) {
+							if (Util.dateFormat(date, '%Y-%m-%d') == Util.dateFormat(dateArg, '%Y-%m-%d')) {
 								let puzzleMatch = puzzleService.regExps.puzzle.exec(itemMatch[1]);
+								let puzzleUrl = puzzleMatch[1];
+
+
+								if (puzzleService.subStrategy == 'google') {
+									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleMatch[2];
+								}
 
 								fetchPuzzle({
 									shortName: puzzleService.shortName,
-									url: puzzleMatch[0],
+									url: puzzleUrl,
 									strategy: 'puz'
 								});
 
@@ -223,7 +241,7 @@ function fetchPuzzle(puzzleService) {
 					puzzle.loadFromPuzFile(puzFile);
 				}
 
-				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + Util.dateFormat(now, '%Y-%m-%d.puz'));
+				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + Util.dateFormat(dateArg, '%Y-%m-%d.puz'));
 			});
 		});
 

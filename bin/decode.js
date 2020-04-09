@@ -91,7 +91,11 @@ let puzzleServices = [
 	{
 		shortName: 'beq',
 		url: 'https://feeds.feedburner.com/BrendanEmmettQuigley--CanIHaveAWordWithYou',
-		regExp: /https?:\/\/www.brendanemmettquigley.com\/.*?\.puz/,
+		regExps: {
+			item: /<entry>(.*?)<\/entry>/g,
+			date: /<published>(.*?)<\/published>/,
+			puzzle: /https?:\/\/www.brendanemmettquigley.com\/files\/.*?\.puz/,
+		},
 		strategy: 'rss'
 	}
 ];
@@ -174,13 +178,27 @@ function fetchPuzzle(puzzleService) {
 					puzzle.loadFromUsaTodayJson(JSON.parse(body));
 				}
 				else if (puzzleService.strategy == 'rss') {
-					let rssMatch = body.match(puzzleService.regExp);
+					body = body.replace(/\r\n/g, '');
+					let itemMatch;
 
-					fetchPuzzle({
-						shortName: puzzleService.shortName,
-						url: rssMatch[0],
-						strategy: 'puz'
-					});
+					while ((itemMatch = puzzleService.regExps.item.exec(body)) !== null) {
+						let dateMatch = puzzleService.regExps.date.exec(itemMatch[1]);
+
+						if (dateMatch[1]) {
+							let date = new Date(dateMatch[1]);
+
+							if (Util.dateFormat(date, '%Y-%m-%d') == Util.dateFormat(now, '%Y-%m-%d')) {
+								let puzzleMatch = puzzleService.regExps.puzzle.exec(itemMatch[1]);
+
+								fetchPuzzle({
+									shortName: puzzleService.shortName,
+									url: puzzleMatch[0],
+									strategy: 'puz'
+								});
+
+							}
+						}
+					}
 
 					return;
 				}

@@ -91,32 +91,21 @@ let puzzleServices = [
 	{
 		shortName: 'beq',
 		url: 'https://feeds.feedburner.com/BrendanEmmettQuigley--CanIHaveAWordWithYou',
-		regExps: {
-			item: /<entry>(.*?)<\/entry>/g,
-			date: /<published>(.*?)<\/published>/,
-			puzzle: /(http:\/\/www.brendanemmettquigley.com\/files\/.*?\.puz)/,
-		},
 		strategy: 'rss'
 	},
 	{
 		shortName: 'square-pursuit',
 		url: 'https://squarepursuit.com/feed/',
-		regExps: {
-			item: /<item>(.*?)<\/item>/g,
-			date: /<pubDate>(.*?)<\/pubDate>/,
-			puzzle: /<a href="(https:\/\/drive.google.com\/open\?id=(.*?))">\.puz<\/a>/
-		},
-		strategy: 'rss',
-		subStrategy: 'google'
+		strategy: 'rss'
 	},
 	{
 		shortName: 'tough-as-nails',
 		url: 'https://toughasnails.net/feed/',
-		regExps: {
-			item: /<item>(.*?)<\/item>/g,
-			date: /<pubDate>(.*?)<\/pubDate>/,
-			puzzle: /<a href="(https:\/\/drive.google.com\/open\?id=(.*?))">.*?Across Lite<\/a>/
-		},
+		strategy: 'rss'
+	},
+	{
+		shortName: 'club72',
+		url: 'https://club72.wordpress.com/feed/',
 		strategy: 'rss'
 	}
 ];
@@ -201,32 +190,50 @@ function fetchPuzzle(puzzleService) {
 				else if (puzzleService.strategy == 'rss') {
 					body = body.replace(/\r\n/g, '');
 					body = body.replace(/\n/g, '');
+					body = body.replace(/&lt;/g, '<');
+					body = body.replace(/&gt;/g, '>');
+					body = body.replace(/&amp;/g, '&');
 
-					let itemMatch;
+					let entryRegexp = /<(?:entry|item)>(.*?)<\/(?:entry|item)>/g;
+					let entryMatch;
 
-					while ((itemMatch = puzzleService.regExps.item.exec(body)) !== null) {
-						let dateMatch = puzzleService.regExps.date.exec(itemMatch[1]);
+					while ((entryMatch = entryRegexp.exec(body)) !== null) {
+						let linkRegexp = /<a.*?href="(.*?)".*?>(.*?)<\/a>/g;
+						let linkMatch;
 
-						if (dateMatch[1]) {
-							let date = new Date(dateMatch[1]);
+						while ((linkMatch = linkRegexp.exec(entryMatch[1])) !== null) {
+							if (linkMatch[2].match(/(^puz$)|(\.puz)|( PUZ )|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
+								let entryDate = new Date();
 
-							console.log(Util.dateFormat(date, '%Y-%m-%d'), Util.dateFormat(dateArg, '%Y-%m-%d'));
-							if (Util.dateFormat(date, '%Y-%m-%d') == Util.dateFormat(dateArg, '%Y-%m-%d')) {
-								let puzzleMatch = puzzleService.regExps.puzzle.exec(itemMatch[1]);
-								let puzzleUrl = puzzleMatch[1];
+								let dateRegexp = /<(?:pubDate|published)>(.*?)<\/(?:pubDate|published)>/;
+								let dateMatch = dateRegexp.exec(entryMatch[1]);
 
-								if (puzzleService.subStrategy == 'google') {
-									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleMatch[2];
+								if (dateMatch[1]) {
+									entryDate = new Date(dateMatch[1]);
+								}
+
+								let puzzleUrl = linkMatch[1];
+								let puzzleGoogleMatch = puzzleUrl.match(/https:\/\/drive\.google\.com\/open\?id=(.*)/);
+
+								if (puzzleGoogleMatch) {
+									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleGoogleMatch[1];
 								}
 
 								fetchPuzzle({
 									shortName: puzzleService.shortName,
 									url: puzzleUrl,
+									date: Util.dateFormat(entryDate, '%Y-%m-%d'),
 									strategy: 'puz'
 								});
-
 							}
 						}
+
+						/*
+							if (puzzleService.subStrategy == 'google') {
+							}
+
+						}
+						*/
 					}
 
 					return;
@@ -252,7 +259,7 @@ function fetchPuzzle(puzzleService) {
 					puzzle.loadFromPuzFile(puzFile);
 				}
 
-				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + Util.dateFormat(dateArg, '%Y-%m-%d.puz'));
+				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
 			});
 		});
 

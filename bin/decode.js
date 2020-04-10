@@ -108,6 +108,16 @@ let puzzleServices = [
 		},
 		strategy: 'rss',
 		subStrategy: 'google'
+	},
+	{
+		shortName: 'tough-as-nails',
+		url: 'https://toughasnails.net/feed/',
+		regExps: {
+			item: /<item>(.*?)<\/item>/g,
+			date: /<pubDate>(.*?)<\/pubDate>/,
+			puzzle: /<a href="(https:\/\/drive.google.com\/open\?id=(.*?))">.*?Across Lite<\/a>/
+		},
+		strategy: 'rss'
 	}
 ];
 
@@ -191,6 +201,7 @@ function fetchPuzzle(puzzleService) {
 				else if (puzzleService.strategy == 'rss') {
 					body = body.replace(/\r\n/g, '');
 					body = body.replace(/\n/g, '');
+
 					let itemMatch;
 
 					while ((itemMatch = puzzleService.regExps.item.exec(body)) !== null) {
@@ -199,10 +210,10 @@ function fetchPuzzle(puzzleService) {
 						if (dateMatch[1]) {
 							let date = new Date(dateMatch[1]);
 
+							console.log(Util.dateFormat(date, '%Y-%m-%d'), Util.dateFormat(dateArg, '%Y-%m-%d'));
 							if (Util.dateFormat(date, '%Y-%m-%d') == Util.dateFormat(dateArg, '%Y-%m-%d')) {
 								let puzzleMatch = puzzleService.regExps.puzzle.exec(itemMatch[1]);
 								let puzzleUrl = puzzleMatch[1];
-
 
 								if (puzzleService.subStrategy == 'google') {
 									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleMatch[2];

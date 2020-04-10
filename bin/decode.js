@@ -107,6 +107,16 @@ let puzzleServices = [
 		shortName: 'club72',
 		url: 'https://club72.wordpress.com/feed/',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'sids-grids',
+		url: 'https://www.sidsgrids.com/blog-feed.xml',
+		strategy: 'rss'
+	},
+	{
+		shortName: 'cruzzles',
+		url: 'https://cruzzles.blogspot.com/feeds/posts/default',
+		strategy: 'rss'
 	}
 ];
 
@@ -140,13 +150,12 @@ function fetchPuzzle(puzzleService) {
 			hostname: hostname,
 			port: puzzleService.url.startsWith('https') ? 443 : 80,
 			path: path,
-			method: 'GET'
+			method: 'GET',
+			headers: {}
 		};
 
 		if (puzzleService.cookie) {
-			options.headers = {
-				'Cookie': puzzleService.cookie
-			};
+			options.headers['Cookie'] = puzzleService.cookie;
 		}
 
 		let body = '';
@@ -193,9 +202,12 @@ function fetchPuzzle(puzzleService) {
 					body = body.replace(/&lt;/g, '<');
 					body = body.replace(/&gt;/g, '>');
 					body = body.replace(/&amp;/g, '&');
+					body = body.replace(/&amp;/g, '&');
+					body = body.replace(/&quot;/g, '"');
 
 					let entryRegexp = /<(?:entry|item)>(.*?)<\/(?:entry|item)>/g;
 					let entryMatch;
+					let delay = 0;
 
 					while ((entryMatch = entryRegexp.exec(body)) !== null) {
 						let linkRegexp = /<a.*?href="(.*?)".*?>(.*?)<\/a>/g;
@@ -225,15 +237,21 @@ function fetchPuzzle(puzzleService) {
 									date: Util.dateFormat(entryDate, '%Y-%m-%d'),
 									strategy: 'puz'
 								});
+
+								/*
+								delay += 1;
+
+								setTimeout(function() {
+									fetchPuzzle({
+										shortName: puzzleService.shortName,
+										url: puzzleUrl,
+										date: Util.dateFormat(entryDate, '%Y-%m-%d'),
+										strategy: 'puz'
+									});
+								}, 5000 * delay);
+								*/
 							}
 						}
-
-						/*
-							if (puzzleService.subStrategy == 'google') {
-							}
-
-						}
-						*/
 					}
 
 					return;

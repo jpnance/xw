@@ -117,6 +117,11 @@ let puzzleServices = [
 		shortName: 'cruzzles',
 		url: 'https://cruzzles.blogspot.com/feeds/posts/default',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'grid-therapy',
+		url: 'https://trentevans.com/crosswords/?feed=rss2',
+		strategy: 'rss'
 	}
 ];
 

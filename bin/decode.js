@@ -1,6 +1,7 @@
 const dotenv = require('dotenv').config({ path: __dirname + '/../.env' });
 
 const { http, https } = require('follow-redirects');
+const fs = require('fs');
 
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
@@ -12,8 +13,10 @@ let puzzleServices = [
 	{
 		shortName: 'nyt',
 		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(dateArg, '%b%d%y') + '.puz', // nyt
-		cookie: process.env.NYT_COOKIE,
-		strategy: 'puz'
+		strategy: 'puz',
+		headers: {
+			'Cookie': process.env.NYT_COOKIE
+		}
 	},
 	{
 		shortName: 'wsj',
@@ -122,6 +125,14 @@ let puzzleServices = [
 		shortName: 'grid-therapy',
 		url: 'https://trentevans.com/crosswords/?feed=rss2',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'bywaters',
+		url: 'https://www.davidalfredbywaters.com/blog?format=rss',
+		strategy: 'rss',
+		headers: {
+			'User-Agent': 'Nonzero something.'
+		}
 	}
 ];
 
@@ -135,6 +146,12 @@ function fetchPuzzle(puzzleService) {
 	}
 
 	servicePromises.push(new Promise(function(resolve, reject) {
+		try {
+			fs.accessSync('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
+			resolve();
+			return;
+		} catch (error) { }
+
 		let hostname = puzzleService.url.match(/https?:\/\/(.*?)\/.*/)[1];
 		let path = puzzleService.url.match(/https?:\/\/.*?(\/.*)/)[1];
 		let protocol = puzzleService.url.startsWith('https') ? https : http;
@@ -156,12 +173,8 @@ function fetchPuzzle(puzzleService) {
 			port: puzzleService.url.startsWith('https') ? 443 : 80,
 			path: path,
 			method: 'GET',
-			headers: {}
+			headers: puzzleService.headers
 		};
-
-		if (puzzleService.cookie) {
-			options.headers['Cookie'] = puzzleService.cookie;
-		}
 
 		let body = '';
 		let encodedPuzzle, jsonPuzzle;

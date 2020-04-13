@@ -147,6 +147,11 @@ let puzzleServices = [
 		shortName: 'rossword',
 		url: 'https://rosswordpuzzles.com/feed/',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'arctanxwords',
+		url: 'http://arctanxwords.blogspot.com/feeds/posts/default',
+		strategy: 'rss'
 	}
 ];
 

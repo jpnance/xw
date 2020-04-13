@@ -58,6 +58,15 @@ let puzzleServices = [
 		strategy: 'amuselabs-json'
 	},
 	{
+		shortName: 'vox',
+		parameters: {
+			id: 'vox_' + Util.dateFormat(dateArg, '%Y%m0%d') + '_1000',
+			set: 'vox'
+		},
+		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox backup because their numbering scheme is insane
+		strategy: 'amuselabs-json'
+	},
+	{
 		shortName: 'newsday',
 		parameters: {
 			id: 'Creators_WEB_' + Util.dateFormat(dateArg, '%Y%m%d'),

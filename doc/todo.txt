@@ -13,3 +13,4 @@
 	* See https://www.brendanemmettquigley.com/2020/03/puzzle-1248-marching-bands.html
 * Be able to star a puzzle as "notably fun"
 * Clipboard feature
+* Syntax for filling in from the back instead of the front

@@ -133,6 +133,11 @@ let puzzleServices = [
 		headers: {
 			'User-Agent': 'Nonzero something.'
 		}
+	},
+	{
+		shortName: 'rossword',
+		url: 'https://rosswordpuzzles.com/feed/',
+		strategy: 'rss'
 	}
 ];
 
@@ -247,6 +252,9 @@ function fetchPuzzle(puzzleService) {
 
 								if (puzzleGoogleMatch) {
 									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleGoogleMatch[1];
+								}
+								else if (puzzleUrl.includes('https://www.dropbox.com/')) {
+									puzzleUrl = puzzleUrl.replace('https://www.dropbox.com/', 'https://dl.dropbox.com/');
 								}
 
 								fetchPuzzle({

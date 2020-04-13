@@ -261,7 +261,8 @@ function fetchPuzzle(puzzleService) {
 									shortName: puzzleService.shortName,
 									url: puzzleUrl,
 									date: Util.dateFormat(entryDate, '%Y-%m-%d'),
-									strategy: 'puz'
+									strategy: 'puz',
+									headers: puzzleService.headers
 								});
 
 								/*

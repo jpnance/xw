@@ -295,6 +295,7 @@ function fetchPuzzle(puzzleService) {
 					puzzle.loadFromPuzFile(puzFile);
 				}
 
+				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
 				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
 			});
 		});

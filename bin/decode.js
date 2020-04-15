@@ -152,6 +152,11 @@ let puzzleServices = [
 		shortName: 'arctanxwords',
 		url: 'http://arctanxwords.blogspot.com/feeds/posts/default',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'luckystreak',
+		url: 'https://luckyxwords.blogspot.com/feeds/posts/default',
+		strategy: 'rss'
 	}
 ];
 
@@ -251,7 +256,7 @@ function fetchPuzzle(puzzleService) {
 						let linkMatch;
 
 						while ((linkMatch = linkRegexp.exec(entryMatch[1])) !== null) {
-							if (linkMatch[2].match(/(^puz$)|(\.puz)|( PUZ )|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
+							if (linkMatch[2].match(/(^puz$)|(^PUZ$)|(\.puz)|( PUZ )|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
 								let entryDate = new Date();
 
 								let dateRegexp = /<(?:pubDate|published)>(.*?)<\/(?:pubDate|published)>/;

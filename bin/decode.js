@@ -157,6 +157,11 @@ let puzzleServices = [
 		shortName: 'luckystreak',
 		url: 'https://luckyxwords.blogspot.com/feeds/posts/default',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'datalexic',
+		url: 'http://datalexic.com/feed/',
+		strategy: 'rss'
 	}
 ];
 

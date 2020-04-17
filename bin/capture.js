@@ -6,8 +6,12 @@ stdin.setEncoding('utf8');
 let counter = 0;
 
 stdin.on('data', key => {
+	for (let i = 0; i < key.length; i++) {
+		console.log(key.charCodeAt(i));
+	}
+
 	switch(key) {
-		case '\u0003':
+		case '\x03':
 			process.exit();
 			break;
 

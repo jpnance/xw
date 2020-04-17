@@ -5,13 +5,6 @@ const CLEAR_SCREEN = "\033[2J";
 const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
 
-const readline = require('readline');
-
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout
-});
-
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
 
@@ -24,15 +17,68 @@ puzzle.loadFromFile(nonOptions.pop());
 let index = 0;
 let timer = null;
 
+let solverMode = 'titleScreen';
 let downsOnly = false;
 
 if (options.includes('--downs-only')) {
 	downsOnly = true;
 }
 
+process.stdin.setRawMode(true);
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function(key) {
+	if (key == '\x03') {
+		process.exit();
+	}
+	else if (solverMode == 'titleScreen') {
+		switch (key) {
+			case '\r':
+				solverMode = 'command';
+				timer = new Date();
+				nextClue(downsOnly ? 'down' : 'across');
+				break;
+
+			default:
+				break;
+		}
+	}
+	else if (solverMode == 'command') {
+		switch (key) {
+			case 'h':
+				puzzle.moveCursor('left');
+				break;
+
+			case 'j':
+				puzzle.moveCursor('down');
+				break;
+
+			case 'k':
+				puzzle.moveCursor('up');
+				break;
+
+			case 'l':
+				puzzle.moveCursor('right');
+				break;
+
+			case ' ':
+				puzzle.switchDirection();
+				break;
+		}
+
+		puzzle.showSolverState();
+	}
+	else if (solverMode == 'insert') {
+		if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.includes(key)) {
+		}
+	}
+});
+
 process.stdout.write(CLEAR_SCREEN);
 process.stdout.write(CURSOR_POSITION(0, 0));
 process.stdout.write(SAVE_CURSOR);
+
 titleScreen();
 
 function titleScreen() {
@@ -46,10 +92,7 @@ function titleScreen() {
 	console.log();
 	console.log();
 
-	rl.question('Press ENTER to begin.', function() {
-		timer = new Date();
-		nextClue(downsOnly ? 'down' : 'across');
-	});
+	console.log('Press ENTER to begin.');
 }
 
 function nextClue(mode) {
@@ -83,7 +126,7 @@ function nextClue(mode) {
 	}
 
 	process.stdout.write(RESTORE_CURSOR);
-	puzzle.showSolverState(mode, clue, words);
+	puzzle.showSolverState(mode);
 	console.log();
 
 	let query = "";
@@ -100,6 +143,7 @@ function nextClue(mode) {
 
 	query += "> ";
 
+	/*
 	rl.question(query, function(input) {
 		if (input == '/reveal') {
 			puzzle.reveal();
@@ -194,6 +238,7 @@ function nextClue(mode) {
 
 		nextClue(mode, Math.floor(Math.random() * puzzle.acrosses.length));
 	});
+	*/
 }
 
 function correctOrNot(mode, clue, guess, words) {

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const RESTORE_CURSOR = "\033[u";
+
 const BACKGROUND_BLACK = "\033[48;5;0m";
 const BACKGROUND_WHITE = "\033[48;5;15m";
 const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
@@ -62,6 +64,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 
 		for (let x = 0; x < this.width; x++) {
 			this.grid[y][x] = {
+				clues: {},
 				answer: String.fromCharCode(puzFile[0x34 + x + (y * this.width)]),
 				guess: String.fromCharCode(puzFile[0x34 + x + (y * this.width) + (this.width * this.height)]),
 				order: 0,
@@ -101,7 +104,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 		}
 	}
 
-	this.notes = "";
+	this.notes = '';
 
 	while (puzFile[++stringIndex] != 0x00) {
 		this.notes += String.fromCharCode(puzFile[stringIndex]);
@@ -234,7 +237,53 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 		}
 	}
 
+	let acrossIndex = -1;
+	let downIndex = -1;
+
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (this.blackCellAt(x, y)) {
+				continue;
+			}
+
+			if (this.needsAcrossNumber(x, y)) {
+				acrossIndex++;
+			}
+
+			if (this.needsDownNumber(x, y)) {
+				downIndex++;
+				this.grid[y][x].clues.down = downIndex;
+			}
+
+			this.grid[y][x].clues.across = acrossIndex;
+		}
+	}
+
+	for (let x = 0; x < this.grid[0].length; x++) {
+		for (let y = 0; y < this.grid.length; y++) {
+			if (this.blackCellAt(x, y)) {
+				continue;
+			}
+
+			if (this.grid[y][x].clues.down != undefined) {
+				downIndex = this.grid[y][x].clues.down;
+			}
+
+			this.grid[y][x].clues.down = downIndex;
+		}
+	}
+
 	this.guessCount = 0;
+
+	this.cursor = { x: 0, y: 0 };
+	this.direction = 'across';
+
+	for (let x = 0; x < this.grid[0].length; x++) {
+		if (!this.blackCellAt(x, 0)) {
+			this.cursor.x = x;
+			break;
+		}
+	}
 };
 
 Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
@@ -643,8 +692,8 @@ Puzzle.prototype.needsDownNumber = function(x, y) {
 }
 
 Puzzle.prototype.getAcrossWord = function(x, y) {
-	let solverWord = "";
-	let answerWord = "";
+	let solverWord = '';
+	let answerWord = '';
 
 	do {
 		if (this.grid[y][x].guess.length > 1) {
@@ -662,8 +711,8 @@ Puzzle.prototype.getAcrossWord = function(x, y) {
 }
 
 Puzzle.prototype.getDownWord = function(x, y) {
-	let solverWord = "";
-	let answerWord = "";
+	let solverWord = '';
+	let answerWord = '';
 
 	do {
 		if (this.grid[y][x].guess.length > 1) {
@@ -806,7 +855,22 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 	}
 };
 
-Puzzle.prototype.showSolverState = function(mode, clue, words) {
+Puzzle.prototype.showSolverState = function(title) {
+	process.stdout.write(RESTORE_CURSOR);
+
+	let mode = this.direction;
+	let clue = null;
+	let words = null;
+
+	if (mode == 'across') {
+		clue = this.acrosses[this.getClueFor(this.cursor, mode)];
+		words = this.getAcrossWord(clue.origin.x, clue.origin.y);
+	}
+	else if (mode == 'down') {
+		clue = this.downs[this.getClueFor(this.cursor, mode)];
+		words = this.getDownWord(clue.origin.x, clue.origin.y);
+	}
+
 	let colorLine1;
 	let colorLine2;
 
@@ -828,12 +892,16 @@ Puzzle.prototype.showSolverState = function(mode, clue, words) {
 		let outputLine2 = '';
 
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (mode == 'title') {
+			if (title == 'title') {
 				outputLine1 += BACKGROUND_WHITE + '   ' + RESET;
 				outputLine2 += BACKGROUND_WHITE + '   ' + RESET;
 			}
 			else {
-				if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+				if (x == this.cursor.x && y == this.cursor.y) {
+					colorLine1 = BACKGROUND_RED + FOREGROUND_WHITE;
+					colorLine2 = BACKGROUND_RED + FOREGROUND_WHITE;
+				}
+				else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
 					if (this.grid[y][x].circled) {
 						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
 						colorLine2 = BACKGROUND_DARK_SLATE_GRAY
@@ -1045,6 +1113,79 @@ Puzzle.prototype.showMinimaps = function() {
 		orderLine += RESET;
 
 		console.log(changesLine + '   ' + orderLine);
+	}
+};
+
+Puzzle.prototype.moveCursor = function(direction) {
+	if (direction == 'left') {
+		let candidateX = this.cursor.x - 1;
+
+		for (candidateX; candidateX >= 0; candidateX--) {
+			if (!this.blackCellAt(candidateX, this.cursor.y)) {
+				break;
+			}
+		}
+
+		if (candidateX >= 0) {
+			this.cursor.x = candidateX;
+		}
+	}
+	else if (direction == 'right') {
+		let candidateX = this.cursor.x + 1;
+
+		for (candidateX; candidateX < this.grid[this.cursor.y].length; candidateX++) {
+			if (!this.blackCellAt(candidateX, this.cursor.y)) {
+				break;
+			}
+		}
+
+		if (candidateX < this.grid[this.cursor.y].length) {
+			this.cursor.x = candidateX;
+		}
+	}
+	else if (direction == 'up') {
+		let candidateY = this.cursor.y - 1;
+
+		for (candidateY; candidateY >= 0; candidateY--) {
+			if (!this.blackCellAt(this.cursor.x, candidateY)) {
+				break;
+			}
+		}
+
+		if (candidateY >= 0) {
+			this.cursor.y = candidateY;
+		}
+	}
+	else if (direction == 'down') {
+		let candidateY = this.cursor.y + 1;
+
+		for (candidateY; candidateY < this.grid.length; candidateY++) {
+			if (!this.blackCellAt(this.cursor.x, candidateY)) {
+				break;
+			}
+		}
+
+		if (candidateY < this.grid.length) {
+			this.cursor.y = candidateY;
+		}
+	}
+};
+
+Puzzle.prototype.getClueFor = function(position, direction) {
+	if (direction == 'across') {
+		return this.grid[position.y][position.x].clues.across;
+	}
+	else if (direction == 'down') {
+		return this.grid[position.y][position.x].clues.down;
+	}
+};
+
+Puzzle.prototype.switchDirection = function() {
+	if (this.direction == 'across') {
+		this.direction = 'down';
+	}
+	else if (this.direction = 'down') {
+		this.direction = 'across';
 	}
 };
 

@@ -277,10 +277,10 @@ function fetchPuzzle(puzzleService) {
 								}
 
 								let puzzleUrl = linkMatch[1];
-								let puzzleGoogleMatch = puzzleUrl.match(/https:\/\/drive\.google\.com\/open\?id=(.*)/);
+								let puzzleGoogleMatch = puzzleUrl.match(/(?:https:\/\/drive\.google\.com\/open\?id=(.*))|(?:https:\/\/drive\.google\.com\/file\/d\/(.*)\/view.*)/);
 
 								if (puzzleGoogleMatch) {
-									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleGoogleMatch[1];
+									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + (puzzleGoogleMatch[1] || puzzleGoogleMatch[2]);
 								}
 								else if (puzzleUrl.includes('https://www.dropbox.com/')) {
 									puzzleUrl = puzzleUrl.replace('https://www.dropbox.com/', 'https://dl.dropbox.com/');

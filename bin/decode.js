@@ -162,6 +162,11 @@ let puzzleServices = [
 		shortName: 'datalexic',
 		url: 'http://datalexic.com/feed/',
 		strategy: 'rss'
+	},
+	{
+		shortName: 'ptnah',
+		url: 'https://puzzlesthatneedahome.blogspot.com/feeds/posts/default',
+		strategy: 'rss'
 	}
 ];
 

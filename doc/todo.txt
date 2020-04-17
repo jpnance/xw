@@ -14,3 +14,17 @@
 * Be able to star a puzzle as "notably fun"
 * Clipboard feature
 * Syntax for filling in from the back instead of the front
+* Better bindings
+	* Command mode
+		* hjkl to move the cursor
+		* i enters insert mode
+		* w and b jump to the next/previous clues
+		* space changes across/down mode
+		* / enters search mode
+	* Insert mode
+		* Letters get guessed and advance the cursor
+		* Esc and enter leave insert mode
+	* Search mode
+		* "14d" jumps to 14-down
+		* "5" jumps to 5 in the corresponding across/down mode, if possible
+		* "" (nothing, just pressing enter) changes across/down mode about wherever the cursor is

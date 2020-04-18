@@ -65,6 +65,14 @@ else {
 			}
 		},
 		{
+			shortName: 'nyt-variety',
+			url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(cliArgs.date, '%b%d%y') + '.2.puz', // nyt-variety
+			strategy: 'puz',
+			headers: {
+				'Cookie': process.env.NYT_COOKIE
+			}
+		},
+		{
 			shortName: 'wsj',
 			url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(cliArgs.date, '%y%m%d') + '.puz', // wsj
 			strategy: 'puz'

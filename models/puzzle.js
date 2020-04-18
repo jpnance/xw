@@ -8,7 +8,9 @@ const BACKGROUND_WHITE = "\033[48;5;15m";
 const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
 const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
 const BACKGROUND_RED = "\033[48;5;196m";
+const BACKGROUND_ORANGE = "\033[48;5;214m";
 const BACKGROUND_LIGHT_PINK = "\033[48;5;217m";
+const BACKGROUND_GOLD = "\033[48;5;220m";
 const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
 const BACKGROUND_GRAY_93 = "\033[48;5;255m";
 const FOREGROUND_BLACK = "\033[38;5;0m";
@@ -898,8 +900,14 @@ Puzzle.prototype.showSolverState = function(title) {
 			}
 			else {
 				if (x == this.cursor.x && y == this.cursor.y) {
-					colorLine1 = BACKGROUND_RED + FOREGROUND_WHITE;
-					colorLine2 = BACKGROUND_RED + FOREGROUND_WHITE;
+					if (this.grid[y][x].circled) {
+						colorLine1 = BACKGROUND_ORANGE + FOREGROUND_DARK_ORANGE;
+						colorLine2 = BACKGROUND_ORANGE + FOREGROUND_DARK_ORANGE;
+					}
+					else {
+						colorLine1 = BACKGROUND_GOLD + FOREGROUND_DARK_ORANGE;
+						colorLine2 = BACKGROUND_GOLD + FOREGROUND_DARK_ORANGE;
+					}
 				}
 				else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
 					if (this.grid[y][x].circled) {

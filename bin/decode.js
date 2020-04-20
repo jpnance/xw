@@ -349,6 +349,8 @@ function fetchPuzzle(puzzleService) {
 									headers: puzzleService.headers
 								});
 
+								break; // only be willing to fetch one puzzle per post
+
 								/*
 								delay += 1;
 

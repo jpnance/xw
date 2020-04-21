@@ -857,6 +857,10 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 	}
 };
 
+Puzzle.prototype.logGuess = function(guess) {
+	this.grid[this.cursor.y][this.cursor.x].guess = guess.toUpperCase();
+};
+
 Puzzle.prototype.showSolverState = function(title) {
 	process.stdout.write(RESTORE_CURSOR);
 
@@ -1125,6 +1129,15 @@ Puzzle.prototype.showMinimaps = function() {
 };
 
 Puzzle.prototype.moveCursor = function(direction) {
+	if (!direction) {
+		if (this.direction == 'across') {
+			direction = 'right';
+		}
+		else if (this.direction == 'down') {
+			direction = 'down';
+		}
+	}
+
 	if (direction == 'left') {
 		let candidateX = this.cursor.x - 1;
 

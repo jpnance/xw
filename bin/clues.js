@@ -50,6 +50,10 @@ process.stdin.on('data', function(key) {
 				puzzle.moveCursor('left');
 				break;
 
+			case 'i':
+				solverMode = 'insert';
+				break;
+
 			case 'j':
 				puzzle.moveCursor('down');
 				break;
@@ -71,6 +75,12 @@ process.stdin.on('data', function(key) {
 	}
 	else if (solverMode == 'insert') {
 		if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.includes(key)) {
+			puzzle.logGuess(key);
+			puzzle.moveCursor();
+			puzzle.showSolverState();
+		}
+		else if (key == "\x07" || key == "\x1b") {
+			solverMode = 'command';
 		}
 	}
 });

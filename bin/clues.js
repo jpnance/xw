@@ -33,11 +33,8 @@ try {
 	}
 }
 
-console.log(puzFilename);
-process.exit();
-
 let puzzle = new Puzzle();
-puzzle.loadFromFile(puzFilename);
+puzzle.loadFromFile(path.resolve('puzzles/', puzFilename));
 
 let index = 0;
 let timer = null;

@@ -17,7 +17,11 @@ puzzle.loadFromFile(nonOptions.pop());
 let index = 0;
 let timer = null;
 
-let solverMode = 'titleScreen';
+let solverMode = {
+	primary: 'titleScreen',
+	secondary: null
+};
+
 let downsOnly = false;
 
 if (options.includes('--downs-only')) {
@@ -34,10 +38,10 @@ process.stdin.on('data', function(key) {
 	if (key == '\x03') {
 		process.exit();
 	}
-	else if (solverMode == 'titleScreen') {
+	else if (solverMode.primary == 'titleScreen') {
 		switch (key) {
 			case '\r':
-				solverMode = 'command';
+				solverMode.primary = 'command';
 				timer = new Date();
 				nextClue(downsOnly ? 'down' : 'across');
 				break;
@@ -46,31 +50,55 @@ process.stdin.on('data', function(key) {
 				break;
 		}
 	}
-	else if (solverMode == 'command') {
+	else if (solverMode.primary == 'command') {
 		switch (key) {
+			case '^': // jump to beginning of line
+			case '$': // jump to end of line
+			case 'I': // begin editing at beginning of line (or maybe first unfilled square?)
+			case 'R': // begin editing in overwrite mode
+			case 'w': // jump to next answer
+			case 'b': // jump to previous answer
+				break;
+
 			case 'a':
 				puzzle.moveCursor();
-				solverMode = 'insert';
+				solverMode.primary = 'insert';
+				solverMode.secondary = 'blanks';
 				break;
 
 			case 'h':
+			case '\u001b\u005b\u0044':
 				puzzle.moveCursor('left');
 				break;
 
 			case 'i':
-				solverMode = 'insert';
+				solverMode.primary = 'insert';
+				solverMode.secondary = 'blanks';
 				break;
 
 			case 'j':
+			case '\u001b\u005b\u0042':
 				puzzle.moveCursor('down');
 				break;
 
 			case 'k':
+			case '\u001b\u005b\u0041':
 				puzzle.moveCursor('up');
 				break;
 
 			case 'l':
+			case '\u001b\u005b\u0043':
 				puzzle.moveCursor('right');
+				break;
+
+			case 'r':
+				solverMode.primary = 'insert';
+				solverMode.secondary = 'one-character';
+				break;
+
+			case 'x':
+				puzzle.logGuess('-');
+				puzzle.moveCursor(null, true);
 				break;
 
 			case ' ':
@@ -78,10 +106,19 @@ process.stdin.on('data', function(key) {
 				break;
 		}
 	}
-	else if (solverMode == 'insert') {
+	else if (solverMode.primary == 'insert') {
+		let jumpToBlank = (solverMode.secondary == 'blanks');
+
 		if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-'.includes(key)) {
 			puzzle.logGuess(key);
-			puzzle.moveCursor(null, true);
+
+			if (solverMode.secondary == 'one-character') {
+				solverMode.primary = 'command';
+				solverMode.secondary = null;
+			}
+			else {
+				puzzle.moveCursor(null, true, false, jumpToBlank);
+			}
 		}
 		else if (key == '/') {
 			nextCursor = { x: puzzle.cursor.x, y: puzzle.cursor.y };
@@ -91,16 +128,17 @@ process.stdin.on('data', function(key) {
 		}
 		else if (key == '\x07' || key == '\x1b') {
 			// esc
-			solverMode = 'command';
+			solverMode.primary = 'command';
 		}
 		else if (key == '\x7f') {
 			// backspace
+			solverMode.secondary = 'overwrite';
 			puzzle.moveCursor(null, true, true);
 			puzzle.logGuess('-');
 		}
 		else if (key == '\r') {
 			// enter
-			solverMode = 'command';
+			solverMode.primary = 'command';
 
 			if (nextCursor) {
 				puzzle.moveCursorTo(nextCursor.x, nextCursor.y);
@@ -108,6 +146,18 @@ process.stdin.on('data', function(key) {
 
 				nextCursor = null;
 			}
+		}
+		else if (key == '\u001b\u005b\u0041') {
+			puzzle.moveCursor('up');
+		}
+		else if (key == '\u001b\u005b\u0042') {
+			puzzle.moveCursor('down');
+		}
+		else if (key == '\u001b\u005b\u0043') {
+			puzzle.moveCursor('right');
+		}
+		else if (key == '\u001b\u005b\u0044') {
+			puzzle.moveCursor('left');
 		}
 	}
 

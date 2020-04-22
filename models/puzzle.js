@@ -899,19 +899,6 @@ Puzzle.prototype.showSolverState = function(title) {
 		console.log();
 	}
 
-	let clueIndentation = clue.clue.indexOf(' ') + 1;
-
-	if (title) {
-		console.log();
-		console.log();
-		console.log();
-		console.log();
-	}
-	else {
-		console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 3));
-		console.log();
-	}
-
 	let clues = 1;
 
 	for (let y = 0; y < this.grid.length; y++) {
@@ -1016,6 +1003,15 @@ Puzzle.prototype.showSolverState = function(title) {
 		console.log(outputLine1);
 		console.log(outputLine2);
 	}
+
+	let clueIndentation = clue.clue.indexOf(' ') + 1;
+
+	if (!title) {
+		console.log();
+		console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
+		console.log();
+	}
+
 };
 
 Puzzle.prototype.isComplete = function() {
@@ -1149,7 +1145,7 @@ Puzzle.prototype.showMinimaps = function() {
 	}
 };
 
-Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse) {
+Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jumpToBlank) {
 	if (!direction) {
 		if (this.direction == 'across') {
 			if (reverse) {
@@ -1172,13 +1168,15 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse) {
 	if (direction == 'left') {
 		let candidateX = this.cursor.x - 1;
 
-		if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
-			return;
-		}
-
 		for (candidateX; candidateX >= 0; candidateX--) {
+			if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
+				return;
+			}
+
 			if (!this.blackCellAt(candidateX, this.cursor.y)) {
-				break;
+				if (!jumpToBlank || this.grid[this.cursor.y][candidateX].guess == '-') {
+					break;
+				}
 			}
 		}
 
@@ -1189,13 +1187,15 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse) {
 	else if (direction == 'right') {
 		let candidateX = this.cursor.x + 1;
 
-		if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
-			return;
-		}
-
 		for (candidateX; candidateX < this.grid[this.cursor.y].length; candidateX++) {
+			if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
+				return;
+			}
+
 			if (!this.blackCellAt(candidateX, this.cursor.y)) {
-				break;
+				if (!jumpToBlank || this.grid[this.cursor.y][candidateX].guess == '-') {
+					break;
+				}
 			}
 		}
 
@@ -1206,13 +1206,15 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse) {
 	else if (direction == 'up') {
 		let candidateY = this.cursor.y - 1;
 
-		if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
-			return;
-		}
-
 		for (candidateY; candidateY >= 0; candidateY--) {
+			if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
+				return;
+			}
+
 			if (!this.blackCellAt(this.cursor.x, candidateY)) {
-				break;
+				if (!jumpToBlank || this.grid[candidateY][this.cursor.x].guess == '-') {
+					break;
+				}
 			}
 		}
 
@@ -1223,13 +1225,15 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse) {
 	else if (direction == 'down') {
 		let candidateY = this.cursor.y + 1;
 
-		if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
-			return;
-		}
-
 		for (candidateY; candidateY < this.grid.length; candidateY++) {
+			if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
+				return;
+			}
+
 			if (!this.blackCellAt(this.cursor.x, candidateY)) {
-				break;
+				if (!jumpToBlank || this.grid[candidateY][this.cursor.x].guess == '-') {
+					break;
+				}
 			}
 		}
 

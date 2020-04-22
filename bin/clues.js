@@ -109,7 +109,7 @@ process.stdin.on('data', function(key) {
 	else if (solverMode.primary == 'insert') {
 		let jumpToBlank = (solverMode.secondary == 'blanks');
 
-		if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-'.includes(key)) {
+		if ('abcdefghijklmnopqrstuvwxyz-'.includes(key)) {
 			puzzle.logGuess(key);
 
 			if (solverMode.secondary == 'one-character') {
@@ -147,26 +147,27 @@ process.stdin.on('data', function(key) {
 				nextCursor = null;
 			}
 		}
-		else if (key == '\u001b\u005b\u0041') {
+		else if (key == 'K' || key == '\u001b\u005b\u0041') {
 			puzzle.moveCursor('up');
 		}
-		else if (key == '\u001b\u005b\u0042') {
+		else if (key == 'J' || key == '\u001b\u005b\u0042') {
 			puzzle.moveCursor('down');
 		}
-		else if (key == '\u001b\u005b\u0043') {
+		else if (key == 'L' || key == '\u001b\u005b\u0043') {
 			puzzle.moveCursor('right');
 		}
-		else if (key == '\u001b\u005b\u0044') {
+		else if (key == 'H' || key == '\u001b\u005b\u0044') {
 			puzzle.moveCursor('left');
 		}
 	}
 
 	if (puzzle.isComplete()) {
-		timer = (new Date()) - timer;
-		timer = Math.floor(timer / 1000);
-		puzzle.tabulateStats();
+		if (solverMode.secondary != 'done') {
+			timer = (new Date()) - timer;
+			timer = Math.floor(timer / 1000);
+			puzzle.tabulateStats();
+		}
 
-		process.stdout.write(RESTORE_CURSOR);
 		puzzle.showSolverState();
 		console.log();
 		puzzle.showMinimaps();
@@ -174,7 +175,8 @@ process.stdin.on('data', function(key) {
 		console.log();
 		console.log('Completed in ' + Util.formatTimer(timer) + '!');
 
-		process.exit();
+		solverMode.primary = 'command';
+		solverMode.secondary = 'done';
 	}
 	else {
 		puzzle.showSolverState();

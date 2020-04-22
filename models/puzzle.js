@@ -1011,7 +1011,6 @@ Puzzle.prototype.showSolverState = function(title) {
 		console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
 		console.log();
 	}
-
 };
 
 Puzzle.prototype.isComplete = function() {

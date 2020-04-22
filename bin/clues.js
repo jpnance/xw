@@ -90,13 +90,16 @@ process.stdin.on('data', function(key) {
 			puzzle.switchDirection();
 		}
 		else if (key == '\x07' || key == '\x1b') {
+			// esc
 			solverMode = 'command';
 		}
 		else if (key == '\x7f') {
+			// backspace
 			puzzle.moveCursor(null, true, true);
 			puzzle.logGuess('-');
 		}
 		else if (key == '\r') {
+			// enter
 			solverMode = 'command';
 
 			if (nextCursor) {

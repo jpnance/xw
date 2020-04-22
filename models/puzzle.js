@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const CLEAR_SCREEN = "\033[2J";
 const RESTORE_CURSOR = "\033[u";
 
 const BACKGROUND_BLACK = "\033[48;5;0m";
@@ -858,10 +859,17 @@ Puzzle.prototype.logDownGuess = function(clue, guess) {
 };
 
 Puzzle.prototype.logGuess = function(guess) {
-	this.grid[this.cursor.y][this.cursor.x].guess = guess.toUpperCase();
+	if (this.grid[this.cursor.y][this.cursor.x].guess != guess.toUpperCase()) {
+		this.grid[this.cursor.y][this.cursor.x].order = ++(this.guessCount);
+		this.grid[this.cursor.y][this.cursor.x].changes += 1;
+		this.grid[this.cursor.y][this.cursor.x].guess = guess.toUpperCase();
+
+		delete this.grid[this.cursor.y][this.cursor.x].incorrect;
+	}
 };
 
 Puzzle.prototype.showSolverState = function(title) {
+	process.stdout.write(CLEAR_SCREEN);
 	process.stdout.write(RESTORE_CURSOR);
 
 	let mode = this.direction;
@@ -869,11 +877,11 @@ Puzzle.prototype.showSolverState = function(title) {
 	let words = null;
 
 	if (mode == 'across') {
-		clue = this.acrosses[this.getClueFor(this.cursor, mode)];
+		clue = this.getClueFor(this.cursor, mode);
 		words = this.getAcrossWord(clue.origin.x, clue.origin.y);
 	}
 	else if (mode == 'down') {
-		clue = this.downs[this.getClueFor(this.cursor, mode)];
+		clue = this.getClueFor(this.cursor, mode);
 		words = this.getDownWord(clue.origin.x, clue.origin.y);
 	}
 
@@ -888,6 +896,19 @@ Puzzle.prototype.showSolverState = function(title) {
 
 	if (this.notes.length > 0) {
 		console.log(Util.formatString(this.notes, this.width * 3, 0));
+		console.log();
+	}
+
+	let clueIndentation = clue.clue.indexOf(' ') + 1;
+
+	if (title) {
+		console.log();
+		console.log();
+		console.log();
+		console.log();
+	}
+	else {
+		console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 3));
 		console.log();
 	}
 
@@ -1128,18 +1149,32 @@ Puzzle.prototype.showMinimaps = function() {
 	}
 };
 
-Puzzle.prototype.moveCursor = function(direction) {
+Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse) {
 	if (!direction) {
 		if (this.direction == 'across') {
-			direction = 'right';
+			if (reverse) {
+				direction = 'left';
+			}
+			else {
+				direction = 'right';
+			}
 		}
 		else if (this.direction == 'down') {
-			direction = 'down';
+			if (reverse) {
+				direction = 'up';
+			}
+			else {
+				direction = 'down';
+			}
 		}
 	}
 
 	if (direction == 'left') {
 		let candidateX = this.cursor.x - 1;
+
+		if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
+			return;
+		}
 
 		for (candidateX; candidateX >= 0; candidateX--) {
 			if (!this.blackCellAt(candidateX, this.cursor.y)) {
@@ -1154,6 +1189,10 @@ Puzzle.prototype.moveCursor = function(direction) {
 	else if (direction == 'right') {
 		let candidateX = this.cursor.x + 1;
 
+		if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
+			return;
+		}
+
 		for (candidateX; candidateX < this.grid[this.cursor.y].length; candidateX++) {
 			if (!this.blackCellAt(candidateX, this.cursor.y)) {
 				break;
@@ -1167,6 +1206,10 @@ Puzzle.prototype.moveCursor = function(direction) {
 	else if (direction == 'up') {
 		let candidateY = this.cursor.y - 1;
 
+		if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
+			return;
+		}
+
 		for (candidateY; candidateY >= 0; candidateY--) {
 			if (!this.blackCellAt(this.cursor.x, candidateY)) {
 				break;
@@ -1179,6 +1222,10 @@ Puzzle.prototype.moveCursor = function(direction) {
 	}
 	else if (direction == 'down') {
 		let candidateY = this.cursor.y + 1;
+
+		if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
+			return;
+		}
 
 		for (candidateY; candidateY < this.grid.length; candidateY++) {
 			if (!this.blackCellAt(this.cursor.x, candidateY)) {
@@ -1194,10 +1241,10 @@ Puzzle.prototype.moveCursor = function(direction) {
 
 Puzzle.prototype.getClueFor = function(position, direction) {
 	if (direction == 'across') {
-		return this.grid[position.y][position.x].clues.across;
+		return this.acrosses[this.grid[position.y][position.x].clues.across];
 	}
 	else if (direction == 'down') {
-		return this.grid[position.y][position.x].clues.down;
+		return this.downs[this.grid[position.y][position.x].clues.down];
 	}
 };
 
@@ -1207,6 +1254,13 @@ Puzzle.prototype.switchDirection = function() {
 	}
 	else if (this.direction = 'down') {
 		this.direction = 'across';
+	}
+};
+
+Puzzle.prototype.moveCursorTo = function(x, y) {
+	if (x >= 0 && x < this.width && y >= 0 && y < this.height && !this.blackCellAt(x, y)) {
+		this.cursor.x = x;
+		this.cursor.y = y;
 	}
 };
 

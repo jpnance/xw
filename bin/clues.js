@@ -24,6 +24,8 @@ if (options.includes('--downs-only')) {
 	downsOnly = true;
 }
 
+let nextCursor;
+
 process.stdin.setRawMode(true);
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
@@ -46,6 +48,11 @@ process.stdin.on('data', function(key) {
 	}
 	else if (solverMode == 'command') {
 		switch (key) {
+			case 'a':
+				puzzle.moveCursor();
+				solverMode = 'insert';
+				break;
+
 			case 'h':
 				puzzle.moveCursor('left');
 				break;
@@ -70,18 +77,54 @@ process.stdin.on('data', function(key) {
 				puzzle.switchDirection();
 				break;
 		}
-
-		puzzle.showSolverState();
 	}
 	else if (solverMode == 'insert') {
-		if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.includes(key)) {
+		if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-'.includes(key)) {
 			puzzle.logGuess(key);
-			puzzle.moveCursor();
-			puzzle.showSolverState();
+			puzzle.moveCursor(null, true);
 		}
-		else if (key == "\x07" || key == "\x1b") {
+		else if (key == '/') {
+			nextCursor = { x: puzzle.cursor.x, y: puzzle.cursor.y };
+		}
+		else if (key == ' ') {
+			puzzle.switchDirection();
+		}
+		else if (key == '\x07' || key == '\x1b') {
 			solverMode = 'command';
 		}
+		else if (key == '\x7f') {
+			puzzle.moveCursor(null, true, true);
+			puzzle.logGuess('-');
+		}
+		else if (key == '\r') {
+			solverMode = 'command';
+
+			if (nextCursor) {
+				puzzle.moveCursorTo(nextCursor.x, nextCursor.y);
+				puzzle.switchDirection();
+
+				nextCursor = null;
+			}
+		}
+	}
+
+	if (puzzle.isComplete()) {
+		timer = (new Date()) - timer;
+		timer = Math.floor(timer / 1000);
+		puzzle.tabulateStats();
+
+		process.stdout.write(RESTORE_CURSOR);
+		puzzle.showSolverState();
+		console.log();
+		puzzle.showMinimaps();
+
+		console.log();
+		console.log('Completed in ' + Util.formatTimer(timer) + '!');
+
+		process.exit();
+	}
+	else {
+		puzzle.showSolverState();
 	}
 });
 

@@ -5,14 +5,36 @@ const CLEAR_SCREEN = "\033[2J";
 const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
 
+const fs = require('fs');
+const path = require('path');
+const readline = require('readline');
+
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
+
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
 
 let options = process.argv.filter(function(option) { return option.startsWith('--'); });
 let nonOptions = process.argv.filter(function(option) { return !option.startsWith('--'); });
 
+let puzFile;
+let puzFilename = nonOptions[nonOptions.length - 1];
+
+try {
+	fs.accessSync(path.resolve('puzzles/', puzFilename));
+} catch (error) {
+	try {
+		let puzFilenames = fs.readdirSync(path.resolve('./puzzles')).filter(filename => filename.length == puzFilename.length + 15 && filename.startsWith(puzFilename)).sort().reverse();
+		puzFilename = puzFilenames[0];
+	} catch (error) {
+	}
+}
+
 let puzzle = new Puzzle();
-puzzle.loadFromFile(nonOptions.pop());
+puzzle.loadFromFile(path.resolve('puzzles/', puzFilename));
 
 let index = 0;
 let timer = null;

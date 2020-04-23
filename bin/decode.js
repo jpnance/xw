@@ -6,164 +6,224 @@ const fs = require('fs');
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
 
-let dateArg = process.argv[2] ? new Date(process.argv[2] + ' 00:00:00') : new Date();
+let cliArgs = {
+	date: new Date(),
+	shortName: null,
+	url: null,
+	strategy: null
+};
 
-let puzzleServices = [
-	// puz files
-	{
-		shortName: 'nyt',
-		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(dateArg, '%b%d%y') + '.puz', // nyt
-		strategy: 'puz',
-		headers: {
-			'Cookie': process.env.NYT_COOKIE
-		}
-	},
-	{
-		shortName: 'wsj',
-		url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(dateArg, '%y%m%d') + '.puz', // wsj
-		strategy: 'puz'
-	},
-	{
-		shortName: 'universal',
-		url: 'http://herbach.dnsalias.com/uc/uc' + Util.dateFormat(dateArg, '%y%m%d') + '.puz', // universal
-		strategy: 'puz'
-	},
+let puzzleServices = [];
 
-	// amuselabs json
-	{
-		shortName: 'lat',
-		parameters: {
-			id: 'tca' + Util.dateFormat(dateArg, '%y%m%d'),
-			set: 'latimes'
-		},
-		url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'wapo-sunday',
-		parameters: {
-			id: 'ebirnholz_' + Util.dateFormat(dateArg, '%y%m%d'),
-			set: 'wapo-eb'
-		},
-		url: 'https://cdn1.amuselabs.com/wapo/crossword', // wapo sunday
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'vox',
-		parameters: {
-			id: 'vox_' + Util.dateFormat(dateArg, '%Y%m%d') + '_1000',
-			set: 'vox'
-		},
-		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'vox',
-		parameters: {
-			id: 'vox_' + Util.dateFormat(dateArg, '%Y%m0%d') + '_1000',
-			set: 'vox'
-		},
-		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox backup because their numbering scheme is insane
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'newsday',
-		parameters: {
-			id: 'Creators_WEB_' + Util.dateFormat(dateArg, '%Y%m%d'),
-			set: 'creatorsweb'
-		},
-		url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'atlantic',
-		parameters: {
-			id: 'atlantic_' + Util.dateFormat(dateArg, '%Y%m%d'),
-			set: 'atlantic'
-		},
-		url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'new-yorker',
-		url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(dateArg, '%Y/%m/%d'),
-		regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,
-		strategy: 'scrape',
-		postScrapeStrategy: 'amuselabs-json'
-	},
-
-	// jsonp
-	{
-		shortName: 'usa-today',
-		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(dateArg, '%Y-%m-%d') + '/data.json', // usa today
-		strategy: 'usa-today-json'
-	},
-
-	// rss feeds
-	{
-		shortName: 'beq',
-		url: 'https://feeds.feedburner.com/BrendanEmmettQuigley--CanIHaveAWordWithYou',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'square-pursuit',
-		url: 'https://squarepursuit.com/feed/',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'tough-as-nails',
-		url: 'https://toughasnails.net/feed/',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'club72',
-		url: 'https://club72.wordpress.com/feed/',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'sids-grids',
-		url: 'https://www.sidsgrids.com/blog-feed.xml',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'cruzzles',
-		url: 'https://cruzzles.blogspot.com/feeds/posts/default',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'grid-therapy',
-		url: 'https://trentevans.com/crosswords/?feed=rss2',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'bywaters',
-		url: 'https://www.davidalfredbywaters.com/blog?format=rss',
-		strategy: 'rss',
-		headers: {
-			'User-Agent': 'Nonzero something.'
-		}
-	},
-	{
-		shortName: 'rossword',
-		url: 'https://rosswordpuzzles.com/feed/',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'arctanxwords',
-		url: 'http://arctanxwords.blogspot.com/feeds/posts/default',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'luckystreak',
-		url: 'https://luckyxwords.blogspot.com/feeds/posts/default',
-		strategy: 'rss'
-	},
-	{
-		shortName: 'datalexic',
-		url: 'http://datalexic.com/feed/',
-		strategy: 'rss'
+process.argv.forEach((argument, i) => {
+	if (i < 2) {
+		return;
 	}
-];
+
+	if (argument == '--date') {
+		cliArgs.date = 'expect';
+	}
+	else if (argument == '--short-name') {
+		cliArgs.shortName = 'expect';
+	}
+	else if (argument == '--url') {
+		cliArgs.url = 'expect';
+	}
+	else if (argument == '--strategy') {
+		cliArgs.strategy = 'expect';
+	}
+	else if (cliArgs.date == 'expect') {
+		cliArgs.date = new Date(argument + ' 00:00:00') || new Date();
+	}
+	else if (cliArgs.shortName == 'expect') {
+		cliArgs.shortName = argument;
+	}
+	else if (cliArgs.url == 'expect') {
+		cliArgs.url = argument;
+	}
+	else if (cliArgs.strategy == 'expect') {
+		cliArgs.strategy = argument;
+	}
+});
+
+if (cliArgs.shortName && cliArgs.url && cliArgs.strategy) {
+	puzzleServices.push({
+		shortName: cliArgs.shortName,
+		url: cliArgs.url,
+		strategy: cliArgs.strategy
+	});
+}
+else {
+	puzzleServices = [
+		// puz files
+		{
+			shortName: 'nyt',
+			url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(cliArgs.date, '%b%d%y') + '.puz', // nyt
+			strategy: 'puz',
+			headers: {
+				'Cookie': process.env.NYT_COOKIE
+			}
+		},
+		{
+			shortName: 'nyt-variety',
+			url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(cliArgs.date, '%b%d%y') + '.2.puz', // nyt-variety
+			strategy: 'puz',
+			headers: {
+				'Cookie': process.env.NYT_COOKIE
+			}
+		},
+		{
+			shortName: 'wsj',
+			url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(cliArgs.date, '%y%m%d') + '.puz', // wsj
+			strategy: 'puz'
+		},
+		{
+			shortName: 'universal',
+			url: 'http://herbach.dnsalias.com/uc/uc' + Util.dateFormat(cliArgs.date, '%y%m%d') + '.puz', // universal
+			strategy: 'puz'
+		},
+
+		// amuselabs json
+		{
+			shortName: 'lat',
+			parameters: {
+				id: 'tca' + Util.dateFormat(cliArgs.date, '%y%m%d'),
+				set: 'latimes'
+			},
+			url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
+			strategy: 'amuselabs-json'
+		},
+		{
+			shortName: 'wapo-sunday',
+			parameters: {
+				id: 'ebirnholz_' + Util.dateFormat(cliArgs.date, '%y%m%d'),
+				set: 'wapo-eb'
+			},
+			url: 'https://cdn1.amuselabs.com/wapo/crossword', // wapo sunday
+			strategy: 'amuselabs-json'
+		},
+		{
+			shortName: 'vox',
+			parameters: {
+				id: 'vox_' + Util.dateFormat(cliArgs.date, '%Y%m%d') + '_1000',
+				set: 'vox'
+			},
+			url: 'https://cdn3.amuselabs.com/vox/crossword', // vox
+			strategy: 'amuselabs-json'
+		},
+		{
+			shortName: 'vox',
+			parameters: {
+				id: 'vox_' + Util.dateFormat(cliArgs.date, '%Y%m0%d') + '_1000',
+				set: 'vox'
+			},
+			url: 'https://cdn3.amuselabs.com/vox/crossword', // vox backup because their numbering scheme is insane
+			strategy: 'amuselabs-json'
+		},
+		{
+			shortName: 'newsday',
+			parameters: {
+				id: 'Creators_WEB_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
+				set: 'creatorsweb'
+			},
+			url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
+			strategy: 'amuselabs-json'
+		},
+		{
+			shortName: 'atlantic',
+			parameters: {
+				id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
+				set: 'atlantic'
+			},
+			url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
+			strategy: 'amuselabs-json'
+		},
+		{
+			shortName: 'new-yorker',
+			url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(cliArgs.date, '%Y/%m/%d'),
+			regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,
+			strategy: 'scrape',
+			postScrapeStrategy: 'amuselabs-json'
+		},
+
+		// jsonp
+		{
+			shortName: 'usa-today',
+			url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(cliArgs.date, '%Y-%m-%d') + '/data.json', // usa today
+			strategy: 'usa-today-json'
+		},
+
+		// rss feeds
+		{
+			shortName: 'beq',
+			url: 'https://feeds.feedburner.com/BrendanEmmettQuigley--CanIHaveAWordWithYou',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'square-pursuit',
+			url: 'https://squarepursuit.com/feed/',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'tough-as-nails',
+			url: 'https://toughasnails.net/feed/',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'club72',
+			url: 'https://club72.wordpress.com/feed/',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'sids-grids',
+			url: 'https://www.sidsgrids.com/blog-feed.xml',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'cruzzles',
+			url: 'https://cruzzles.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'grid-therapy',
+			url: 'https://trentevans.com/crosswords/?feed=rss2',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'bywaters',
+			url: 'https://www.davidalfredbywaters.com/blog?format=rss',
+			strategy: 'rss',
+			headers: {
+				'User-Agent': 'Nonzero something.'
+			}
+		},
+		{
+			shortName: 'rossword',
+			url: 'https://rosswordpuzzles.com/feed/',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'arctanxwords',
+			url: 'http://arctanxwords.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'luckystreak',
+			url: 'https://luckyxwords.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'datalexic',
+			url: 'http://datalexic.com/feed/',
+			strategy: 'rss'
+		},
+		{
+			shortName: 'ptnah',
+			url: 'https://puzzlesthatneedahome.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
+		}
+	];
+}
 
 let servicePromises = [];
 
@@ -176,7 +236,7 @@ function fetchPuzzle(puzzleService) {
 
 	servicePromises.push(new Promise(function(resolve, reject) {
 		try {
-			fs.accessSync('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
+			fs.accessSync('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
 			resolve();
 			return;
 		} catch (error) { }
@@ -272,10 +332,10 @@ function fetchPuzzle(puzzleService) {
 								}
 
 								let puzzleUrl = linkMatch[1];
-								let puzzleGoogleMatch = puzzleUrl.match(/https:\/\/drive\.google\.com\/open\?id=(.*)/);
+								let puzzleGoogleMatch = puzzleUrl.match(/(?:https:\/\/drive\.google\.com\/open\?id=(.*))|(?:https:\/\/drive\.google\.com\/file\/d\/(.*)\/view.*)/);
 
 								if (puzzleGoogleMatch) {
-									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + puzzleGoogleMatch[1];
+									puzzleUrl = 'https://drive.google.com/uc?export=download&id=' + (puzzleGoogleMatch[1] || puzzleGoogleMatch[2]);
 								}
 								else if (puzzleUrl.includes('https://www.dropbox.com/')) {
 									puzzleUrl = puzzleUrl.replace('https://www.dropbox.com/', 'https://dl.dropbox.com/');
@@ -288,6 +348,8 @@ function fetchPuzzle(puzzleService) {
 									strategy: 'puz',
 									headers: puzzleService.headers
 								});
+
+								break; // only be willing to fetch one puzzle per post
 
 								/*
 								delay += 1;
@@ -328,8 +390,8 @@ function fetchPuzzle(puzzleService) {
 					puzzle.loadFromPuzFile(puzFile);
 				}
 
-				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
-				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(dateArg, '%Y-%m-%d')) + '.puz');
+				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
+				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
 			});
 		});
 

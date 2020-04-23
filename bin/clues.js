@@ -101,6 +101,12 @@ process.stdin.on('data', function(key) {
 				puzzle.moveCursor(null, true);
 				break;
 
+			case ':':
+				solverMode.primary = 'last-line';
+				process.stdout.write(':');
+				lastLineCommand = '';
+				break;
+
 			case ' ':
 				puzzle.switchDirection();
 				break;
@@ -160,26 +166,44 @@ process.stdin.on('data', function(key) {
 			puzzle.moveCursor('left');
 		}
 	}
+	else if (solverMode.primary == 'last-line') {
+		if (key == '\r') {
+			solverMode.primary = 'command';
 
-	if (puzzle.isComplete()) {
-		if (solverMode.secondary != 'done') {
-			timer = (new Date()) - timer;
-			timer = Math.floor(timer / 1000);
-			puzzle.tabulateStats();
+			if (lastLineCommand == 'reveal') {
+				puzzle.reveal();
+			}
+			else if (lastLineCommand == 'check') {
+				puzzle.check();
+			}
 		}
-
-		puzzle.showSolverState();
-		console.log();
-		puzzle.showMinimaps();
-
-		console.log();
-		console.log('Completed in ' + Util.formatTimer(timer) + '!');
-
-		solverMode.primary = 'command';
-		solverMode.secondary = 'done';
+		else if ('abcdefghijklmnopqrstuvwxyz'.includes(key)) {
+			lastLineCommand += key;
+			process.stdout.write(key);
+		}
 	}
-	else {
-		puzzle.showSolverState();
+
+	if (solverMode.primary != 'last-line') {
+		if (puzzle.isComplete()) {
+			if (solverMode.secondary != 'done') {
+				timer = (new Date()) - timer;
+				timer = Math.floor(timer / 1000);
+				puzzle.tabulateStats();
+			}
+
+			puzzle.showSolverState();
+			console.log();
+			puzzle.showMinimaps();
+
+			console.log();
+			console.log('Completed in ' + Util.formatTimer(timer) + '!');
+
+			solverMode.primary = 'command';
+			solverMode.secondary = 'done';
+		}
+		else {
+			puzzle.showSolverState();
+		}
 	}
 });
 

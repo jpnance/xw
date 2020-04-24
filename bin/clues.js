@@ -81,6 +81,10 @@ process.stdin.on('data', function(key) {
 			case 'b': // jump to previous answer
 				break;
 
+			case '\r':
+				puzzle.cursorToNextClue();
+				break;
+
 			case 'a':
 				puzzle.moveCursor();
 				solverMode.primary = 'insert';
@@ -178,6 +182,9 @@ process.stdin.on('data', function(key) {
 				puzzle.switchDirection();
 
 				nextCursor = null;
+			}
+			else {
+				puzzle.cursorToNextClue();
 			}
 		}
 		else if (key == 'K' || key == '\u001b\u005b\u0041') {

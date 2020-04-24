@@ -1267,4 +1267,33 @@ Puzzle.prototype.moveCursorTo = function(x, y) {
 	}
 };
 
+Puzzle.prototype.cursorToNextClue = function() {
+	if (this.direction == 'across') {
+		let acrossIndex = this.grid[this.cursor.y][this.cursor.x].clues.across;
+
+		acrossIndex++;
+
+		if (acrossIndex >= this.acrosses.length) {
+			this.switchDirection();
+			this.moveCursorTo(this.downs[0].origin.x, this.downs[0].origin.y);
+		}
+		else {
+			this.moveCursorTo(this.acrosses[acrossIndex].origin.x, this.acrosses[acrossIndex].origin.y);
+		}
+	}
+	else if (this.direction == 'down') {
+		let downIndex = this.grid[this.cursor.y][this.cursor.x].clues.down;
+
+		downIndex++;
+
+		if (downIndex >= this.downs.length) {
+			this.switchDirection();
+			this.moveCursorTo(this.acrosses[0].origin.x, this.acrosses[0].origin.y);
+		}
+		else {
+			this.moveCursorTo(this.downs[downIndex].origin.x, this.downs[downIndex].origin.y);
+		}
+	}
+};
+
 module.exports = Puzzle;

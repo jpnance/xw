@@ -76,9 +76,6 @@ process.stdin.on('data', function(key) {
 		switch (key) {
 			case '^': // jump to beginning of line
 			case '$': // jump to end of line
-			case 'I': // begin editing at beginning of line (or maybe first unfilled square?)
-			case 'w': // jump to next answer
-			case 'b': // jump to previous answer
 				break;
 
 			case '\r':
@@ -92,6 +89,11 @@ process.stdin.on('data', function(key) {
 				solverMode.secondary = 'blanks';
 				break;
 
+			case 'b':
+				puzzle.cursorToPreviousClue();
+				puzzle.cursorToFirstBlank();
+				break;
+
 			case 'h':
 			case '\u001b\u005b\u0044':
 				puzzle.moveCursor('left');
@@ -100,6 +102,12 @@ process.stdin.on('data', function(key) {
 			case 'i':
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'blanks';
+				break;
+
+			case 'I':
+				solverMode.primary = 'insert';
+				solverMode.secondary = 'blanks';
+				puzzle.cursorToFirstBlank();
 				break;
 
 			case 'j':
@@ -125,6 +133,11 @@ process.stdin.on('data', function(key) {
 			case 'R':
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'overwrite';
+				break;
+
+			case 'w':
+				puzzle.cursorToNextClue();
+				puzzle.cursorToFirstBlank();
 				break;
 
 			case 'x':

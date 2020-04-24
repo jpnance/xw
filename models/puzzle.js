@@ -1296,6 +1296,35 @@ Puzzle.prototype.cursorToNextClue = function() {
 	}
 };
 
+Puzzle.prototype.cursorToPreviousClue = function() {
+	if (this.direction == 'across') {
+		let acrossIndex = this.grid[this.cursor.y][this.cursor.x].clues.across;
+
+		acrossIndex--;
+
+		if (acrossIndex < 0) {
+			this.switchDirection();
+			this.moveCursorTo(this.downs[this.downs.length - 1].origin.x, this.downs[this.downs.length - 1].origin.y);
+		}
+		else {
+			this.moveCursorTo(this.acrosses[acrossIndex].origin.x, this.acrosses[acrossIndex].origin.y);
+		}
+	}
+	else if (this.direction == 'down') {
+		let downIndex = this.grid[this.cursor.y][this.cursor.x].clues.down;
+
+		downIndex--;
+
+		if (downIndex < 0) {
+			this.switchDirection();
+			this.moveCursorTo(this.acrosses[this.acrosses.length - 1].origin.x, this.acrosses[this.acrosses.length - 1].origin.y);
+		}
+		else {
+			this.moveCursorTo(this.downs[downIndex].origin.x, this.downs[downIndex].origin.y);
+		}
+	}
+}
+
 Puzzle.prototype.cursorToFirstBlank = function() {
 	let clue = this.getClueFor(this.cursor, this.direction);
 

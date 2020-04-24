@@ -83,6 +83,7 @@ process.stdin.on('data', function(key) {
 
 			case '\r':
 				puzzle.cursorToNextClue();
+				puzzle.cursorToFirstBlank();
 				break;
 
 			case 'a':
@@ -180,11 +181,13 @@ process.stdin.on('data', function(key) {
 			if (nextCursor) {
 				puzzle.moveCursorTo(nextCursor.x, nextCursor.y);
 				puzzle.switchDirection();
+				puzzle.cursorToFirstBlank();
 
 				nextCursor = null;
 			}
 			else {
 				puzzle.cursorToNextClue();
+				puzzle.cursorToFirstBlank();
 			}
 		}
 		else if (key == 'K' || key == '\u001b\u005b\u0041') {

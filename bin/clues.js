@@ -77,7 +77,6 @@ process.stdin.on('data', function(key) {
 			case '^': // jump to beginning of line
 			case '$': // jump to end of line
 			case 'I': // begin editing at beginning of line (or maybe first unfilled square?)
-			case 'R': // begin editing in overwrite mode
 			case 'w': // jump to next answer
 			case 'b': // jump to previous answer
 				break;
@@ -118,6 +117,11 @@ process.stdin.on('data', function(key) {
 				solverMode.secondary = 'one-character';
 				break;
 
+			case 'R':
+				solverMode.primary = 'insert';
+				solverMode.secondary = 'overwrite';
+				break;
+
 			case 'x':
 				puzzle.logGuess('-');
 				puzzle.moveCursor(null, true);
@@ -135,8 +139,6 @@ process.stdin.on('data', function(key) {
 		}
 	}
 	else if (solverMode.primary == 'insert') {
-		let jumpToBlank = (solverMode.secondary == 'blanks');
-
 		if ('abcdefghijklmnopqrstuvwxyz-'.includes(key)) {
 			puzzle.logGuess(key);
 
@@ -144,8 +146,11 @@ process.stdin.on('data', function(key) {
 				solverMode.primary = 'command';
 				solverMode.secondary = null;
 			}
+			else if (solverMode.secondary == 'overwrite') {
+				puzzle.moveCursor(null, true, false, false);
+			}
 			else {
-				puzzle.moveCursor(null, true, false, jumpToBlank);
+				puzzle.moveCursor(null, true, false, true);
 			}
 		}
 		else if (key == '/') {

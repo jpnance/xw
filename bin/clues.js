@@ -39,11 +39,11 @@ puzzle.loadFromFile(path.resolve('puzzles/', puzFilename));
 let timer = null;
 
 let solverMode = {
-	primary: 'titleScreen',
+	primary: 'title-screen',
 	secondary: null
 };
 
-let puzzleOptions = {};
+let puzzleOptions = { title: true };
 
 if (options.includes('--downs-only')) {
 	puzzleOptions.downsOnly = true;
@@ -57,10 +57,7 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', function(key) {
-	if (key == '\x03') {
-		process.exit();
-	}
-	else if (solverMode.primary == 'titleScreen') {
+	if (solverMode.primary == 'title-screen') {
 		switch (key) {
 			case '\r':
 				solverMode.primary = 'command';
@@ -69,6 +66,8 @@ process.stdin.on('data', function(key) {
 				if (puzzleOptions.downsOnly) {
 					puzzle.switchDirection();
 				}
+
+				puzzleOptions.title = false;
 
 				break;
 
@@ -231,7 +230,10 @@ process.stdin.on('data', function(key) {
 		if (key == '\r') {
 			solverMode.primary = 'command';
 
-			if (lastLineCommand == ':reveal') {
+			if (lastLineCommand == ':q') {
+				process.exit();
+			}
+			else if (lastLineCommand == ':reveal') {
 				puzzle.reveal();
 			}
 			else if (lastLineCommand == ':check') {
@@ -289,18 +291,4 @@ process.stdout.write(CLEAR_SCREEN);
 process.stdout.write(CURSOR_POSITION(0, 0));
 process.stdout.write(SAVE_CURSOR);
 
-titleScreen();
-
-function titleScreen() {
-	process.stdout.write(RESTORE_CURSOR);
-	puzzle.showSolverState({ title: true });
-
-	console.log();
-	console.log();
-	console.log();
-	console.log();
-	console.log();
-	console.log();
-
-	console.log('Press ENTER to begin.');
-}
+puzzle.showSolverState(puzzleOptions);

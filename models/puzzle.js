@@ -1024,6 +1024,17 @@ Puzzle.prototype.showSolverState = function(options) {
 		}
 		console.log();
 	}
+	else {
+		console.log();
+		console.log();
+		console.log();
+		console.log();
+		console.log();
+		console.log();
+		console.log();
+
+		console.log('Press ENTER to begin.');
+	}
 };
 
 Puzzle.prototype.isComplete = function() {

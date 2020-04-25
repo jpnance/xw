@@ -51,6 +51,7 @@ if (options.includes('--downs-only')) {
 }
 
 let nextCursor;
+let lastLineCommand;
 
 process.stdin.setRawMode(true);
 process.stdin.resume();
@@ -151,8 +152,12 @@ process.stdin.on('data', function(key) {
 
 			case ':':
 				solverMode.primary = 'last-line';
-				process.stdout.write(':');
-				lastLineCommand = '';
+				lastLineCommand = ':';
+				break;
+
+			case '/':
+				solverMode.primary = 'last-line';
+				lastLineCommand = '/';
 				break;
 
 			case ' ':
@@ -223,16 +228,33 @@ process.stdin.on('data', function(key) {
 		if (key == '\r') {
 			solverMode.primary = 'command';
 
-			if (lastLineCommand == 'reveal') {
+			if (lastLineCommand == ':reveal') {
 				puzzle.reveal();
 			}
-			else if (lastLineCommand == 'check') {
+			else if (lastLineCommand == ':check') {
 				puzzle.check();
 			}
+			else {
+				let lastLineMatch = lastLineCommand.match(/\/(\d\d?\d?)(a|d)?/);
+
+				if (lastLineMatch) {
+					let number = lastLineMatch[1];
+					let direction = null;
+
+					if (lastLineMatch[2] && lastLineMatch[2].toLowerCase() == 'a') {
+						direction = 'across';
+					}
+					else if (lastLineMatch[2] && lastLineMatch[2].toLowerCase() == 'd') {
+						direction = 'down';
+					}
+
+					puzzle.cursorToClue(number, direction);
+					puzzle.cursorToFirstBlank();
+				}
+			}
 		}
-		else if ('abcdefghijklmnopqrstuvwxyz'.includes(key)) {
+		else if ('0123456789abcdefghijklmnopqrstuvwxyz'.includes(key)) {
 			lastLineCommand += key;
-			process.stdout.write(key);
 		}
 	}
 

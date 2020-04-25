@@ -1365,4 +1365,34 @@ Puzzle.prototype.cursorToFirstBlank = function() {
 	}
 };
 
+Puzzle.prototype.cursorToClue = function(number, direction) {
+	direction = direction || this.direction;
+
+	let acrossClue = this.acrosses.find(clue => clue.clue.startsWith(number));
+	let downClue = this.downs.find(clue => clue.clue.startsWith(number));
+	let clue;
+
+	if (acrossClue && !downClue) {
+		clue = acrossClue;
+		direction = 'across';
+	}
+	else if (!acrossClue && downClue) {
+		clue = downClue;
+		direction = 'down';
+	}
+	else if (acrossClue && downClue) {
+		if (direction == 'across') {
+			clue = acrossClue;
+		}
+		else if (direction == 'down') {
+			clue = downClue;
+		}
+	}
+	
+	if (clue) {
+		this.moveCursorTo(clue.origin.x, clue.origin.y);
+		this.direction = direction;
+	}
+};
+
 module.exports = Puzzle;

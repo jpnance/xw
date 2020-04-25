@@ -40,7 +40,8 @@ let timer = null;
 
 let solverMode = {
 	primary: 'title-screen',
-	secondary: null
+	secondary: null,
+	tertiary: null
 };
 
 let puzzleOptions = { title: true };
@@ -163,6 +164,12 @@ process.stdin.on('data', function(key) {
 				lastLineCommand = '/';
 				break;
 
+			case '*':
+				solverMode.primary = 'last-line';
+				solverMode.tertiary = 'command';
+				lastLineCommand = '*';
+				break;
+
 			case ' ':
 				puzzle.switchDirection();
 				break;
@@ -182,6 +189,11 @@ process.stdin.on('data', function(key) {
 			else {
 				puzzle.moveCursor(null, true, false, true);
 			}
+		}
+		else if (key == '*') {
+				solverMode.primary = 'last-line';
+				solverMode.tertiary = 'insert';
+				lastLineCommand = '*';
 		}
 		else if (key == '/') {
 			nextCursor = { x: puzzle.cursor.x, y: puzzle.cursor.y };
@@ -231,7 +243,26 @@ process.stdin.on('data', function(key) {
 		if (key == '\r') {
 			solverMode.primary = 'command';
 
-			if (lastLineCommand == ':q') {
+			if (lastLineCommand.startsWith('*')) {
+				let rebus = lastLineCommand.substring(1);
+
+				solverMode.primary = solverMode.tertiary; // this is a small abuse of the tertiary field but we want to return whence we came
+				solverMode.tertiary = null;
+
+				puzzle.logGuess(rebus);
+
+				if (solverMode.secondary == 'one-character') {
+					solverMode.primary = 'command';
+					solverMode.secondary = null;
+				}
+				else if (solverMode.secondary == 'overwrite') {
+					puzzle.moveCursor(null, true, false, false);
+				}
+				else {
+					puzzle.moveCursor(null, true, false, true);
+				}
+			}
+			else if (lastLineCommand == ':q') {
 				process.exit();
 			}
 			else if (lastLineCommand == ':reveal') {

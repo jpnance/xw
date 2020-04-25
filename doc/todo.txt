@@ -1,4 +1,3 @@
-* Make clues browsable after you're done
 * Save progress
 * "Gridless" mode
 * Metrics minimap

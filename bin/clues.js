@@ -83,6 +83,7 @@ process.stdin.on('data', function(key) {
 				break;
 
 			case 'a':
+			case 'o':
 				puzzle.moveCursor();
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'blanks';

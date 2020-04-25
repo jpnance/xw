@@ -199,7 +199,6 @@ process.stdin.on('data', function(key) {
 				nextCursor = null;
 			}
 			else {
-				puzzle.cursorToNextClue();
 				puzzle.cursorToFirstBlank();
 			}
 		}

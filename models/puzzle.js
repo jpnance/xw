@@ -868,7 +868,9 @@ Puzzle.prototype.logGuess = function(guess) {
 	}
 };
 
-Puzzle.prototype.showSolverState = function(title) {
+Puzzle.prototype.showSolverState = function(options) {
+	options = options || {};
+
 	process.stdout.write(CLEAR_SCREEN);
 	process.stdout.write(RESTORE_CURSOR);
 
@@ -906,7 +908,7 @@ Puzzle.prototype.showSolverState = function(title) {
 		let outputLine2 = '';
 
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (title == 'title') {
+			if (options.title) {
 				outputLine1 += BACKGROUND_WHITE + '   ' + RESET;
 				outputLine2 += BACKGROUND_WHITE + '   ' + RESET;
 			}
@@ -1004,13 +1006,22 @@ Puzzle.prototype.showSolverState = function(title) {
 		console.log(outputLine2);
 	}
 
-	if (!title) {
+	if (!options.title) {
 		let clueIndentation = clue.clue.indexOf(' ') + 1;
 
 		console.log();
 		console.log(words.guess, '(' + words.guess.length + ')');
 		console.log();
-		console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
+
+		if (!options.downsOnly || this.direction == 'down') {
+			console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
+		}
+		else {
+			console.log();
+			console.log();
+			console.log();
+			console.log();
+		}
 		console.log();
 	}
 };

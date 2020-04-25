@@ -44,10 +44,10 @@ let solverMode = {
 	secondary: null
 };
 
-let downsOnly = false;
+let puzzleOptions = {};
 
 if (options.includes('--downs-only')) {
-	downsOnly = true;
+	puzzleOptions.downsOnly = true;
 }
 
 let nextCursor;
@@ -65,7 +65,11 @@ process.stdin.on('data', function(key) {
 			case '\r':
 				solverMode.primary = 'command';
 				timer = new Date();
-				nextClue(downsOnly ? 'down' : 'across');
+
+				if (puzzleOptions.downsOnly) {
+					puzzle.switchDirection();
+				}
+
 				break;
 
 			default:
@@ -240,7 +244,7 @@ process.stdin.on('data', function(key) {
 				puzzle.tabulateStats();
 			}
 
-			puzzle.showSolverState();
+			puzzle.showSolverState(puzzleOptions);
 			console.log();
 			puzzle.showMinimaps();
 
@@ -251,7 +255,7 @@ process.stdin.on('data', function(key) {
 			solverMode.secondary = 'done';
 		}
 		else {
-			puzzle.showSolverState();
+			puzzle.showSolverState(puzzleOptions);
 		}
 	}
 });
@@ -264,7 +268,7 @@ titleScreen();
 
 function titleScreen() {
 	process.stdout.write(RESTORE_CURSOR);
-	puzzle.showSolverState('title');
+	puzzle.showSolverState({ title: true });
 
 	console.log();
 	console.log();
@@ -309,20 +313,6 @@ function nextClue(mode) {
 	process.stdout.write(RESTORE_CURSOR);
 	puzzle.showSolverState(mode);
 	console.log();
-
-	let query = "";
-	let clueIndentation = clue.clue.indexOf(' ') + 1;
-
-	query += words.guess + ' (' + words.answer.length + ') ' + "\n\n";
-
-	if (!downsOnly || mode == 'down') {
-		query += Util.formatString(clue.clue, puzzle.width * 3, clueIndentation, 3) + "\n";
-	}
-	else {
-		query += Util.formatString('', puzzle.width * 3, clueIndentation, 3) + "\n";
-	}
-
-	query += "> ";
 
 	/*
 	rl.question(query, function(input) {

@@ -1395,4 +1395,31 @@ Puzzle.prototype.cursorToClue = function(number, direction) {
 	}
 };
 
+Puzzle.prototype.cursorToFirstSquare = function() {
+	let clue = this.getClueFor(this.cursor, this.direction);
+
+	this.moveCursorTo(clue.origin.x, clue.origin.y);
+};
+
+Puzzle.prototype.cursorToLastSquare = function() {
+	let clue = this.getClueFor(this.cursor, this.direction);
+
+	if (this.direction == 'across') {
+		for (let i = 0; i < this.width; i++) {
+			if (this.blackCellAt(clue.origin.x + i, clue.origin.y)) {
+				this.cursor.x = clue.origin.x + i - 1;
+				return;
+			}
+		}
+	}
+	else if (this.direction == 'down') {
+		for (let i = 0; i < this.height; i++) {
+			if (this.blackCellAt(clue.origin.x, clue.origin.y + i)) {
+				this.cursor.y = clue.origin.y + i - 1;
+				return;
+			}
+		}
+	}
+};
+
 module.exports = Puzzle;

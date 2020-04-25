@@ -78,10 +78,6 @@ process.stdin.on('data', function(key) {
 	}
 	else if (solverMode.primary == 'command') {
 		switch (key) {
-			case '^': // jump to beginning of line
-			case '$': // jump to end of line
-				break;
-
 			case '\r':
 				puzzle.cursorToNextClue();
 				puzzle.cursorToFirstBlank();
@@ -147,6 +143,14 @@ process.stdin.on('data', function(key) {
 			case 'x':
 				puzzle.logGuess('-');
 				puzzle.moveCursor(null, true);
+				break;
+
+			case '^':
+				puzzle.cursorToFirstSquare();
+				break;
+
+			case '$':
+				puzzle.cursorToLastSquare();
 				break;
 
 			case ':':

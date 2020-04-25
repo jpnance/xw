@@ -1004,9 +1004,11 @@ Puzzle.prototype.showSolverState = function(title) {
 		console.log(outputLine2);
 	}
 
-	let clueIndentation = clue.clue.indexOf(' ') + 1;
-
 	if (!title) {
+		let clueIndentation = clue.clue.indexOf(' ') + 1;
+
+		console.log();
+		console.log(words.guess, '(' + words.guess.length + ')');
 		console.log();
 		console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
 		console.log();

@@ -1010,7 +1010,7 @@ Puzzle.prototype.showSolverState = function(options) {
 		let clueIndentation = clue.clue.indexOf(' ') + 1;
 
 		console.log();
-		console.log(words.guess, '(' + words.guess.length + ')');
+		console.log(words.guess, '(' + words.answer.length + ')');
 		console.log();
 
 		if (!options.downsOnly || this.direction == 'down') {

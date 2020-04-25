@@ -14,3 +14,6 @@
 * Clipboard feature
 * Syntax for filling in from the back instead of the front
 * Have I done the puzzle or not?
+* Visuals
+	* Show where an anchor has been dropped
+	* Show a difference between insert mode and command mode

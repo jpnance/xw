@@ -895,6 +895,7 @@ Puzzle.prototype.showSolverState = function(options) {
 			console.log(Util.formatString(''));
 			console.log(Util.formatString(''));
 		}
+
 		console.log(Util.formatString(''));
 	}
 	else {

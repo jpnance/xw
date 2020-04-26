@@ -745,7 +745,6 @@ Puzzle.prototype.logGuess = function(guess) {
 Puzzle.prototype.showSolverState = function(options) {
 	options = options || {};
 
-	process.stdout.write(CLEAR_SCREEN);
 	process.stdout.write(RESTORE_CURSOR);
 
 	let mode = this.direction;
@@ -883,29 +882,29 @@ Puzzle.prototype.showSolverState = function(options) {
 	if (!options.title) {
 		let clueIndentation = clue.clue.indexOf(' ') + 1;
 
-		console.log();
-		console.log(words.guess, '(' + words.answer.length + ')');
-		console.log();
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(words.guess + ' (' + words.answer.length + ')'));
+		console.log(Util.formatString(''));
 
 		if (!options.downsOnly || this.direction == 'down') {
 			console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
 		}
 		else {
-			console.log();
-			console.log();
-			console.log();
-			console.log();
+			console.log(Util.formatString(''));
+			console.log(Util.formatString(''));
+			console.log(Util.formatString(''));
+			console.log(Util.formatString(''));
 		}
-		console.log();
+		console.log(Util.formatString(''));
 	}
 	else {
-		console.log();
-		console.log();
-		console.log();
-		console.log();
-		console.log();
-		console.log();
-		console.log();
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
 
 		console.log('Press ENTER to begin.');
 	}

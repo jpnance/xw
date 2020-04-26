@@ -32,6 +32,10 @@ Util.formatString = function(string, width, indent, padLines) {
 	let line = '';
 	let lines = [];
 
+	width = width || process.stdout.columns;
+	indent = indent || 0;
+	padLines = padLines || 1;
+
 	words.forEach(function(word) {
 		if (line.length + 1 + word.length > width) {
 			lines.push(line);
@@ -51,6 +55,12 @@ Util.formatString = function(string, width, indent, padLines) {
 
 	while (lines.length < padLines) {
 		lines.push('');
+	}
+
+	for (let i = 0; i < lines.length; i++) {
+		if (lines[i].length < width) {
+			lines[i] += ' '.repeat(width - lines[i].length);
+		}
 	}
 
 	return lines.join("\n");

@@ -7,12 +7,6 @@ const RESTORE_CURSOR = "\033[u";
 
 const fs = require('fs');
 const path = require('path');
-const readline = require('readline');
-
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout
-});
 
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
@@ -157,17 +151,20 @@ process.stdin.on('data', function(key) {
 			case ':':
 				solverMode.primary = 'last-line';
 				lastLineCommand = ':';
+				process.stdout.write(key);
 				break;
 
 			case '/':
 				solverMode.primary = 'last-line';
 				lastLineCommand = '/';
+				process.stdout.write(key);
 				break;
 
 			case '*':
 				solverMode.primary = 'last-line';
 				solverMode.tertiary = 'command';
 				lastLineCommand = '*';
+				process.stdout.write(key);
 				break;
 
 			case ' ':
@@ -292,6 +289,7 @@ process.stdin.on('data', function(key) {
 		}
 		else if ('0123456789abcdefghijklmnopqrstuvwxyz'.includes(key)) {
 			lastLineCommand += key;
+			process.stdout.write(key);
 		}
 	}
 

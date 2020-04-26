@@ -3,6 +3,7 @@ const path = require('path');
 
 const CLEAR_SCREEN = "\033[2J";
 const RESTORE_CURSOR = "\033[u";
+const CURSOR_UP = "\033[1A";
 
 const BACKGROUND_BLACK = "\033[48;5;0m";
 const BACKGROUND_WHITE = "\033[48;5;15m";
@@ -897,6 +898,9 @@ Puzzle.prototype.showSolverState = function(options) {
 		}
 
 		console.log(Util.formatString(''));
+		console.log(Util.formatString(''));
+
+		process.stdout.write(CURSOR_UP);
 	}
 	else {
 		console.log(Util.formatString(''));

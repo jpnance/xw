@@ -5,7 +5,7 @@
 * Be able to jot down notes afterwards (and during?)
 * Creator mode
 * "Tournament" mode
-	* No automatic completion
+	* No automatic completion (i.e. it doesn't just tell you when you have everything correct)
 	* Scoring (customizable would be neat!)
 * "Freeform" mode where I can just type letters into a grid sized however I want it
 	* Bonus points if I can make shaded/black squares

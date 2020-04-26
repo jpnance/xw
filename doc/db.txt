@@ -1,0 +1,23 @@
+sources = [
+	{
+		id: 'nyt',
+		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + Util.dateFormat(cliArgs.date, '%b%d%y') + '.puz', // nyt
+		strategy: 'puz',
+		headers: {
+			'Cookie': process.env.NYT_COOKIE
+		}
+	}
+];
+
+puzzles = [
+	{
+		id: <probably magic checksums>,
+		filename: 'nyt-2020-04-15',
+		title: 'NY Times. Wednesday, April 15, 2020',
+		author: 'John-Clark Levin and Jeff Chen / Will Shortz',
+		copyright: '© 2020, The New York Times',
+		date: <April 15th, 2020>,
+		completed: true,
+		time: 123456
+	}
+];

@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 function Util() {
 }
 
@@ -145,6 +148,24 @@ Util.computeChecksum = function(data, checksum, debug) {
 	}
 
 	return checksum;
+};
+
+Util.openJsonFile = function(filename) {
+	let jsonFile;
+
+	try {
+		fs.accessSync(path.resolve(filename), fs.constants.R_OK);
+	} catch (error) {
+		fs.writeFileSync(path.resolve(filename), JSON.stringify([]));
+	}
+
+	jsonFile = fs.readFileSync(path.resolve(filename));
+
+	return JSON.parse(jsonFile);
+};
+
+Util.saveJsonFile = function(filename, data) {
+	fs.writeFileSync(path.resolve(filename), JSON.stringify(data));
 };
 
 module.exports = Util;

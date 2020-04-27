@@ -1311,4 +1311,49 @@ Puzzle.prototype.cursorToLastSquare = function() {
 	}
 };
 
+Puzzle.prototype.checksumSignature = function() {
+	let signature = '';
+
+	signature += ((this.checksum >> 12) & 0xF).toString(16);
+	signature += ((this.checksum >> 8) & 0xF).toString(16);
+	signature += ((this.checksum >> 4) & 0xF).toString(16);
+	signature += ((this.checksum >> 0) & 0xF).toString(16);
+
+	signature += ((this.cibChecksum >> 12) & 0xF).toString(16);
+	signature += ((this.cibChecksum >> 8) & 0xF).toString(16);
+	signature += ((this.cibChecksum >> 4) & 0xF).toString(16);
+	signature += ((this.cibChecksum >> 0) & 0xF).toString(16);
+
+	signature += ((this.maskedHighChecksum >> 28) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 24) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 20) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 16) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 12) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 8) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 4) & 0xF).toString(16);
+	signature += ((this.maskedHighChecksum >> 0) & 0xF).toString(16);
+
+	signature += ((this.maskedLowChecksum >> 28) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 24) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 20) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 16) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 12) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 8) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 4) & 0xF).toString(16);
+	signature += ((this.maskedLowChecksum >> 0) & 0xF).toString(16);
+
+	return signature;
+};
+
+Puzzle.prototype.saveProgress = function() {
+	let puzzleDatabase = Util.openJsonFile(path.resolve(__dirname, '../puzzles.json'));
+	let checksum = this.checksumSignature();
+
+	let puzzle = puzzleDatabase.find(puzzleRecord => puzzleRecord._id == checksum);
+
+	puzzle.complete = true;
+
+	Util.saveJsonFile(path.resolve(__dirname, '../puzzles.json'), puzzleDatabase);
+};
+
 module.exports = Puzzle;

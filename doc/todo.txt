@@ -17,3 +17,6 @@
 * Visuals
 	* Show where an anchor has been dropped
 	* Show a difference between insert mode and command mode
+* String formatting bug when one world is longer than the width window (see: Atlantic 2020-04-28, 1A)
+* Add puzzles to the database when they're downloaded
+* "Are you sure you want to quit?"

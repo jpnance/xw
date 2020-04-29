@@ -259,6 +259,10 @@ process.stdin.on('data', function(key) {
 					puzzle.moveCursor(null, true, false, true);
 				}
 			}
+			else if (lastLineCommand == ':x') {
+				puzzle.saveProgress();
+				process.exit();
+			}
 			else if (lastLineCommand == ':w') {
 				puzzle.saveProgress();
 			}

@@ -20,3 +20,5 @@
 * String formatting bug when one world is longer than the width window (see: Atlantic 2020-04-28, 1A)
 * Add puzzles to the database when they're downloaded
 * "Are you sure you want to quit?"
+* Rebuses didn't work quite right (NYT 2020-04-30)
+* $ doesn't always work correctly?

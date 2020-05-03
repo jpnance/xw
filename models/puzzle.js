@@ -506,6 +506,7 @@ Puzzle.prototype.writeToFile = function(filename) {
 	let solutionOffset = 0x34;
 
 	let circledSquares = false;
+	let rebuses = false;
 
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
@@ -513,6 +514,10 @@ Puzzle.prototype.writeToFile = function(filename) {
 
 			if (this.grid[y][x].circled) {
 				circledSquares = true;
+			}
+
+			if (this.grid[y][x].rebus) {
+				rebuses = true;
 			}
 		}
 	}
@@ -601,6 +606,92 @@ Puzzle.prototype.writeToFile = function(filename) {
 
 		data[gextChecksumOffset] = gextChecksum & 0x00FF;
 		data[gextChecksumOffset + 1] = (gextChecksum & 0xFF00) >> 8;
+
+		data[offset++] = 0x00;
+	}
+
+	if (rebuses) {
+		data[offset++] = 'G'.charCodeAt(0);
+		data[offset++] = 'R'.charCodeAt(0);
+		data[offset++] = 'B'.charCodeAt(0);
+		data[offset++] = 'S'.charCodeAt(0);
+
+		data[offset++] = (this.width * this.height) & 0x00FF;
+		data[offset++] = ((this.width * this.height) & 0xFF00) >> 8;
+
+		let grbsChecksumOffset = offset;
+
+		data[offset++] = 0x00;
+		data[offset++] = 0x00;
+
+		for (let y = 0; y < this.grid.length; y++) {
+			for (let x = 0; x < this.grid[y].length; x++) {
+				if (this.grid[y][x].rebus) {
+					data[offset++] = (1 + this.grid[y][x].rebus.id) & 0xFF;
+				}
+				else {
+					data[offset++] = 0x00;
+				}
+			}
+		}
+
+		let grbsChecksum = Util.computeChecksum(data.slice(grbsChecksumOffset + 2, grbsChecksumOffset + 2 + (this.width * this.height)), 0x0000);
+
+		data[grbsChecksumOffset] = grbsChecksum & 0x00FF;
+		data[grbsChecksumOffset + 1] = (grbsChecksum & 0xFF00) >> 8;
+
+		data[offset++] = 0x00;
+
+		data[offset++] = 'R'.charCodeAt(0);
+		data[offset++] = 'T'.charCodeAt(0);
+		data[offset++] = 'B'.charCodeAt(0);
+		data[offset++] = 'L'.charCodeAt(0);
+
+		let rtblLength = 0;
+
+		for (let y = 0; y < this.grid.length; y++) {
+			for (let x = 0; x < this.grid[y].length; x++) {
+				if (this.grid[y][x].rebus) {
+					rtblLength += 4 + this.grid[y][x].rebus.text.length;
+				}
+			}
+		}
+
+		data[offset++] = (rtblLength) & 0x00FF;
+		data[offset++] = ((rtblLength) & 0xFF00) >> 8;
+
+		let rtblChecksumOffset = offset;
+
+		data[offset++] = 0x00;
+		data[offset++] = 0x00;
+
+		for (let y = 0; y < this.grid.length; y++) {
+			for (let x = 0; x < this.grid[y].length; x++) {
+				if (this.grid[y][x].rebus) {
+					if (this.grid[y][x].rebus.id < 10) {
+						data[offset++] = ' '.charCodeAt(0);
+						data[offset++] = this.grid[y][x].rebus.id.toString().charCodeAt(0);
+					}
+					else {
+						data[offset++] = this.grid[y][x].rebus.id.toString().charCodeAt(0);
+						data[offset++] = this.grid[y][x].rebus.id.toString().charCodeAt(1);
+					}
+
+					data[offset++] = ':'.charCodeAt(0);
+
+					for (let i = 0; i < this.grid[y][x].rebus.text.length; i++) {
+						data[offset++] = this.grid[y][x].rebus.text.charCodeAt(i);
+					}
+
+					data[offset++] = ';'.charCodeAt(0);
+				}
+			}
+		}
+
+		let rtblChecksum = Util.computeChecksum(data.slice(rtblChecksumOffset + 2, rtblChecksumOffset + 2 + (this.width * this.height)), 0x0000);
+
+		data[rtblChecksumOffset] = rtblChecksum & 0x00FF;
+		data[rtblChecksumOffset + 1] = (rtblChecksum & 0xFF00) >> 8;
 
 		data[offset++] = 0x00;
 	}

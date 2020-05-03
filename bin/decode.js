@@ -2,6 +2,7 @@ const dotenv = require('dotenv').config({ path: __dirname + '/../.env' });
 
 const { http, https } = require('follow-redirects');
 const fs = require('fs');
+const path = require('path');
 
 const Util = require('../models/util');
 const Puzzle = require('../models/puzzle');
@@ -45,6 +46,8 @@ process.argv.forEach((argument, i) => {
 		cliArgs.strategy = argument;
 	}
 });
+
+let puzzleDatabase = Util.openJsonFile(path.resolve(__dirname, '../puzzles.json'));
 
 if (cliArgs.shortName && cliArgs.url && cliArgs.strategy) {
 	puzzleServices.push({
@@ -392,6 +395,19 @@ function fetchPuzzle(puzzleService) {
 
 				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
 				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
+
+				let checksum = puzzle.checksumSignature();
+
+				if (!puzzleDatabase.find(puzzleRecord => puzzleRecord._id == checksum)) {
+					puzzleDatabase.push({
+						_id: checksum,
+						filename: filename,
+						title: puzzle.filename,
+						author: puzzle.author,
+						copyright: puzzle.copyright,
+						date: date
+					});
+				}
 			});
 		});
 
@@ -404,5 +420,6 @@ function fetchPuzzle(puzzleService) {
 }
 
 Promise.all(servicePromises).then(() => {
+	Util.saveJsonFile(path.resolve(__dirname, '../puzzles.json'), puzzleDatabase);
 	process.exit();
 });

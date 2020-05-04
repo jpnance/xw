@@ -44,7 +44,7 @@ if (options.includes('--downs-only')) {
 	puzzleOptions.downsOnly = true;
 }
 
-let nextCursor;
+let anchor;
 let lastLineCommand;
 
 process.stdin.setRawMode(true);
@@ -193,7 +193,14 @@ process.stdin.on('data', function(key) {
 				lastLineCommand = '*';
 		}
 		else if (key == '/') {
-			nextCursor = { x: puzzle.cursor.x, y: puzzle.cursor.y };
+			anchor = { x: puzzle.cursor.x, y: puzzle.cursor.y };
+
+			if (puzzle.direction == 'across') {
+				anchor.direction = 'down';
+			}
+			else if (puzzle.direction == 'down') {
+				anchor.directino = 'across';
+			}
 		}
 		else if (key == ' ') {
 			puzzle.switchDirection();
@@ -212,12 +219,12 @@ process.stdin.on('data', function(key) {
 			// enter
 			solverMode.primary = 'command';
 
-			if (nextCursor) {
-				puzzle.moveCursorTo(nextCursor.x, nextCursor.y);
-				puzzle.switchDirection();
+			if (anchor) {
+				puzzle.moveCursorTo(anchor.x, anchor.y);
+				puzzle.switchDirection(anchor.direction);
 				puzzle.cursorToFirstBlank();
 
-				nextCursor = null;
+				anchor = null;
 			}
 			else {
 				puzzle.cursorToFirstBlank();

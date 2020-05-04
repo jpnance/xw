@@ -1244,8 +1244,11 @@ Puzzle.prototype.getClueFor = function(position, direction) {
 	}
 };
 
-Puzzle.prototype.switchDirection = function() {
-	if (this.direction == 'across') {
+Puzzle.prototype.switchDirection = function(direction) {
+	if (direction) {
+		this.direction = direction;
+	}
+	else if (this.direction == 'across') {
 		this.direction = 'down';
 	}
 	else if (this.direction = 'down') {

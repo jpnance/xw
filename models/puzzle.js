@@ -1385,20 +1385,24 @@ Puzzle.prototype.cursorToLastSquare = function() {
 	let clue = this.getClueFor(this.cursor, this.direction);
 
 	if (this.direction == 'across') {
-		for (let i = 0; i < this.width; i++) {
-			if (this.blackCellAt(clue.origin.x + i, clue.origin.y)) {
-				this.cursor.x = clue.origin.x + i - 1;
+		for (let i = this.cursor.x; i < this.width; i++) {
+			if (this.blackCellAt(i, clue.origin.y)) {
+				this.cursor.x = i - 1;
 				return;
 			}
 		}
+
+		this.cursor.x = this.width - 1;
 	}
 	else if (this.direction == 'down') {
-		for (let i = 0; i < this.height; i++) {
-			if (this.blackCellAt(clue.origin.x, clue.origin.y + i)) {
-				this.cursor.y = clue.origin.y + i - 1;
+		for (let i = this.cursor.y; i < this.height; i++) {
+			if (this.blackCellAt(clue.origin.x, i)) {
+				this.cursor.y = i - 1;
 				return;
 			}
 		}
+
+		this.cursor.y = this.height - 1;
 	}
 };
 

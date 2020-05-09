@@ -224,6 +224,11 @@ else {
 			shortName: 'ptnah',
 			url: 'https://puzzlesthatneedahome.blogspot.com/feeds/posts/default',
 			strategy: 'rss'
+		},
+		{
+			shortName: 'grids-these-days',
+			url: 'http://gridsthesedays.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
 		}
 	];
 }

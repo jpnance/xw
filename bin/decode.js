@@ -229,6 +229,11 @@ else {
 			shortName: 'grids-these-days',
 			url: 'http://gridsthesedays.blogspot.com/feeds/posts/default',
 			strategy: 'rss'
+		},
+		{
+			shortName: 'happy-little-puzzles',
+			url: 'https://www.happylittlepuzzles.com/blog-feed.xml',
+			strategy: 'rss'
 		}
 	];
 }
@@ -329,7 +334,7 @@ function fetchPuzzle(puzzleService) {
 						let linkMatch;
 
 						while ((linkMatch = linkRegexp.exec(entryMatch[1])) !== null) {
-							if (linkMatch[2].match(/(^puz$)|(^PUZ$)|(\.puz)|( PUZ )|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
+							if (linkMatch[2].match(/(^puz$)|(^PUZ$)|(\.puz)|( PUZ )|(<.*?>puz<.*?>)|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
 								let entryDate = new Date();
 
 								let dateRegexp = /<(?:pubDate|published)>(.*?)<\/(?:pubDate|published)>/;

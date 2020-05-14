@@ -234,6 +234,11 @@ else {
 			shortName: 'happy-little-puzzles',
 			url: 'https://www.happylittlepuzzles.com/blog-feed.xml',
 			strategy: 'rss'
+		},
+		{
+			shortName: 'brain-candy',
+			url: 'https://amandarafkin.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
 		}
 	];
 }

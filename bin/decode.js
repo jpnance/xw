@@ -248,6 +248,10 @@ let servicePromises = [];
 puzzleServices.forEach(fetchPuzzle);
 
 function fetchPuzzle(puzzleService) {
+	if (cliArgs.shortName && cliArgs.shortName != puzzleService.shortName) {
+		return;
+	}
+
 	if (!['puz', 'amuselabs-json', 'usa-today-json', 'rss', 'scrape'].includes(puzzleService.strategy)) {
 		return;
 	}

@@ -199,7 +199,7 @@ process.stdin.on('data', function(key) {
 				anchor.direction = 'down';
 			}
 			else if (puzzle.direction == 'down') {
-				anchor.directino = 'across';
+				anchor.direction = 'across';
 			}
 		}
 		else if (key == ' ') {

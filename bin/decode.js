@@ -412,21 +412,25 @@ function fetchPuzzle(puzzleService) {
 					puzzle.loadFromPuzFile(puzFile);
 				}
 
-				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
-				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + (puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d')) + '.puz');
+				let useDate = puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d');
+
+				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + useDate + '.puz');
+				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + useDate + '.puz');
 
 				let checksum = puzzle.checksumSignature();
 
 				if (!puzzleDatabase.find(puzzleRecord => puzzleRecord._id == checksum)) {
 					puzzleDatabase.push({
 						_id: checksum,
-						filename: filename,
+						filename: puzzle.filename,
 						title: puzzle.filename,
 						author: puzzle.author,
 						copyright: puzzle.copyright,
-						date: date
+						date: useDate
 					});
 				}
+
+				resolve();
 			});
 		});
 

@@ -173,7 +173,7 @@ process.stdin.on('data', function(key) {
 		}
 	}
 	else if (solverMode.primary == 'insert') {
-		if ('abcdefghijklmnopqrstuvwxyz-'.includes(key)) {
+		if ('0123456789abcdefghijklmnopqrstuvwxyz-'.includes(key)) {
 			puzzle.logGuess(key);
 
 			if (solverMode.secondary == 'one-character') {

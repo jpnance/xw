@@ -371,20 +371,7 @@ function fetchPuzzle(puzzleService) {
 									headers: puzzleService.headers
 								});
 
-								break; // only be willing to fetch one puzzle per post
-
-								/*
-								delay += 1;
-
-								setTimeout(function() {
-									fetchPuzzle({
-										shortName: puzzleService.shortName,
-										url: puzzleUrl,
-										date: Util.dateFormat(entryDate, '%Y-%m-%d'),
-										strategy: 'puz'
-									});
-								}, 5000 * delay);
-								*/
+								break; // only be willing to fetch one puzzle per post (for now)
 							}
 						}
 					}

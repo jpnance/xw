@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const CURSOR_POSITION = (x, y) => { return "\033[" + x + ";" + y + "H"; };
+const CURSOR_LEFT = "\033[1D";
 const CLEAR_SCREEN = "\033[2J";
 const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
@@ -304,6 +305,12 @@ process.stdin.on('data', function(key) {
 		else if ('0123456789abcdefghijklmnopqrstuvwxyz'.includes(key)) {
 			lastLineCommand += key;
 			process.stdout.write(key);
+		}
+		else if (key.charCodeAt(0) == 127) {
+			lastLineCommand = lastLineCommand.substring(0, lastLineCommand.length - 1);
+			process.stdout.write(CURSOR_LEFT);
+			process.stdout.write(' ');
+			process.stdout.write(CURSOR_LEFT);
 		}
 	}
 

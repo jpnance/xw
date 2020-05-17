@@ -243,6 +243,14 @@ process.stdin.on('data', function(key) {
 		else if (key == 'H' || key == '\u001b\u005b\u0044') {
 			puzzle.moveCursor('left');
 		}
+		else if (key == 'W') {
+			puzzle.cursorToNextClue();
+			puzzle.cursorToFirstBlank();
+		}
+		else if (key == 'B') {
+			puzzle.cursorToPreviousClue();
+			puzzle.cursorToFirstBlank();
+		}
 	}
 	else if (solverMode.primary == 'last-line') {
 		if (key == '\r') {

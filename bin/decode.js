@@ -142,6 +142,15 @@ else {
 			strategy: 'amuselabs-json'
 		},
 		{
+			shortName: 'lat-mini',
+			parameters: {
+				id: 'latimes-mini-' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
+				set: 'latimes-mini'
+			},
+			url: 'https://cdn4.amuselabs.com/lat/crossword',
+			strategy: 'amuselabs-json'
+		},
+		{
 			shortName: 'new-yorker',
 			url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(cliArgs.date, '%Y/%m/%d'),
 			regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,

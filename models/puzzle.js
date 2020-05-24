@@ -341,11 +341,11 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		let downClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && !element.acrossNotDown);
 
 		if (acrossClue) {
-			this.clues.push(acrossClue.clue.clue);
+			this.clues.push(acrossClue.clue.clue.replace('’', '\''));
 		}
 
 		if (downClue) {
-			this.clues.push(downClue.clue.clue);
+			this.clues.push(downClue.clue.clue.replace('’', '\''));
 		}
 	}
 

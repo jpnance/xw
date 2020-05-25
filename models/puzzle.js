@@ -303,13 +303,26 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		this.grid[i] = [];
 	}
 
+	let rebuses = [];
+
 	jsonPuzzle.box.forEach((boxRow, x) => {
 		boxRow.forEach((boxRowChar, y) => {
 			if (boxRowChar == '\u0000') {
 				this.grid[y].push({ answer: '.' });
 			}
 			else {
-				this.grid[y].push({ answer: boxRowChar });
+				if (boxRowChar.length > 1) {
+					if (!rebuses.includes(boxRowChar)) {
+						rebuses.push(boxRowChar);
+					}
+
+					let rebusId = rebuses.indexOf(boxRowChar);
+
+					this.grid[y].push({ answer: boxRowChar, rebus: { id: rebusId, text: boxRowChar } });
+				}
+				else {
+					this.grid[y].push({ answer: boxRowChar });
+				}
 			}
 
 			if (jsonPuzzle.cellInfos) {

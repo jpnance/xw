@@ -20,3 +20,6 @@
 * String formatting bug when one world is longer than the width window (see: Atlantic 2020-04-28, 1A)
 * "Are you sure you want to quit?"
 * Maybe split the timer at 25% correct, 50% correct, etc. (or even more granular?)
+* decode.js can't handle multiple puzzles on the same day from blog
+* decode.js needs to be able to scrape recursively (this just implies changing postScrapeStrategy into its own puzzleServicey object)
+* Change 0x19 (half of a weird smartquote character) in all puzzles to 0x27 (normal ')

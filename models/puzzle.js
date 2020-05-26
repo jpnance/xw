@@ -356,6 +356,7 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		if (acrossClue) {
 			let clue = acrossClue.clue.clue;
 
+			clue = clue.replace('‘', '\'');
 			clue = clue.replace('’', '\'');
 			clue = clue.replace('“', '"');
 			clue = clue.replace('”', '"');
@@ -366,6 +367,7 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		if (downClue) {
 			let clue = downClue.clue.clue;
 
+			clue = clue.replace('‘', '\'');
 			clue = clue.replace('’', '\'');
 			clue = clue.replace('“', '"');
 			clue = clue.replace('”', '"');

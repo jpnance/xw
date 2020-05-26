@@ -354,11 +354,23 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		let downClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && !element.acrossNotDown);
 
 		if (acrossClue) {
-			this.clues.push(acrossClue.clue.clue.replace('’', '\''));
+			let clue = acrossClue.clue.clue;
+
+			clue = clue.replace('’', '\'');
+			clue = clue.replace('“', '"');
+			clue = clue.replace('”', '"');
+
+			this.clues.push(clue);
 		}
 
 		if (downClue) {
-			this.clues.push(downClue.clue.clue.replace('’', '\''));
+			let clue = downClue.clue.clue;
+
+			clue = clue.replace('’', '\'');
+			clue = clue.replace('“', '"');
+			clue = clue.replace('”', '"');
+
+			this.clues.push(clue);
 		}
 	}
 

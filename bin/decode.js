@@ -248,6 +248,11 @@ else {
 			shortName: 'brain-candy',
 			url: 'https://amandarafkin.blogspot.com/feeds/posts/default',
 			strategy: 'rss'
+		},
+		{
+			shortName: 'bewilderingly',
+			url: 'http://blog.bewilderinglypuzzles.com/feeds/posts/default',
+			strategy: 'rss'
 		}
 	];
 }

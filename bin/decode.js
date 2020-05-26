@@ -253,6 +253,11 @@ else {
 			shortName: 'bewilderingly',
 			url: 'http://blog.bewilderinglypuzzles.com/feeds/posts/default',
 			strategy: 'rss'
+		},
+		{
+			shortName: 'southern-crosswords',
+			url: 'https://southerncrosswords.blogspot.com/feeds/posts/default',
+			strategy: 'rss'
 		}
 	];
 }
@@ -357,7 +362,7 @@ function fetchPuzzle(puzzleService) {
 						let linkMatch;
 
 						while ((linkMatch = linkRegexp.exec(entryMatch[1])) !== null) {
-							if (linkMatch[2].match(/(^puz$)|(^PUZ$)|(\.puz)|( PUZ )|(<.*?>puz<.*?>)|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
+							if (linkMatch[2].match(/(^puz$)|(^PUZ$)|(\.puz)|( PUZ )|(<.*?>puz<.*?>)|(download puz)|(Across Lite)|(ACROSS LITE)/) && linkMatch[1].match(/(drive\.google\.com)|(\.puz)/)) {
 								let entryDate = new Date();
 
 								let dateRegexp = /<(?:pubDate|published)>(.*?)<\/(?:pubDate|published)>/;

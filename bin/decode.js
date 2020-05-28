@@ -158,6 +158,17 @@ else {
 			postScrapeStrategy: 'amuselabs-json'
 		},
 
+		// amuselabs widget
+		{
+			shortName: 'daily-beast',
+			parameters: {
+				set: 'tdb'
+			},
+			url: 'https://cdn3.amuselabs.com/tdb/date-picker',
+			nextUrl: 'https://cdn3.amuselabs.com/tdb/crossword',
+			strategy: 'amuselabs-widget'
+		},
+
 		// jsonp
 		{
 			shortName: 'usa-today',
@@ -271,7 +282,7 @@ function fetchPuzzle(puzzleService) {
 		return;
 	}
 
-	if (!['puz', 'amuselabs-json', 'usa-today-json', 'rss', 'scrape'].includes(puzzleService.strategy)) {
+	if (!['puz', 'amuselabs-json', 'amuselabs-widget', 'usa-today-json', 'rss', 'scrape'].includes(puzzleService.strategy)) {
 		return;
 	}
 
@@ -340,6 +351,38 @@ function fetchPuzzle(puzzleService) {
 					}
 
 					puzzle.loadFromAmuseLabsJson(JSON.parse(Buffer.from(encodedPuzzle[1], 'base64').toString('utf-8')));
+				}
+				else if (puzzleService.strategy == 'amuselabs-widget') {
+					body = body.replace(/\r\n/g, '');
+					body = body.replace(/\n/g, '');
+					body = body.replace(/&lt;/g, '<');
+					body = body.replace(/&gt;/g, '>');
+					body = body.replace(/&amp;/g, '&');
+					body = body.replace(/&amp;/g, '&');
+					body = body.replace(/&quot;/g, '"');
+
+					let puzzleIdRegexp = /<li data-id="(.*?)".*?>(.*?)<\/li>/g;
+					let puzzleIdMatch;
+
+					while ((puzzleIdMatch = puzzleIdRegexp.exec(body)) !== null) {
+						let dateRegexp = /<strong>(.*?)<\/strong>/;
+						let dateMatch;
+
+						dateMatch = dateRegexp.exec(puzzleIdMatch[0]);
+
+						fetchPuzzle({
+							shortName: puzzleService.shortName,
+							parameters: {
+								id: puzzleIdMatch[1],
+								set: puzzleService.parameters.set
+							},
+							url: puzzleService.nextUrl,
+							date: Util.dateFormat(new Date(dateMatch[1]), '%Y-%m-%d'),
+							strategy: 'amuselabs-json'
+						});
+					}
+
+					return;
 				}
 				else if (puzzleService.strategy == 'usa-today-json') {
 					puzzle.loadFromUsaTodayJson(JSON.parse(body));

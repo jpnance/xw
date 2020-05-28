@@ -382,13 +382,15 @@ function fetchPuzzle(puzzleService) {
 									puzzleUrl = puzzleUrl.replace('https://www.dropbox.com/', 'https://dl.dropbox.com/');
 								}
 
-								fetchPuzzle({
-									shortName: puzzleService.shortName,
-									url: puzzleUrl,
-									date: Util.dateFormat(entryDate, '%Y-%m-%d'),
-									strategy: 'puz',
-									headers: puzzleService.headers
-								});
+								if (!puzzleDatabase.find(puzzleRecord => puzzleRecord.filename == (puzzleService.shortName + '-' + Util.dateFormat(entryDate, '%Y-%m-%d') + '.puz'))) {
+									fetchPuzzle({
+										shortName: puzzleService.shortName,
+										url: puzzleUrl,
+										date: Util.dateFormat(entryDate, '%Y-%m-%d'),
+										strategy: 'puz',
+										headers: puzzleService.headers
+									});
+								}
 
 								break; // only be willing to fetch one puzzle per post (for now)
 							}

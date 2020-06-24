@@ -465,7 +465,7 @@ function fetchPuzzle(puzzleService) {
 
 				let useDate = puzzleService.date || Util.dateFormat(cliArgs.date, '%Y-%m-%d');
 
-				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzleService.shortName + '-' + useDate + '.puz');
+				console.log('\x1b[32m\u2713\x1b[0m ' + puzzleService.shortName + ': ' + puzzle.title + ' / ' + puzzle.author + ' / ' + puzzleService.shortName + '-' + useDate + '.puz');
 				puzzle.writeToFile('puzzles/' + puzzleService.shortName + '-' + useDate + '.puz');
 
 				let checksum = puzzle.checksumSignature();

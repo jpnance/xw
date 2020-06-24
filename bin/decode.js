@@ -152,7 +152,7 @@ else {
 		},
 		{
 			shortName: 'new-yorker',
-			url: 'https://www.newyorker.com/crossword/puzzles-dept/' + Util.dateFormat(cliArgs.date, '%Y/%m/%d'),
+			url: 'https://www.newyorker.com/puzzles-and-games-dept/crossword/' + Util.dateFormat(cliArgs.date, '%Y/%m/%d'),
 			regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,
 			strategy: 'scrape',
 			postScrapeStrategy: 'amuselabs-json'

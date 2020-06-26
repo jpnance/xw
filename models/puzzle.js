@@ -217,7 +217,8 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 				let clue = this.clues[this.acrosses.length + this.downs.length];
 
 				this.acrosses.push({
-					clue: clueNumber + '. ' + clue,
+					number: clueNumber,
+					clue: clue,
 					origin: { x: x, y: y }
 				});
 
@@ -228,7 +229,8 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 				let clue = this.clues[this.acrosses.length + this.downs.length];
 
 				this.downs.push({
-					clue: clueNumber + '. ' + clue,
+					number: clueNumber,
+					clue: clue,
 					origin: { x: x, y: y }
 				});
 
@@ -999,14 +1001,14 @@ Puzzle.prototype.showSolverState = function(options) {
 	}
 
 	if (!options.title) {
-		let clueIndentation = clue.clue.indexOf(' ') + 1;
+		let clueIndentation = clue.number.toString().length + 2;
 
 		console.log(Util.formatString(''));
 		console.log(Util.formatString(words.guess + ' (' + words.answer.length + ')'));
 		console.log(Util.formatString(''));
 
 		if (!options.downsOnly || this.direction == 'down') {
-			console.log(Util.formatString(clue.clue, this.width * 3, clueIndentation, 4));
+			console.log(Util.formatString(clue.number + '. ' + clue.clue, this.width * 3, clueIndentation, 4));
 		}
 		else {
 			console.log(Util.formatString(''));
@@ -1378,8 +1380,8 @@ Puzzle.prototype.cursorToFirstBlank = function() {
 Puzzle.prototype.cursorToClue = function(number, direction) {
 	direction = direction || this.direction;
 
-	let acrossClue = this.acrosses.find(clue => clue.clue.startsWith(number));
-	let downClue = this.downs.find(clue => clue.clue.startsWith(number));
+	let acrossClue = this.acrosses.find(clue => clue.number == number);
+	let downClue = this.downs.find(clue => clue.number == number);
 	let clue;
 
 	if (acrossClue && !downClue) {

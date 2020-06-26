@@ -80,6 +80,10 @@ process.stdin.on('data', function(key) {
 
 			case 'a':
 			case 'o':
+				if (puzzle.isComplete()) {
+					break;
+				}
+
 				puzzle.moveCursor();
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'blanks';
@@ -96,11 +100,19 @@ process.stdin.on('data', function(key) {
 				break;
 
 			case 'i':
+				if (puzzle.isComplete()) {
+					break;
+				}
+
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'blanks';
 				break;
 
 			case 'I':
+				if (puzzle.isComplete()) {
+					break;
+				}
+
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'blanks';
 				puzzle.cursorToFirstBlank();
@@ -122,11 +134,19 @@ process.stdin.on('data', function(key) {
 				break;
 
 			case 'r':
+				if (puzzle.isComplete()) {
+					break;
+				}
+
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'one-character';
 				break;
 
 			case 'R':
+				if (puzzle.isComplete()) {
+					break;
+				}
+
 				solverMode.primary = 'insert';
 				solverMode.secondary = 'overwrite';
 				break;
@@ -137,6 +157,10 @@ process.stdin.on('data', function(key) {
 				break;
 
 			case 'x':
+				if (puzzle.isComplete()) {
+					break;
+				}
+
 				puzzle.logGuess('-');
 				puzzle.moveCursor(null, true);
 				break;

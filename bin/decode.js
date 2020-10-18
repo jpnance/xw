@@ -135,7 +135,7 @@ else {
 		{
 			shortName: 'atlantic',
 			parameters: {
-				id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
+				id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d', -1),
 				set: 'atlantic'
 			},
 			url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic

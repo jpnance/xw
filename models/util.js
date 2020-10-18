@@ -69,15 +69,16 @@ Util.formatString = function(string, width, indent, padLines) {
 	return lines.join("\n");
 };
 
-Util.dateFormat = function(date, format) {
+Util.dateFormat = function(date, format, adjustment) {
 	let output = format;
+	let localDate = new Date(date);
 
-	if (!date) {
-		date = new Date();
+	if (adjustment != undefined) {
+		localDate.setDate(localDate.getDate() + adjustment);
 	}
 
 	if (output.includes('%b')) {
-		let month = date.getMonth();
+		let month = localDate.getMonth();
 		let monthString;
 
 		if (month == 0) {
@@ -120,10 +121,10 @@ Util.dateFormat = function(date, format) {
 		output = output.replace('%b', monthString);
 	}
 
-	output = output.replace('%d', (date.getDate() < 10 ? '0' : '') + date.getDate());
-	output = output.replace('%m', (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1));
-	output = output.replace('%y', date.getFullYear().toString().substring(2));
-	output = output.replace('%Y', date.getFullYear());
+	output = output.replace('%d', (localDate.getDate() < 10 ? '0' : '') + localDate.getDate());
+	output = output.replace('%m', (localDate.getMonth() < 9 ? '0' : '') + (localDate.getMonth() + 1));
+	output = output.replace('%y', localDate.getFullYear().toString().substring(2));
+	output = output.replace('%Y', localDate.getFullYear());
 
 	return output;
 };

@@ -1524,8 +1524,12 @@ Puzzle.prototype.weighAnchor = function() {
 		this.moveCursorTo(this.anchor.x, this.anchor.y);
 		this.switchDirection(this.anchor.direction);
 
-		this.anchor = null;
+		this.removeAnchor();
 	}
+};
+
+Puzzle.prototype.removeAnchor = function() {
+	this.anchor = null;
 };
 
 module.exports = Puzzle;

@@ -230,6 +230,7 @@ process.stdin.on('data', function(key) {
 		else if (key == '\x07' || key == '\x1b') {
 			// esc
 			solverMode.primary = 'command';
+			puzzle.removeAnchor();
 		}
 		else if (key == '\x7f') {
 			// backspace

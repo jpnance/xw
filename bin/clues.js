@@ -356,7 +356,7 @@ process.stdin.on('data', function(key) {
 
 			puzzle.showSolverState(puzzleOptions);
 			console.log(Util.formatString(''));
-			puzzle.showMinimaps();
+			puzzle.showMinimaps(puzzleOptions);
 
 			console.log(Util.formatString(''));
 			console.log('Completed in ' + Util.formatTimer(timer) + '!');
@@ -368,7 +368,7 @@ process.stdin.on('data', function(key) {
 			puzzle.tabulateStats();
 			puzzle.showSolverState(puzzleOptions);
 			console.log(Util.formatString(''));
-			puzzle.showMinimaps();
+			puzzle.showMinimaps(puzzleOptions);
 		}
 	}
 });
@@ -378,3 +378,4 @@ process.stdout.write(CURSOR_POSITION(0, 0));
 process.stdout.write(SAVE_CURSOR);
 
 puzzle.showSolverState(puzzleOptions);
+puzzle.showMinimaps(puzzleOptions);

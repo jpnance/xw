@@ -1208,7 +1208,7 @@ Puzzle.prototype.tabulateStats = function() {
 	}
 };
 
-Puzzle.prototype.showMinimaps = function() {
+Puzzle.prototype.showMinimaps = function(options) {
 	process.stdout.write(SAVE_CURSOR);
 
 	let changesLine = '';
@@ -1219,7 +1219,11 @@ Puzzle.prototype.showMinimaps = function() {
 		orderLine = '';
 
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (this.grid[y][x].answer == '.') {
+			if (options.solverMode.primary == 'title-screen') {
+				changesLine += BACKGROUND_WHITE;
+				orderLine += BACKGROUND_WHITE;
+			}
+			else if (this.grid[y][x].answer == '.') {
 				changesLine += BACKGROUND_BLACK;
 				orderLine += BACKGROUND_BLACK;
 			}

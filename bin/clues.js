@@ -355,17 +355,20 @@ process.stdin.on('data', function(key) {
 			}
 
 			puzzle.showSolverState(puzzleOptions);
-			console.log();
+			console.log(Util.formatString(''));
 			puzzle.showMinimaps();
 
-			console.log();
+			console.log(Util.formatString(''));
 			console.log('Completed in ' + Util.formatTimer(timer) + '!');
 
 			puzzleOptions.solverMode.primary = 'command';
 			puzzleOptions.solverMode.secondary = 'done';
 		}
 		else {
+			puzzle.tabulateStats();
 			puzzle.showSolverState(puzzleOptions);
+			console.log(Util.formatString(''));
+			puzzle.showMinimaps();
 		}
 	}
 });

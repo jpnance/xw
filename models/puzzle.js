@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
+const CURSOR_POSITION = (x, y) => { return "\033[" + y + ";" + x + "H"; };
 const CLEAR_SCREEN = "\033[2J";
+const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
 const CURSOR_UP = "\033[1A";
 
@@ -18,6 +20,7 @@ const BACKGROUND_GOLD = "\033[48;5;220m";
 const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
 const BACKGROUND_LIGHT_GOLDENROD = "\033[48;5;227m";
 const BACKGROUND_CORN_SILK_1 = "\033[48;5;230m";
+const BACKGROUND_GRAY_79 = "\033[48;5;251m";
 const BACKGROUND_GRAY_85 = "\033[48;5;253m";
 const BACKGROUND_GRAY_89 = "\033[48;5;254m";
 const BACKGROUND_GRAY_93 = "\033[48;5;255m";
@@ -33,6 +36,7 @@ const FOREGROUND_GOLD = "\033[38;5;220m";
 const FOREGROUND_LIGHT_GOLDENROD = "\033[38;5;227m";
 const FOREGROUND_GRAY_58 = "\033[38;5;246m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
+const FOREGROUND_GRAY_89 = "\033[38;5;255m";
 
 const BOLD = "\x1b[1m";
 const RESET = "\x1b[0m";
@@ -892,7 +896,7 @@ Puzzle.prototype.logGuess = function(guess) {
 Puzzle.prototype.showSolverState = function(options) {
 	options = options || {};
 
-	process.stdout.write(RESTORE_CURSOR);
+	process.stdout.write(CURSOR_POSITION(1, 1));
 
 	let mode = this.direction;
 	let thisClue = null;
@@ -1205,6 +1209,8 @@ Puzzle.prototype.tabulateStats = function() {
 };
 
 Puzzle.prototype.showMinimaps = function() {
+	process.stdout.write(SAVE_CURSOR);
+
 	let changesLine = '';
 	let orderLine = '';
 
@@ -1222,7 +1228,7 @@ Puzzle.prototype.showMinimaps = function() {
 				orderLine += BACKGROUND_RED;
 			}
 			else {
-				if (this.grid[y][x].changes == 1) {
+				if (this.grid[y][x].changes <= 1) {
 					changesLine += BACKGROUND_WHITE;
 				}
 				else if (this.grid[y][x].changes == 2) {
@@ -1232,7 +1238,7 @@ Puzzle.prototype.showMinimaps = function() {
 					changesLine += BACKGROUND_LIGHT_PINK;
 				}
 
-				if (this.grid[y][x].percentile < 0.67) {
+				if (!this.grid[y][x].percentile || this.grid[y][x].percentile < 0.67) {
 					orderLine += BACKGROUND_WHITE;
 				}
 				else if (this.grid[y][x].percentile < 0.89) {
@@ -1243,15 +1249,20 @@ Puzzle.prototype.showMinimaps = function() {
 				}
 			}
 
-			changesLine += ' ';
-			orderLine += ' ';
+			changesLine += (y == this.grid.length - 1) ? '▁' : ' ';
+			orderLine += (y == 0) ? '▔' : ' ';
 		}
 
 		changesLine += RESET;
 		orderLine += RESET;
 
-		console.log(changesLine + '   ' + orderLine);
+		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + y));
+		console.log(BACKGROUND_BLACK + FOREGROUND_GRAY_58 + ' │ ' + FOREGROUND_BLACK + changesLine);
+		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + y + this.grid.length));
+		console.log(BACKGROUND_BLACK + FOREGROUND_GRAY_58 + ' │ ' + FOREGROUND_BLACK + orderLine);
 	}
+
+	process.stdout.write(RESTORE_CURSOR);
 };
 
 Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jumpToBlank) {

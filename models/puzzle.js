@@ -932,8 +932,8 @@ Puzzle.prototype.showSolverState = function(options) {
 				if (options.solverMode.primary == 'command') {
 					if (x == this.cursor.x && y == this.cursor.y) {
 						if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
-							colorLine2 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+							colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
+							colorLine2 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
 						}
 						else {
 							colorLine1 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;

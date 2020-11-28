@@ -218,13 +218,11 @@ process.stdin.on('data', function(key) {
 				lastLineCommand = '*';
 		}
 		else if (key == '/') {
-			anchor = { x: puzzle.cursor.x, y: puzzle.cursor.y };
-
 			if (puzzle.direction == 'across') {
-				anchor.direction = 'down';
+				puzzle.dropAnchor(puzzle.cursor.x, puzzle.cursor.y, 'down' );
 			}
 			else if (puzzle.direction == 'down') {
-				anchor.direction = 'across';
+				puzzle.dropAnchor(puzzle.cursor.x, puzzle.cursor.y, 'across' );
 			}
 		}
 		else if (key == ' ') {
@@ -244,16 +242,8 @@ process.stdin.on('data', function(key) {
 			// enter
 			solverMode.primary = 'command';
 
-			if (anchor) {
-				puzzle.moveCursorTo(anchor.x, anchor.y);
-				puzzle.switchDirection(anchor.direction);
-				puzzle.cursorToFirstBlank();
-
-				anchor = null;
-			}
-			else {
-				puzzle.cursorToFirstBlank();
-			}
+			puzzle.weighAnchor();
+			puzzle.cursorToFirstBlank();
 		}
 		else if (key == 'K' || key == '\u001b\u005b\u0041') {
 			puzzle.moveCursor('up');

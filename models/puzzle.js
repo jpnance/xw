@@ -1483,4 +1483,17 @@ Puzzle.prototype.saveProgress = function() {
 	Util.saveJsonFile(path.resolve(__dirname, '../puzzles.json'), puzzleDatabase);
 };
 
+Puzzle.prototype.dropAnchor = function(x, y, direction) {
+	this.anchor = { x: x, y: y, direction: direction };
+};
+
+Puzzle.prototype.weighAnchor = function() {
+	if (this.anchor) {
+		this.moveCursorTo(this.anchor.x, this.anchor.y);
+		this.switchDirection(this.anchor.direction);
+
+		this.anchor = null;
+	}
+};
+
 module.exports = Puzzle;

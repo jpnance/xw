@@ -31,8 +31,10 @@ const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
 const FOREGROUND_ORANGE = "\033[38;5;214m";
 const FOREGROUND_GOLD = "\033[38;5;220m";
 const FOREGROUND_LIGHT_GOLDENROD = "\033[38;5;227m";
+const FOREGROUND_GRAY_58 = "\033[38;5;246m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 
+const BOLD = "\x1b[1m";
 const RESET = "\x1b[0m";
 
 const COLOR = (foreground, background) => {
@@ -240,6 +242,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 
 				this.acrosses.push({
 					number: clueNumber,
+					direction: 'A',
 					clue: clue,
 					origin: { x: x, y: y }
 				});
@@ -252,6 +255,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 
 				this.downs.push({
 					number: clueNumber,
+					direction: 'D',
 					clue: clue,
 					origin: { x: x, y: y }
 				});
@@ -891,16 +895,19 @@ Puzzle.prototype.showSolverState = function(options) {
 	process.stdout.write(RESTORE_CURSOR);
 
 	let mode = this.direction;
-	let clue = null;
+	let thisClue = null;
+	let crossClue = null;
 	let words = null;
 
 	if (mode == 'across') {
-		clue = this.getClueFor(this.cursor, mode);
-		words = this.getAcrossWord(clue.origin.x, clue.origin.y);
+		thisClue = this.getClueFor(this.cursor, mode);
+		crossClue = this.getClueFor(this.cursor, 'down');
+		words = this.getAcrossWord(thisClue.origin.x, thisClue.origin.y);
 	}
 	else if (mode == 'down') {
-		clue = this.getClueFor(this.cursor, mode);
-		words = this.getDownWord(clue.origin.x, clue.origin.y);
+		thisClue = this.getClueFor(this.cursor, mode);
+		crossClue = this.getClueFor(this.cursor, 'across');
+		words = this.getDownWord(thisClue.origin.x, thisClue.origin.y);
 	}
 
 	let colorLine1;
@@ -940,7 +947,7 @@ Puzzle.prototype.showSolverState = function(options) {
 							colorLine2 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
 						}
 					}
-					else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+					else if (mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) {
 						if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
 							colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
@@ -950,7 +957,7 @@ Puzzle.prototype.showSolverState = function(options) {
 							colorLine2 = BACKGROUND_LIGHT_CYAN;
 						}
 					}
-					else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
+					else if (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length) {
 						if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
 							colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
@@ -986,7 +993,7 @@ Puzzle.prototype.showSolverState = function(options) {
 							colorLine2 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
 						}
 					}
-					else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+					else if (mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) {
 						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
 							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
@@ -1000,7 +1007,7 @@ Puzzle.prototype.showSolverState = function(options) {
 							colorLine2 = BACKGROUND_PALE_TURQUOISE;
 						}
 					}
-					else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
+					else if (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length) {
 						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
 							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
@@ -1082,20 +1089,24 @@ Puzzle.prototype.showSolverState = function(options) {
 	}
 
 	if (!options.title) {
-		let clueIndentation = clue.number.toString().length + 2;
+		let clueIndentation = Math.max(thisClue.number.toString().length, crossClue.number.toString().length) + 3;
 
 		console.log(Util.formatString(''));
 		console.log(Util.formatString(words.guess + ' (' + words.answer.length + ')'));
 		console.log(Util.formatString(''));
 
-		if (!options.downsOnly || this.direction == 'down') {
-			console.log(Util.formatString(clue.number + '. ' + clue.clue, this.width * 3, clueIndentation, 4));
+		if (options.downsOnly) {
+			if (this.direction == 'down') {
+				console.log(BOLD + Util.formatString(thisClue.number + thisClue.direction + '. ' + thisClue.clue, this.width * 3, clueIndentation) + RESET);
+			}
+			else {
+				console.log(FOREGROUND_GRAY_58 + Util.formatString(crossClue.number + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation) + RESET);
+			}
 		}
 		else {
+			console.log(BOLD + Util.formatString(thisClue.number + thisClue.direction + '. ' + thisClue.clue, this.width * 3, clueIndentation) + RESET);
 			console.log(Util.formatString(''));
-			console.log(Util.formatString(''));
-			console.log(Util.formatString(''));
-			console.log(Util.formatString(''));
+			console.log(FOREGROUND_GRAY_58 + Util.formatString(crossClue.number + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation) + RESET);
 		}
 
 		console.log(Util.formatString(''));
@@ -1104,10 +1115,6 @@ Puzzle.prototype.showSolverState = function(options) {
 		process.stdout.write(CURSOR_UP);
 	}
 	else {
-		console.log(Util.formatString(''));
-		console.log(Util.formatString(''));
-		console.log(Util.formatString(''));
-		console.log(Util.formatString(''));
 		console.log(Util.formatString(''));
 		console.log(Util.formatString(''));
 		console.log(Util.formatString(''));

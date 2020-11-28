@@ -11,11 +11,15 @@ const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
 const BACKGROUND_DARK_OLIVE_GREEN_2 = "\033[48;5;155m";
 const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
 const BACKGROUND_DARK_OLIVE_GREEN_1 = "\033[48;5;192m";
+const BACKGROUND_LIGHT_CYAN = "\033[48;5;195m";
 const BACKGROUND_RED = "\033[48;5;196m";
 const BACKGROUND_LIGHT_PINK = "\033[48;5;217m";
 const BACKGROUND_GOLD = "\033[48;5;220m";
-const BACKGROUND_LIGHT_GOLDENROD = "\033[48;5;227m";
 const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
+const BACKGROUND_LIGHT_GOLDENROD = "\033[48;5;227m";
+const BACKGROUND_CORN_SILK_1 = "\033[48;5;230m";
+const BACKGROUND_GRAY_85 = "\033[48;5;253m";
+const BACKGROUND_GRAY_89 = "\033[48;5;254m";
 const BACKGROUND_GRAY_93 = "\033[48;5;255m";
 
 const FOREGROUND_BLACK = "\033[38;5;0m";
@@ -25,6 +29,8 @@ const FOREGROUND_DARK_OLIVE_GREEN_3 = "\033[38;5;107m";
 const FOREGROUND_RED = "\033[38;5;196m";
 const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
 const FOREGROUND_ORANGE = "\033[38;5;214m";
+const FOREGROUND_GOLD = "\033[38;5;220m";
+const FOREGROUND_LIGHT_GOLDENROD = "\033[38;5;227m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 
 const RESET = "\x1b[0m";
@@ -923,62 +929,105 @@ Puzzle.prototype.showSolverState = function(options) {
 				outputLine2 += BACKGROUND_WHITE + '   ' + RESET;
 			}
 			else {
-				if (x == this.cursor.x && y == this.cursor.y) {
-					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
+				if (options.solverMode.primary == 'command') {
+					if (x == this.cursor.x && y == this.cursor.y) {
+						if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+							colorLine2 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+						}
+						else {
+							colorLine1 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
+							colorLine2 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
+						}
 					}
-					else if (this.grid[y][x].circled) {
-						colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
-						colorLine2 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+					else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+						if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+						}
+						else {
+							colorLine1 = BACKGROUND_LIGHT_CYAN + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_LIGHT_CYAN;
+						}
 					}
-					else {
-						colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-						colorLine2 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-					}
-				}
-				else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
-					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-					}
-					else if (this.grid[y][x].circled) {
-						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-						colorLine2 = BACKGROUND_DARK_SLATE_GRAY
-					}
-					else {
-						colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-						colorLine2 = BACKGROUND_PALE_TURQUOISE;
-					}
-				}
-				else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
-					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-					}
-					else if (this.grid[y][x].circled) {
-						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-						colorLine2 = BACKGROUND_DARK_SLATE_GRAY;
+					else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
+						if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+						}
+						else {
+							colorLine1 = BACKGROUND_LIGHT_CYAN + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_LIGHT_CYAN;
+						}
 					}
 					else {
-						colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-						colorLine2 = BACKGROUND_PALE_TURQUOISE;
+						if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
+							colorLine2 = BACKGROUND_GRAY_93;
+						}
+						else {
+							colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
+							colorLine2 = BACKGROUND_WHITE;
+						}
 					}
 				}
 				else {
-					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+					if (x == this.cursor.x && y == this.cursor.y) {
+						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						}
+						else if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+							colorLine2 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+						}
+						else {
+							colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
+							colorLine2 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
+						}
 					}
-					else if (this.grid[y][x].circled) {
-						colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-						colorLine2 = BACKGROUND_GRAY_93;
+					else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
+						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						}
+						else if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_DARK_SLATE_GRAY
+						}
+						else {
+							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_PALE_TURQUOISE;
+						}
+					}
+					else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
+						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						}
+						else if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_DARK_SLATE_GRAY;
+						}
+						else {
+							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+							colorLine2 = BACKGROUND_PALE_TURQUOISE;
+						}
 					}
 					else {
-						colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-						colorLine2 = BACKGROUND_WHITE;
+						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						}
+						else if (this.grid[y][x].circled) {
+							colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
+							colorLine2 = BACKGROUND_GRAY_93;
+						}
+						else {
+							colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
+							colorLine2 = BACKGROUND_WHITE;
+						}
 					}
-
 				}
 
 				if (this.grid[y][x].answer == '.') {

@@ -33,13 +33,15 @@ puzzle.loadFromFile(path.resolve('puzzles/', puzFilename));
 
 let timer = null;
 
-let solverMode = {
-	primary: 'title-screen',
-	secondary: null,
-	tertiary: null
-};
+let puzzleOptions = {
+	title: true,
 
-let puzzleOptions = { title: true };
+	solverMode: {
+		primary: 'title-screen',
+		secondary: null,
+		tertiary: null
+	}
+};
 
 if (options.includes('--downs-only')) {
 	puzzleOptions.downsOnly = true;
@@ -52,10 +54,10 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', function(key) {
-	if (solverMode.primary == 'title-screen') {
+	if (puzzleOptions.solverMode.primary == 'title-screen') {
 		switch (key) {
 			case '\r':
-				solverMode.primary = 'command';
+				puzzleOptions.solverMode.primary = 'command';
 				timer = new Date();
 
 				if (puzzleOptions.downsOnly) {
@@ -70,7 +72,7 @@ process.stdin.on('data', function(key) {
 				break;
 		}
 	}
-	else if (solverMode.primary == 'command') {
+	else if (puzzleOptions.solverMode.primary == 'command') {
 		switch (key) {
 			case '\r':
 				puzzle.cursorToNextClue();
@@ -84,8 +86,8 @@ process.stdin.on('data', function(key) {
 				}
 
 				puzzle.moveCursor();
-				solverMode.primary = 'insert';
-				solverMode.secondary = 'blanks';
+				puzzleOptions.solverMode.primary = 'insert';
+				puzzleOptions.solverMode.secondary = 'blanks';
 				break;
 
 			case 'b':
@@ -103,8 +105,8 @@ process.stdin.on('data', function(key) {
 					break;
 				}
 
-				solverMode.primary = 'insert';
-				solverMode.secondary = 'blanks';
+				puzzleOptions.solverMode.primary = 'insert';
+				puzzleOptions.solverMode.secondary = 'blanks';
 				break;
 
 			case 'I':
@@ -112,8 +114,8 @@ process.stdin.on('data', function(key) {
 					break;
 				}
 
-				solverMode.primary = 'insert';
-				solverMode.secondary = 'blanks';
+				puzzleOptions.solverMode.primary = 'insert';
+				puzzleOptions.solverMode.secondary = 'blanks';
 				puzzle.cursorToFirstBlank();
 				break;
 
@@ -137,8 +139,8 @@ process.stdin.on('data', function(key) {
 					break;
 				}
 
-				solverMode.primary = 'insert';
-				solverMode.secondary = 'one-character';
+				puzzleOptions.solverMode.primary = 'insert';
+				puzzleOptions.solverMode.secondary = 'one-character';
 				break;
 
 			case 'R':
@@ -146,8 +148,8 @@ process.stdin.on('data', function(key) {
 					break;
 				}
 
-				solverMode.primary = 'insert';
-				solverMode.secondary = 'overwrite';
+				puzzleOptions.solverMode.primary = 'insert';
+				puzzleOptions.solverMode.secondary = 'overwrite';
 				break;
 
 			case 'w':
@@ -173,20 +175,20 @@ process.stdin.on('data', function(key) {
 				break;
 
 			case ':':
-				solverMode.primary = 'last-line';
+				puzzleOptions.solverMode.primary = 'last-line';
 				lastLineCommand = ':';
 				process.stdout.write(key);
 				break;
 
 			case '/':
-				solverMode.primary = 'last-line';
+				puzzleOptions.solverMode.primary = 'last-line';
 				lastLineCommand = '/';
 				process.stdout.write(key);
 				break;
 
 			case '*':
-				solverMode.primary = 'last-line';
-				solverMode.tertiary = 'command';
+				puzzleOptions.solverMode.primary = 'last-line';
+				puzzleOptions.solverMode.tertiary = 'command';
 				lastLineCommand = '*';
 				process.stdout.write(key);
 				break;
@@ -196,15 +198,15 @@ process.stdin.on('data', function(key) {
 				break;
 		}
 	}
-	else if (solverMode.primary == 'insert') {
+	else if (puzzleOptions.solverMode.primary == 'insert') {
 		if ('0123456789abcdefghijklmnopqrstuvwxyz-'.includes(key)) {
 			puzzle.logGuess(key);
 
-			if (solverMode.secondary == 'one-character') {
-				solverMode.primary = 'command';
-				solverMode.secondary = null;
+			if (puzzleOptions.solverMode.secondary == 'one-character') {
+				puzzleOptions.solverMode.primary = 'command';
+				puzzleOptions.solverMode.secondary = null;
 			}
-			else if (solverMode.secondary == 'overwrite') {
+			else if (puzzleOptions.solverMode.secondary == 'overwrite') {
 				puzzle.moveCursor(null, true, false, false);
 			}
 			else {
@@ -212,8 +214,8 @@ process.stdin.on('data', function(key) {
 			}
 		}
 		else if (key == '*') {
-				solverMode.primary = 'last-line';
-				solverMode.tertiary = 'insert';
+				puzzleOptions.solverMode.primary = 'last-line';
+				puzzleOptions.solverMode.tertiary = 'insert';
 				lastLineCommand = '*';
 		}
 		else if (key == '/') {
@@ -229,18 +231,18 @@ process.stdin.on('data', function(key) {
 		}
 		else if (key == '\x07' || key == '\x1b') {
 			// esc
-			solverMode.primary = 'command';
+			puzzleOptions.solverMode.primary = 'command';
 			puzzle.removeAnchor();
 		}
 		else if (key == '\x7f') {
 			// backspace
-			solverMode.secondary = 'overwrite';
+			puzzleOptions.solverMode.secondary = 'overwrite';
 			puzzle.moveCursor(null, true, true);
 			puzzle.logGuess('-');
 		}
 		else if (key == '\r') {
 			// enter
-			solverMode.primary = 'command';
+			puzzleOptions.solverMode.primary = 'command';
 
 			puzzle.weighAnchor();
 			puzzle.cursorToFirstBlank();
@@ -266,31 +268,31 @@ process.stdin.on('data', function(key) {
 			puzzle.cursorToFirstBlank();
 		}
 		else if (key == 'R') {
-			if (solverMode.secondary != 'overwrite') {
-				solverMode.secondary = 'overwrite';
+			if (puzzleOptions.solverMode.secondary != 'overwrite') {
+				puzzleOptions.solverMode.secondary = 'overwrite';
 			}
 			else {
-				solverMode.secondary = null;
+				puzzleOptions.solverMode.secondary = null;
 			}
 		}
 	}
-	else if (solverMode.primary == 'last-line') {
+	else if (puzzleOptions.solverMode.primary == 'last-line') {
 		if (key == '\r') {
-			solverMode.primary = 'command';
+			puzzleOptions.solverMode.primary = 'command';
 
 			if (lastLineCommand.startsWith('*')) {
 				let rebus = lastLineCommand.substring(1);
 
-				solverMode.primary = solverMode.tertiary; // this is a small abuse of the tertiary field but we want to return whence we came
-				solverMode.tertiary = null;
+				puzzleOptions.solverMode.primary = puzzleOptions.solverMode.tertiary; // this is a small abuse of the tertiary field but we want to return whence we came
+				puzzleOptions.solverMode.tertiary = null;
 
 				puzzle.logGuess(rebus);
 
-				if (solverMode.secondary == 'one-character') {
-					solverMode.primary = 'command';
-					solverMode.secondary = null;
+				if (puzzleOptions.solverMode.secondary == 'one-character') {
+					puzzleOptions.solverMode.primary = 'command';
+					puzzleOptions.solverMode.secondary = null;
 				}
-				else if (solverMode.secondary == 'overwrite') {
+				else if (puzzleOptions.solverMode.secondary == 'overwrite') {
 					puzzle.moveCursor(null, true, false, false);
 				}
 				else {
@@ -344,9 +346,9 @@ process.stdin.on('data', function(key) {
 		}
 	}
 
-	if (solverMode.primary != 'last-line') {
+	if (puzzleOptions.solverMode.primary != 'last-line') {
 		if (puzzle.isComplete()) {
-			if (solverMode.secondary != 'done') {
+			if (puzzleOptions.solverMode.secondary != 'done') {
 				timer = (new Date()) - timer;
 				timer = Math.floor(timer / 1000);
 				puzzle.tabulateStats();
@@ -359,8 +361,8 @@ process.stdin.on('data', function(key) {
 			console.log();
 			console.log('Completed in ' + Util.formatTimer(timer) + '!');
 
-			solverMode.primary = 'command';
-			solverMode.secondary = 'done';
+			puzzleOptions.solverMode.primary = 'command';
+			puzzleOptions.solverMode.secondary = 'done';
 		}
 		else {
 			puzzle.showSolverState(puzzleOptions);

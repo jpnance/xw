@@ -45,7 +45,6 @@ if (options.includes('--downs-only')) {
 	puzzleOptions.downsOnly = true;
 }
 
-let anchor;
 let lastLineCommand;
 
 process.stdin.setRawMode(true);

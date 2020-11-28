@@ -8,21 +8,37 @@ const CURSOR_UP = "\033[1A";
 const BACKGROUND_BLACK = "\033[48;5;0m";
 const BACKGROUND_WHITE = "\033[48;5;15m";
 const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
+const BACKGROUND_DARK_OLIVE_GREEN_2 = "\033[48;5;155m";
 const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
+const BACKGROUND_DARK_OLIVE_GREEN_1 = "\033[48;5;192m";
 const BACKGROUND_RED = "\033[48;5;196m";
 const BACKGROUND_LIGHT_PINK = "\033[48;5;217m";
 const BACKGROUND_GOLD = "\033[48;5;220m";
 const BACKGROUND_LIGHT_GOLDENROD = "\033[48;5;227m";
 const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
 const BACKGROUND_GRAY_93 = "\033[48;5;255m";
+
 const FOREGROUND_BLACK = "\033[38;5;0m";
 const FOREGROUND_TEAL = "\033[38;5;6m";
 const FOREGROUND_WHITE = "\033[38;5;15m";
+const FOREGROUND_DARK_OLIVE_GREEN_3 = "\033[38;5;107m";
 const FOREGROUND_RED = "\033[38;5;196m";
 const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
 const FOREGROUND_ORANGE = "\033[38;5;214m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
+
 const RESET = "\x1b[0m";
+
+const COLOR = (foreground, background) => {
+	let foregroundColor = "\033[38;5;" + foreground + 'm';
+	let backgroundColor = '';
+
+	if (background) {
+		backgroundColor = "\033[48;5;" + background + 'm';
+	}
+
+	return foregroundColor + backgroundColor;
+};
 
 const Util = require('./util');
 
@@ -908,7 +924,11 @@ Puzzle.prototype.showSolverState = function(options) {
 			}
 			else {
 				if (x == this.cursor.x && y == this.cursor.y) {
-					if (this.grid[y][x].circled) {
+					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
+					}
+					else if (this.grid[y][x].circled) {
 						colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
 						colorLine2 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
 					}
@@ -918,7 +938,11 @@ Puzzle.prototype.showSolverState = function(options) {
 					}
 				}
 				else if (mode == 'across' && y == clue.origin.y && x >= clue.origin.x && x < clue.origin.x + words.answer.length) {
-					if (this.grid[y][x].circled) {
+					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+					}
+					else if (this.grid[y][x].circled) {
 						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
 						colorLine2 = BACKGROUND_DARK_SLATE_GRAY
 					}
@@ -928,7 +952,11 @@ Puzzle.prototype.showSolverState = function(options) {
 					}
 				}
 				else if (mode == 'down' && x == clue.origin.x && y >= clue.origin.y && y < clue.origin.y + words.answer.length) {
-					if (this.grid[y][x].circled) {
+					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+					}
+					else if (this.grid[y][x].circled) {
 						colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
 						colorLine2 = BACKGROUND_DARK_SLATE_GRAY;
 					}
@@ -938,7 +966,11 @@ Puzzle.prototype.showSolverState = function(options) {
 					}
 				}
 				else {
-					if (this.grid[y][x].circled) {
+					if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+						colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+						colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+					}
+					else if (this.grid[y][x].circled) {
 						colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
 						colorLine2 = BACKGROUND_GRAY_93;
 					}

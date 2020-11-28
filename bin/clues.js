@@ -265,6 +265,14 @@ process.stdin.on('data', function(key) {
 			puzzle.cursorToPreviousClue();
 			puzzle.cursorToFirstBlank();
 		}
+		else if (key == 'R') {
+			if (solverMode.secondary != 'overwrite') {
+				solverMode.secondary = 'overwrite';
+			}
+			else {
+				solverMode.secondary = null;
+			}
+		}
 	}
 	else if (solverMode.primary == 'last-line') {
 		if (key == '\r') {

@@ -65,13 +65,8 @@ if (cliArgs.filename) {
 	try {
 		fs.accessSync(path.resolve('puzzles/', puzFilename));
 	} catch (error) {
-		try {
-			let puzFilenames = fs.readdirSync(path.resolve('./puzzles')).filter(filename => filename.length == puzFilename.length + 15 && filename.startsWith(puzFilename)).sort().reverse();
-			puzFilename = puzFilenames[0];
-		} catch (error) {
-			console.log(error);
-			process.exit();
-		}
+		console.log(error);
+		process.exit();
 	}
 
 	let puzzle = new Puzzle();

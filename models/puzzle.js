@@ -922,15 +922,15 @@ Puzzle.prototype.showSolverState = function(options) {
 	let colorLine1;
 	let colorLine2;
 
-	console.log(this.title);
-	console.log(this.author);
-	console.log(this.copyright);
+	console.log(Util.formatString(this.title));
+	console.log(Util.formatString(this.author));
+	console.log(Util.formatString(this.copyright));
 
-	console.log();
+	console.log(Util.formatString(''));
 
 	if (this.notes.length > 0) {
 		console.log(Util.formatString(this.notes, this.width * 3, 0));
-		console.log();
+		console.log(Util.formatString(''));
 	}
 
 	let clues = 1;
@@ -1581,6 +1581,7 @@ Puzzle.prototype.checksumSignature = function() {
 };
 
 Puzzle.prototype.saveProgress = function() {
+	return;
 	let puzzleDatabase = Util.openJsonFile(path.resolve(__dirname, '../puzzles.json'));
 	let checksum = this.checksumSignature();
 

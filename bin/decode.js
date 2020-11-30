@@ -108,7 +108,7 @@ else {
 		{
 			shortName: 'vox',
 			parameters: {
-				id: 'vox_' + Util.dateFormat(cliArgs.date, '%Y%m%d') + '_1000',
+				id: 'PBvox_' + Util.dateFormat(cliArgs.date, '%Y%m%d') + '_1000',
 				set: 'vox'
 			},
 			url: 'https://cdn3.amuselabs.com/vox/crossword', // vox
@@ -135,7 +135,7 @@ else {
 		{
 			shortName: 'atlantic',
 			parameters: {
-				id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d', -1),
+				id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
 				set: 'atlantic'
 			},
 			url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
@@ -173,6 +173,12 @@ else {
 		{
 			shortName: 'usa-today',
 			url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/' + Util.dateFormat(cliArgs.date, '%Y-%m-%d') + '/data.json', // usa today
+			strategy: 'usa-today-json'
+		},
+		{
+			shortName: 'universal-test',
+			//url: 'https://embed.universaluclick.com/c/uucom/l/U2FsdGVkX1%2BOdU4A1ItrUss1I16%2FtetiRgLdSgWkaVRyiZ1h7mLAc5vVK%2Bq1EH7T%0Ac702dzeQWdoEpLaRNdQJ0sqe1w3TgKiF9CIXqzIu6c0%3D/g/fcx/d/' + Util.dateFormat(cliArgs.date, '%Y-%m-%d') + '/data.json', // universal
+			url: 'https://gamedata.services.amuniversal.com/c/uucom/l/U2FsdGVkX1%2BOdU4A1ItrUss1I16%2FtetiRgLdSgWkaVRyiZ1h7mLAc5vVK%2Bq1EH7T%0Ac702dzeQWdoEpLaRNdQJ0sqe1w3TgKiF9CIXqzIu6c0%3D/g/fcx/d/' + Util.dateFormat(cliArgs.date, '%Y-%m-%d') + '/data.json', // universal
 			strategy: 'usa-today-json'
 		},
 
@@ -237,7 +243,7 @@ else {
 		},
 		{
 			shortName: 'datalexic',
-			url: 'http://datalexic.com/feed/',
+			url: 'https://datalexic.com/feed/',
 			strategy: 'rss'
 		},
 		{

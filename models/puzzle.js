@@ -412,6 +412,8 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 	this.height = this.grid.length;
 
 	this.notes = '';
+
+	this.loadFromPuzFile(this.generatePuzFileData());
 };
 
 Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
@@ -491,9 +493,11 @@ Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
 	this.height = this.grid.length;
 
 	this.notes = '';
+
+	this.loadFromPuzFile(this.generatePuzFileData());
 };
 
-Puzzle.prototype.writeToFile = function(filename) {
+Puzzle.prototype.generatePuzFileData = function(filename) {
 	let data = [];
 
 	data[0x00] = 0x00; // checksum0
@@ -814,7 +818,8 @@ Puzzle.prototype.writeToFile = function(filename) {
 	data[0x16] = 0x45 ^ ((this.gridChecksum & 0xFF00) >> 8);
 	data[0x17] = 0x44 ^ ((this.partialChecksum & 0xFF00) >> 8);
 
-	fs.writeFileSync(path.resolve(filename), Uint8Array.from(data), { encoding: 'utf8' });
+	return data;
+	//fs.writeFileSync(path.resolve(filename), Uint8Array.from(data), { encoding: 'utf8' });
 };
 
 Puzzle.prototype.blackCellAt = function(x, y) {

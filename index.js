@@ -9,9 +9,9 @@ const RESTORE_CURSOR = "\033[u";
 const fs = require('fs');
 const path = require('path');
 
-const Util = require('../models/util');
-const Grabber = require('../models/grabber');
-const Puzzle = require('../models/puzzle');
+const Util = require('./models/util');
+const Grabber = require('./models/grabber');
+const Puzzle = require('./models/puzzle');
 
 let cliArgs = {
 	date: new Date(),

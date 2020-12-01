@@ -348,13 +348,13 @@ function launchPuzzle(puzzle) {
 				}
 				else if (lastLineCommand == ':x') {
 					puzzle.saveProgress();
-					process.exit();
+					quit();
 				}
 				else if (lastLineCommand == ':w') {
 					puzzle.saveProgress();
 				}
 				else if (lastLineCommand == ':q') {
-					process.exit();
+					quit();
 				}
 				else if (lastLineCommand == ':reveal') {
 					puzzle.reveal();
@@ -430,4 +430,9 @@ function launchPuzzle(puzzle) {
 
 function displayError(error) {
 	console.log(error);
+}
+
+function quit() {
+	console.log(Util.formatString(''));
+	process.exit();
 }

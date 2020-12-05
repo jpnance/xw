@@ -949,41 +949,41 @@ Puzzle.prototype.showSolverState = function(options) {
 					if (x == this.cursor.x && y == this.cursor.y) {
 						if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-							colorLine2 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
+							colorLine2 = BOLD + BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
 						}
 						else {
 							colorLine1 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
-							colorLine2 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
+							colorLine2 = BOLD + BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
 						}
 					}
 					else if (mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) {
 						if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
 						}
 						else {
 							colorLine1 = BACKGROUND_LIGHT_CYAN + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_LIGHT_CYAN;
+							colorLine2 = BOLD + BACKGROUND_LIGHT_CYAN;
 						}
 					}
 					else if (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length) {
 						if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
+							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
 						}
 						else {
 							colorLine1 = BACKGROUND_LIGHT_CYAN + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_LIGHT_CYAN;
+							colorLine2 = BOLD + BACKGROUND_LIGHT_CYAN;
 						}
 					}
 					else {
 						if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-							colorLine2 = BACKGROUND_GRAY_93;
+							colorLine2 = BOLD + BACKGROUND_GRAY_93;
 						}
 						else {
 							colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-							colorLine2 = BACKGROUND_WHITE;
+							colorLine2 = BOLD + BACKGROUND_WHITE;
 						}
 					}
 				}
@@ -991,57 +991,57 @@ Puzzle.prototype.showSolverState = function(options) {
 					if (x == this.cursor.x && y == this.cursor.y) {
 						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
 							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
 						}
 						else if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
-							colorLine2 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
+							colorLine2 = BOLD + BACKGROUND_GOLD + FOREGROUND_ORANGE;
 						}
 						else {
 							colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-							colorLine2 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
+							colorLine2 = BOLD + BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
 						}
 					}
 					else if (mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) {
 						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
 							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 						}
 						else if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_DARK_SLATE_GRAY
+							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY
 						}
 						else {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_PALE_TURQUOISE;
+							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE;
 						}
 					}
 					else if (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length) {
 						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
 							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 						}
 						else if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_DARK_SLATE_GRAY;
+							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY;
 						}
 						else {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BACKGROUND_PALE_TURQUOISE;
+							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE;
 						}
 					}
 					else {
 						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
 							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
+							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 						}
 						else if (this.grid[y][x].circled) {
 							colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-							colorLine2 = BACKGROUND_GRAY_93;
+							colorLine2 = BOLD + BACKGROUND_GRAY_93;
 						}
 						else {
 							colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-							colorLine2 = BACKGROUND_WHITE;
+							colorLine2 = BOLD + BACKGROUND_WHITE;
 						}
 					}
 				}

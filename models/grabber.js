@@ -43,16 +43,17 @@ let puzzleServices = [
 	},
 
 	// amuselabs json
-	/*
 	{
 		shortName: 'lat',
 		parameters: {
-			id: 'tca' + Util.dateFormat(cliArgs.date, '%y%m%d'),
+			id: 'tca#DATE#',
 			set: 'latimes'
 		},
+		dateFormat: '%y%m%d',
 		url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
 		strategy: 'amuselabs-json'
 	},
+	/*
 	{
 		shortName: 'wapo-sunday',
 		parameters: {

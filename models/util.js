@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const CLEAR_LINE = "\033[K";
+
 function Util() {
 }
 
@@ -35,12 +37,13 @@ Util.formatString = function(string, width, indent, padLines) {
 	let line = '';
 	let lines = [];
 
-	width = width || process.stdout.columns;
+	width = Math.max(30, width || process.stdout.columns);
 	indent = indent || 0;
 	padLines = padLines || 1;
 
 	words.forEach(function(word) {
 		if (line.length + 1 + word.length > width) {
+			line += CLEAR_LINE;
 			lines.push(line);
 			line = ' '.repeat(indent) + word;
 		}

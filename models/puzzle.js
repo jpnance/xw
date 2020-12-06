@@ -3,6 +3,7 @@ const path = require('path');
 
 const CURSOR_POSITION = (x, y) => { return "\033[" + y + ";" + x + "H"; };
 const CLEAR_SCREEN = "\033[2J";
+const CLEAR_REST_OF_SCREEN = "\033[J";
 const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
 const CURSOR_UP = "\033[1A";
@@ -1118,15 +1119,12 @@ Puzzle.prototype.showSolverState = function(options) {
 			console.log(FOREGROUND_GRAY_58 + Util.formatString(crossClue.number + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation) + RESET);
 		}
 
-		console.log(Util.formatString(''));
-		console.log(Util.formatString(''));
+		console.log(CLEAR_REST_OF_SCREEN);
 
 		process.stdout.write(CURSOR_UP);
 	}
 	else {
-		console.log(Util.formatString(''));
-		console.log(Util.formatString(''));
-		console.log(Util.formatString(''));
+		console.log(CLEAR_REST_OF_SCREEN);
 
 		console.log('Press ENTER to begin.');
 	}

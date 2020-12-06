@@ -53,6 +53,16 @@ let puzzleServices = [
 		strategy: 'amuselabs-json'
 	},
 	{
+		shortName: 'lat-mini',
+		parameters: {
+			id: 'latimes-mini-#DATE#',
+			set: 'latimes-mini'
+		},
+		dateFormat: '%Y%m%d',
+		url: 'https://cdn4.amuselabs.com/lat/crossword',
+		strategy: 'amuselabs-json'
+	},
+	{
 		shortName: 'wapo-sunday',
 		parameters: {
 			id: 'ebirnholz_#DATE#',
@@ -60,6 +70,16 @@ let puzzleServices = [
 		},
 		dateFormat: '%y%m%d',
 		url: 'https://cdn1.amuselabs.com/wapo/crossword',
+		strategy: 'amuselabs-json'
+	},
+	{
+		shortName: 'newsday',
+		parameters: {
+			id: 'Creators_WEB_#DATE#',
+			set: 'creatorsweb'
+		},
+		dateFormat: '%Y%m%d',
+		url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
 		strategy: 'amuselabs-json'
 	},
 	/*
@@ -82,30 +102,12 @@ let puzzleServices = [
 		strategy: 'amuselabs-json'
 	},
 	{
-		shortName: 'newsday',
-		parameters: {
-			id: 'Creators_WEB_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
-			set: 'creatorsweb'
-		},
-		url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
-		strategy: 'amuselabs-json'
-	},
-	{
 		shortName: 'atlantic',
 		parameters: {
 			id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
 			set: 'atlantic'
 		},
 		url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'lat-mini',
-		parameters: {
-			id: 'latimes-mini-' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
-			set: 'latimes-mini'
-		},
-		url: 'https://cdn4.amuselabs.com/lat/crossword',
 		strategy: 'amuselabs-json'
 	},
 	{

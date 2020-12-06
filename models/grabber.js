@@ -10,7 +10,6 @@ const Puzzle = require('./puzzle');
 let puzzleServices = [
 	// puz files
 	{
-		// nyt
 		shortName: 'nyt',
 		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/#DATE#.puz',
 		dateFormat: '%b%d%y',
@@ -31,12 +30,11 @@ let puzzleServices = [
 	*/
 	{
 		shortName: 'wsj',
-		url: 'http://herbach.dnsalias.com/wsj/wsj#DATE#.puz', // wsj
+		url: 'http://herbach.dnsalias.com/wsj/wsj#DATE#.puz',
 		dateFormat: '%y%m%d',
 		strategy: 'puz'
 	},
 	{
-		// universal
 		shortName: 'universal',
 		url: 'http://herbach.dnsalias.com/uc/uc#DATE#.puz',
 		dateFormat: '%y%m%d',
@@ -51,7 +49,7 @@ let puzzleServices = [
 			set: 'latimes'
 		},
 		dateFormat: '%y%m%d',
-		url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
+		url: 'https://cdn4.amuselabs.com/lat/crossword',
 		strategy: 'amuselabs-json'
 	},
 	{
@@ -61,7 +59,7 @@ let puzzleServices = [
 			set: 'wapo-eb'
 		},
 		dateFormat: '%y%m%d',
-		url: 'https://cdn1.amuselabs.com/wapo/crossword', // wapo sunday
+		url: 'https://cdn1.amuselabs.com/wapo/crossword',
 		strategy: 'amuselabs-json'
 	},
 	/*
@@ -132,19 +130,12 @@ let puzzleServices = [
 
 	// jsonp
 	{
-		// usa today
 		shortName: 'usa-today',
 		url: 'https://gamedata.services.amuniversal.com/c/uupuz/l/U2FsdGVkX18CR3EauHsCV8JgqcLh1ptpjBeQ%2Bnjkzhu8zNO00WYK6b%2BaiZHnKcAD%0A9vwtmWJp2uHE9XU1bRw2gA%3D%3D/g/usaon/d/#DATE#/data.json',
 		dateFormat: '%Y-%m-%d',
 		strategy: 'usa-today-json'
 	},
 	/*
-	{
-		shortName: 'universal-test',
-		//url: 'https://embed.universaluclick.com/c/uucom/l/U2FsdGVkX1%2BOdU4A1ItrUss1I16%2FtetiRgLdSgWkaVRyiZ1h7mLAc5vVK%2Bq1EH7T%0Ac702dzeQWdoEpLaRNdQJ0sqe1w3TgKiF9CIXqzIu6c0%3D/g/fcx/d/' + Util.dateFormat(cliArgs.date, '%Y-%m-%d') + '/data.json', // universal
-		url: 'https://gamedata.services.amuniversal.com/c/uucom/l/U2FsdGVkX1%2BOdU4A1ItrUss1I16%2FtetiRgLdSgWkaVRyiZ1h7mLAc5vVK%2Bq1EH7T%0Ac702dzeQWdoEpLaRNdQJ0sqe1w3TgKiF9CIXqzIu6c0%3D/g/fcx/d/' + Util.dateFormat(cliArgs.date, '%Y-%m-%d') + '/data.json', // universal
-		strategy: 'usa-today-json'
-	},
 
 	// rss feeds
 	{

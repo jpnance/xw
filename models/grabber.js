@@ -53,16 +53,17 @@ let puzzleServices = [
 		url: 'https://cdn4.amuselabs.com/lat/crossword', // lat
 		strategy: 'amuselabs-json'
 	},
-	/*
 	{
 		shortName: 'wapo-sunday',
 		parameters: {
-			id: 'ebirnholz_' + Util.dateFormat(cliArgs.date, '%y%m%d'),
+			id: 'ebirnholz_#DATE#',
 			set: 'wapo-eb'
 		},
+		dateFormat: '%y%m%d',
 		url: 'https://cdn1.amuselabs.com/wapo/crossword', // wapo sunday
 		strategy: 'amuselabs-json'
 	},
+	/*
 	{
 		shortName: 'vox',
 		parameters: {
@@ -352,7 +353,7 @@ module.exports.grabPuzzle = function(cliArgs) {
 
 					if (!encodedPuzzle || !encodedPuzzle[1]) {
 						console.log(puzzleService.shortName + ': no puzzle found');
-						resolve();
+						reject({ status: response.statusCode, puzzleService: puzzleService });
 						return;
 					}
 

@@ -28,12 +28,13 @@ let puzzleServices = [
 			'Cookie': process.env.NYT_COOKIE
 		}
 	},
+	*/
 	{
 		shortName: 'wsj',
-		url: 'http://herbach.dnsalias.com/wsj/wsj' + Util.dateFormat(cliArgs.date, '%y%m%d') + '.puz', // wsj
+		url: 'http://herbach.dnsalias.com/wsj/wsj#DATE#.puz', // wsj
+		dateFormat: '%y%m%d',
 		strategy: 'puz'
 	},
-	*/
 	{
 		// universal
 		shortName: 'universal',

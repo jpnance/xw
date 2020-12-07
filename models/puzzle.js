@@ -387,24 +387,12 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 		let downClue = jsonPuzzle.placedWords.find(element => element.clueNum == i && !element.acrossNotDown);
 
 		if (acrossClue) {
-			let clue = acrossClue.clue.clue;
-
-			clue = clue.replace('‘', '\'');
-			clue = clue.replace('’', '\'');
-			clue = clue.replace('“', '"');
-			clue = clue.replace('”', '"');
-
+			let clue = Util.sanitizeClue(acrossClue.clue.clue);
 			this.clues.push(clue);
 		}
 
 		if (downClue) {
-			let clue = downClue.clue.clue;
-
-			clue = clue.replace('‘', '\'');
-			clue = clue.replace('’', '\'');
-			clue = clue.replace('“', '"');
-			clue = clue.replace('”', '"');
-
+			let clue = Util.sanitizeClue(downClue.clue.clue);
 			this.clues.push(clue);
 		}
 	}

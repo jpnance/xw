@@ -3,6 +3,9 @@ const path = require('path');
 
 const CLEAR_LINE = "\033[K";
 
+const UNDERLINE = "\x1b[4m";
+const NO_UNDERLINE = "\x1b[24m";
+
 function Util() {
 }
 
@@ -42,12 +45,12 @@ Util.formatString = function(string, width, indent, padLines) {
 	padLines = padLines || 1;
 
 	words.forEach(function(word) {
-		if (line.length + 1 + word.length > width) {
+		if (Util.realLength(line) + 1 + Util.realLength(word) > width) {
 			line += CLEAR_LINE;
 			lines.push(line);
 			line = ' '.repeat(indent) + word;
 		}
-		else if (line.length == 0) {
+		else if (Util.realLength(line) == 0) {
 			line += word;
 		}
 		else {
@@ -55,7 +58,7 @@ Util.formatString = function(string, width, indent, padLines) {
 		}
 	});
 
-	if (line.length > indent) {
+	if (Util.realLength(line) > indent) {
 		line += CLEAR_LINE;
 		lines.push(line);
 	}
@@ -66,8 +69,8 @@ Util.formatString = function(string, width, indent, padLines) {
 	}
 
 	for (let i = 0; i < lines.length; i++) {
-		if (lines[i].length < width) {
-			lines[i] += ' '.repeat(width - lines[i].length);
+		if (Util.realLength(lines[i]) < width) {
+			lines[i] += ' '.repeat(width - Util.realLength(lines[i]));
 		}
 	}
 
@@ -172,6 +175,36 @@ Util.openJsonFile = function(filename) {
 
 Util.saveJsonFile = function(filename, data) {
 	fs.writeFileSync(path.resolve(filename), JSON.stringify(data));
+};
+
+Util.sanitizeClue = function(clue) {
+	clue = clue.replace('‘', '\'');
+	clue = clue.replace('’', '\'');
+	clue = clue.replace('“', '"');
+	clue = clue.replace('”', '"');
+
+	let italicizations = clue.match(/<i>(.*?)<\/i>/g);
+
+	if (italicizations) {
+		italicizations.forEach(function(italicization) {
+			let words = italicization.replace(/<(\/)?i>/g, '').split(/ /);
+			let replacementWords = [];
+
+			words.forEach(function(word) {
+				replacementWords.push(UNDERLINE + word + NO_UNDERLINE);
+			});
+
+			let replacementString = replacementWords.join(' ');
+
+			clue = clue.replace(italicization, replacementString);
+		});
+	}
+
+	return clue;
+};
+
+Util.realLength = function(string) {
+	return string.replace(/\u001b\[24?m/, '').length;
 };
 
 module.exports = Util;

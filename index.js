@@ -63,7 +63,7 @@ if (cliArgs.filename) {
 	let puzFilename = cliArgs.filename;
 
 	try {
-		fs.accessSync(path.resolve('puzzles/', puzFilename));
+		fs.accessSync(puzFilename);
 	} catch (error) {
 		console.log(error);
 		process.exit();
@@ -71,7 +71,7 @@ if (cliArgs.filename) {
 
 	let puzzle = new Puzzle();
 
-	puzzle.loadFromFile(path.resolve('puzzles/', puzFilename));
+	puzzle.loadFromFile(puzFilename);
 	launchPuzzle(puzzle);
 }
 else if (cliArgs.shortName) {

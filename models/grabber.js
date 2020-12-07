@@ -82,6 +82,16 @@ let puzzleServices = [
 		url: 'https://cdn2.amuselabs.com/pmm/crossword', // newsday
 		strategy: 'amuselabs-json'
 	},
+	{
+		shortName: 'atlantic',
+		parameters: {
+			id: 'atlantic_#DATE#',
+			set: 'atlantic'
+		},
+		dateFormat: '%Y%m%d',
+		url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
+		strategy: 'amuselabs-json'
+	},
 	/*
 	{
 		shortName: 'vox',
@@ -99,15 +109,6 @@ let puzzleServices = [
 			set: 'vox'
 		},
 		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox backup because their numbering scheme is insane
-		strategy: 'amuselabs-json'
-	},
-	{
-		shortName: 'atlantic',
-		parameters: {
-			id: 'atlantic_' + Util.dateFormat(cliArgs.date, '%Y%m%d'),
-			set: 'atlantic'
-		},
-		url: 'https://cdn3.amuselabs.com/atlantic/crossword', // atlantic
 		strategy: 'amuselabs-json'
 	},
 	{

@@ -111,13 +111,16 @@ let puzzleServices = [
 		url: 'https://cdn3.amuselabs.com/vox/crossword', // vox backup because their numbering scheme is insane
 		strategy: 'amuselabs-json'
 	},
+	*/
 	{
 		shortName: 'new-yorker',
-		url: 'https://www.newyorker.com/puzzles-and-games-dept/crossword/' + Util.dateFormat(cliArgs.date, '%Y/%m/%d'),
+		url: 'https://www.newyorker.com/puzzles-and-games-dept/crossword/#DATE#',
+		dateFormat: '%Y/%m/%d',
 		regExp: /https?:\/\/cdn\d.amuselabs.com\/tny\/crossword.*?set=tny-weekly/,
 		strategy: 'scrape',
 		postScrapeStrategy: 'amuselabs-json'
 	},
+	/*
 
 	// amuselabs widget
 	{
@@ -138,7 +141,6 @@ let puzzleServices = [
 		dateFormat: '%Y-%m-%d',
 		strategy: 'usa-today-json'
 	},
-	/*
 
 	// rss feeds
 	{
@@ -234,7 +236,6 @@ let puzzleServices = [
 		url: 'https://southerncrosswords.blogspot.com/feeds/posts/default',
 		strategy: 'rss'
 	}
-	*/
 ];
 
 /*
@@ -282,14 +283,12 @@ if (cliArgs.shortName && cliArgs.url && cliArgs.strategy) {
 let servicePromises = [];
 */
 
-module.exports.grabPuzzle = function(cliArgs) {
-	let puzzleService = puzzleServices.find(puzzleService => { return puzzleService.shortName == cliArgs.shortName; });
+let findService = function(shortName) {
+	return puzzleServices.find(puzzleService => { return puzzleService.shortName == shortName; });
+};
 
+let grabPuzzle = function(puzzleService) {
 	return new Promise(function(resolve, reject) {
-		if (cliArgs.shortName && cliArgs.shortName != puzzleService.shortName) {
-			return;
-		}
-
 		if (!['puz', 'amuselabs-json', 'amuselabs-widget', 'usa-today-json', 'rss', 'scrape'].includes(puzzleService.strategy)) {
 			return;
 		}
@@ -311,7 +310,7 @@ module.exports.grabPuzzle = function(cliArgs) {
 		}
 
 		if (puzzleService.dateFormat) {
-			path = path.replace(/#DATE#/, Util.dateFormat(cliArgs.date, puzzleService.dateFormat));
+			path = path.replace(/#DATE#/, Util.dateFormat(puzzleService.date, puzzleService.dateFormat));
 		}
 
 		let options = {
@@ -402,7 +401,6 @@ module.exports.grabPuzzle = function(cliArgs) {
 
 					let entryRegexp = /<(?:entry|item)>(.*?)<\/(?:entry|item)>/g;
 					let entryMatch;
-					let delay = 0;
 
 					while ((entryMatch = entryRegexp.exec(body)) !== null) {
 						let linkRegexp = /<a.*?href="(.*?)".*?>(.*?)<\/a>/g;
@@ -429,17 +427,17 @@ module.exports.grabPuzzle = function(cliArgs) {
 									puzzleUrl = puzzleUrl.replace('https://www.dropbox.com/', 'https://dl.dropbox.com/');
 								}
 
-								if (!puzzleDatabase.find(puzzleRecord => puzzleRecord.filename == (puzzleService.shortName + '-' + Util.dateFormat(entryDate, '%Y-%m-%d') + '.puz'))) {
-									fetchPuzzle({
-										shortName: puzzleService.shortName,
-										url: puzzleUrl,
-										date: Util.dateFormat(entryDate, '%Y-%m-%d'),
-										strategy: 'puz',
-										headers: puzzleService.headers
-									});
-								}
+								grabPuzzle({
+									shortName: puzzleService.shortName,
+									url: puzzleUrl,
+									date: Util.dateFormat(entryDate, '%Y-%m-%d'),
+									strategy: 'puz',
+									headers: puzzleService.headers
+								}).then(function(puzzle) {
+									resolve(puzzle);
+								});
 
-								break; // only be willing to fetch one puzzle per post (for now)
+								return; // only be willing to fetch one puzzle per post per feed
 							}
 						}
 					}
@@ -449,10 +447,12 @@ module.exports.grabPuzzle = function(cliArgs) {
 				else if (puzzleService.strategy == 'scrape') {
 					let urlMatch = body.match(puzzleService.regExp);
 
-					fetchPuzzle({
+					grabPuzzle({
 						shortName: puzzleService.shortName,
 						url: urlMatch[0],
 						strategy: puzzleService.postScrapeStrategy
+					}).then(function(puzzle) {
+						resolve(puzzle);
 					});
 
 					return;
@@ -477,4 +477,7 @@ module.exports.grabPuzzle = function(cliArgs) {
 
 		request.end();
 	});
-}
+};
+
+module.exports.findService = findService;
+module.exports.grabPuzzle = grabPuzzle;

@@ -60,22 +60,31 @@ process.argv.forEach((argument, i) => {
 });
 
 if (cliArgs.filename) {
-	let puzFilename = cliArgs.filename;
+	let puzzleService = Grabber.findService(cliArgs.filename);
 
-	try {
-		fs.accessSync(puzFilename);
-	} catch (error) {
-		console.log(error);
-		process.exit();
+	if (puzzleService) {
+		puzzleService.date = cliArgs.date;
+
+		Grabber.grabPuzzle(puzzleService).then(launchPuzzle).catch(displayError);
 	}
+	else if (cliArgs.filename.match(/https?:\/\//)) {
+		Grabber.grabPuzzle({ url: cliArgs.filename, strategy: 'puz' }).then(launchPuzzle).catch(displayError);
+	}
+	else {
+		let puzFilename = cliArgs.filename;
 
-	let puzzle = new Puzzle();
+		try {
+			fs.accessSync(puzFilename);
+		} catch (error) {
+			console.log(error);
+			process.exit();
+		}
 
-	puzzle.loadFromFile(puzFilename);
-	launchPuzzle(puzzle);
-}
-else if (cliArgs.shortName) {
-	Grabber.grabPuzzle({ shortName: cliArgs.shortName, date: cliArgs.date }).then(launchPuzzle).catch(displayError);
+		let puzzle = new Puzzle();
+
+		puzzle.loadFromFile(puzFilename);
+		launchPuzzle(puzzle);
+	}
 }
 
 function launchPuzzle(puzzle) {

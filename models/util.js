@@ -56,10 +56,12 @@ Util.formatString = function(string, width, indent, padLines) {
 	});
 
 	if (line.length > indent) {
+		line += CLEAR_LINE;
 		lines.push(line);
 	}
 
 	while (lines.length < padLines) {
+		line += CLEAR_LINE;
 		lines.push('');
 	}
 

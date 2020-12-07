@@ -238,51 +238,6 @@ let puzzleServices = [
 	}
 ];
 
-/*
-process.argv.forEach((argument, i) => {
-	if (i < 2) {
-		return;
-	}
-
-	if (argument == '--date') {
-		cliArgs.date = 'expect';
-	}
-	else if (argument == '--short-name') {
-		cliArgs.shortName = 'expect';
-	}
-	else if (argument == '--url') {
-		cliArgs.url = 'expect';
-	}
-	else if (argument == '--strategy') {
-		cliArgs.strategy = 'expect';
-	}
-	else if (cliArgs.date == 'expect') {
-		cliArgs.date = new Date(argument + ' 00:00:00') || new Date();
-	}
-	else if (cliArgs.shortName == 'expect') {
-		cliArgs.shortName = argument;
-	}
-	else if (cliArgs.url == 'expect') {
-		cliArgs.url = argument;
-	}
-	else if (cliArgs.strategy == 'expect') {
-		cliArgs.strategy = argument;
-	}
-});
-
-let puzzleDatabase = Util.openJsonFile(path.resolve(__dirname, '../puzzles.json'));
-
-if (cliArgs.shortName && cliArgs.url && cliArgs.strategy) {
-	puzzleServices.push({
-		shortName: cliArgs.shortName,
-		url: cliArgs.url,
-		strategy: cliArgs.strategy
-	});
-}
-
-let servicePromises = [];
-*/
-
 let findService = function(shortName) {
 	return puzzleServices.find(puzzleService => { return puzzleService.shortName == shortName; });
 };

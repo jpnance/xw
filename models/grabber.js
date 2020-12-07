@@ -310,7 +310,9 @@ module.exports.grabPuzzle = function(cliArgs) {
 			});
 		}
 
-		path = path.replace(/#DATE#/, Util.dateFormat(cliArgs.date, puzzleService.dateFormat));
+		if (puzzleService.dateFormat) {
+			path = path.replace(/#DATE#/, Util.dateFormat(cliArgs.date, puzzleService.dateFormat));
+		}
 
 		let options = {
 			hostname: hostname,

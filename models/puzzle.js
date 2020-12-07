@@ -39,8 +39,8 @@ const FOREGROUND_GRAY_58 = "\033[38;5;246m";
 const FOREGROUND_GRAY_74 = "\033[38;5;250m";
 const FOREGROUND_GRAY_89 = "\033[38;5;255m";
 
-const BOLD = "\x1b[1m";
 const RESET = "\x1b[0m";
+const BOLD = "\x1b[1m";
 
 const COLOR = (foreground, background) => {
 	let foregroundColor = "\033[38;5;" + foreground + 'm';

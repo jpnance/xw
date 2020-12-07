@@ -182,6 +182,7 @@ Util.sanitizeClue = function(clue) {
 	clue = clue.replace('’', '\'');
 	clue = clue.replace('“', '"');
 	clue = clue.replace('”', '"');
+	clue = clue.replace('\'\'', '"');
 
 	let italicizations = clue.match(/<i>(.*?)<\/i>/g);
 
@@ -199,6 +200,8 @@ Util.sanitizeClue = function(clue) {
 			clue = clue.replace(italicization, replacementString);
 		});
 	}
+
+	clue = clue.replace(/<\/?.*?>/g, '');
 
 	return clue;
 };

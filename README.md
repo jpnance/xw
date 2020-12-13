@@ -16,7 +16,11 @@ If you get sick of using valuable hard drive space on two-kilobyte puzzles, `xw 
 
 Finally, there's one more syntax that's a little wonky but is what I use most often. You see, I've [predefined](https://github.com/jpnance/xw/blob/main/models/grabber.js) a bunch of bookmarks to the puzzles I do most often: [USA Today](https://puzzles.usatoday.com/), [New York Times](https://www.nytimes.com/crosswords/game/daily), among many others. For most of these services, `xw <puzzle service short name>` will instantly grab the latest puzzle that service has to offer. `xw lat` will fetch the latest [Los Angeles Times puzzle](https://www.latimes.com/games/daily-crossword) and `xw club72` will retrieve the latest [Tim Croce concoction](https://club72.wordpress.com/) (yes! RSS feeds work!), and so on. You'll have to browse through the others to see what else is available.
 
-In the case of the New York Times Crossword, though, there's a little extra work needed. First, of course, you'll have to have an NYTXW subscription. Then, you'll need to copy and paste your `NYT-S` cookie from your browser into a file called `.env` at the root of wherever your system installed xw, most likely `/usr/local/lib/node_modules/xw`. The only line in that file should be: `NYT_COOKIE=NYT-S=<cookie value which is pretty long and has a lot of random looking characters>`. Then, `xw nyt` will work just like the other short names. (I know this part is a bit involved. I hope to improve it soon.)
+In the case of the New York Times Crossword, though, there's a little extra work needed. First, of course, you'll have to have an NYTXW subscription. Then, you'll need to copy and paste your `NYT-S` cookie from your browser into a file called `.xw.conf` at the root of wherever your system installed xw, most likely `/usr/local/lib/node_modules/xw`. The only line in that file should be:
+
+	{ "nytCookie": "NYT-S=<cookie value which is pretty long and has a lot of random looking characters>" }
+
+Then, `xw nyt` will work just like the other short names. (I know this part is a bit involved. I hope to improve it soon.)
 
 Oh, yeah, and if you want to do a puzzle from a specific date, try something like `xw usa-today --date 2020-09-20`.
 

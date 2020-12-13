@@ -1,11 +1,23 @@
-const dotenv = require('dotenv').config({ path: __dirname + '/../.env' });
-
 const { http, https } = require('follow-redirects');
 const fs = require('fs');
 const path = require('path');
 
 const Util = require('./util');
 const Puzzle = require('./puzzle');
+
+const configFilename = path.resolve(process.env.HOME, '.xw.conf');
+
+let configFile;
+
+try {
+	fs.accessSync(path.resolve(configFilename), fs.constants.R_OK);
+	configFile = JSON.parse(fs.readFileSync(path.resolve(configFilename)));
+
+	if (configFile.nytCookie) {
+		process.env.NYT_COOKIE = configFile.nytCookie;
+	}
+} catch (error) {
+}
 
 let puzzleServices = [
 	// puz files
@@ -15,7 +27,7 @@ let puzzleServices = [
 		dateFormat: '%b%d%y',
 		strategy: 'puz',
 		headers: {
-			'Cookie': process.env.NYT_COOKIE
+			'Cookie': configFile.nytCookie
 		}
 	},
 	/*

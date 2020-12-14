@@ -331,6 +331,12 @@ function launchPuzzle(puzzle) {
 					puzzleOptions.solverMode.secondary = null;
 				}
 			}
+			else if (key == '^') {
+				puzzle.cursorToFirstSquare();
+			}
+			else if (key == '$') {
+				puzzle.cursorToLastSquare();
+			}
 		}
 		else if (puzzleOptions.solverMode.primary == 'last-line') {
 			if (key == '\r') {

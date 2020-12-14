@@ -1285,6 +1285,7 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 
 		for (candidateX; candidateX >= 0; candidateX--) {
 			if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
+				this.cursorToFirstBlank();
 				return;
 			}
 
@@ -1298,12 +1299,16 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 		if (candidateX >= 0) {
 			this.cursor.x = candidateX;
 		}
+		else {
+			this.cursorToFirstBlank();
+		}
 	}
 	else if (direction == 'right') {
 		let candidateX = this.cursor.x + 1;
 
 		for (candidateX; candidateX < this.grid[this.cursor.y].length; candidateX++) {
 			if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
+				this.cursorToFirstBlank();
 				return;
 			}
 
@@ -1317,12 +1322,16 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 		if (candidateX < this.grid[this.cursor.y].length) {
 			this.cursor.x = candidateX;
 		}
+		else {
+			this.cursorToFirstBlank();
+		}
 	}
 	else if (direction == 'up') {
 		let candidateY = this.cursor.y - 1;
 
 		for (candidateY; candidateY >= 0; candidateY--) {
 			if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
+				this.cursorToFirstBlank();
 				return;
 			}
 
@@ -1336,12 +1345,16 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 		if (candidateY >= 0) {
 			this.cursor.y = candidateY;
 		}
+		else {
+			this.cursorToFirstBlank();
+		}
 	}
 	else if (direction == 'down') {
 		let candidateY = this.cursor.y + 1;
 
 		for (candidateY; candidateY < this.grid.length; candidateY++) {
 			if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
+				this.cursorToFirstBlank();
 				return;
 			}
 
@@ -1354,6 +1367,9 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 
 		if (candidateY < this.grid.length) {
 			this.cursor.y = candidateY;
+		}
+		else {
+			this.cursorToFirstBlank();
 		}
 	}
 };

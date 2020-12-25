@@ -918,7 +918,7 @@ Puzzle.prototype.showSolverState = function(options) {
 	console.log(Util.formatString(''));
 
 	if (this.notes.length > 0) {
-		console.log(Util.formatString(this.notes, this.width * 3, 0));
+		console.log(Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0));
 		console.log(Util.formatString(''));
 	}
 
@@ -1205,6 +1205,8 @@ Puzzle.prototype.showMinimaps = function(options) {
 	let changesLine = '';
 	let orderLine = '';
 
+	let notesLines = Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length + 1;
+
 	for (let y = 0; y < this.grid.length; y++) {
 		changesLine = '';
 		orderLine = '';
@@ -1251,9 +1253,9 @@ Puzzle.prototype.showMinimaps = function(options) {
 		changesLine += RESET;
 		orderLine += RESET;
 
-		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + y));
+		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + notesLines + y));
 		console.log(BACKGROUND_BLACK + FOREGROUND_GRAY_58 + ' │ ' + FOREGROUND_BLACK + changesLine);
-		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + y + this.grid.length));
+		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + notesLines + y + this.grid.length));
 		console.log(BACKGROUND_BLACK + FOREGROUND_GRAY_58 + ' │ ' + FOREGROUND_BLACK + orderLine);
 	}
 

@@ -879,8 +879,11 @@ Puzzle.prototype.getDownWord = function(x, y) {
 
 Puzzle.prototype.logGuess = function(guess) {
 	if (this.grid[this.cursor.y][this.cursor.x].guess != guess.toUpperCase()) {
-		this.grid[this.cursor.y][this.cursor.x].order = ++(this.guessCount);
-		this.grid[this.cursor.y][this.cursor.x].changes += 1;
+		if (guess != '-') {
+			this.grid[this.cursor.y][this.cursor.x].order = ++(this.guessCount);
+			this.grid[this.cursor.y][this.cursor.x].changes += 1;
+		}
+
 		this.grid[this.cursor.y][this.cursor.x].guess = guess.toUpperCase();
 
 		delete this.grid[this.cursor.y][this.cursor.x].incorrect;

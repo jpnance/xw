@@ -345,6 +345,10 @@ function launchPuzzle(puzzle) {
 				if (lastLineCommand.startsWith('*')) {
 					let rebus = lastLineCommand.substring(1);
 
+					if (rebus == '') {
+						rebus = '-';
+					}
+
 					puzzleOptions.solverMode.primary = puzzleOptions.solverMode.tertiary; // this is a small abuse of the tertiary field but we want to return whence we came
 					puzzleOptions.solverMode.tertiary = null;
 

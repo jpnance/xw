@@ -1205,7 +1205,11 @@ Puzzle.prototype.showMinimaps = function(options) {
 	let changesLine = '';
 	let orderLine = '';
 
-	let notesLines = Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length + 1;
+	let notesLines = Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length;
+
+	if (notesLines > 1) {
+		notesLines += 2;
+	}
 
 	for (let y = 0; y < this.grid.length; y++) {
 		changesLine = '';
@@ -1253,9 +1257,9 @@ Puzzle.prototype.showMinimaps = function(options) {
 		changesLine += RESET;
 		orderLine += RESET;
 
-		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + notesLines + y));
+		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 4 + notesLines + y));
 		console.log(BACKGROUND_BLACK + FOREGROUND_GRAY_58 + ' │ ' + FOREGROUND_BLACK + changesLine);
-		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 5 + notesLines + y + this.grid.length));
+		process.stdout.write(CURSOR_POSITION((this.grid[0].length * 3) + 1, 4 + notesLines + y + this.grid.length));
 		console.log(BACKGROUND_BLACK + FOREGROUND_GRAY_58 + ' │ ' + FOREGROUND_BLACK + orderLine);
 	}
 

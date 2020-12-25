@@ -285,8 +285,8 @@ function launchPuzzle(puzzle) {
 			else if (key == ' ') {
 				puzzle.switchDirection();
 			}
-			else if (key == '\x07' || key == '\x1b') {
-				// esc
+			else if (key == '\x07' || key == '\x1b' || key == '\x03') {
+				// esc or ^C
 				puzzleOptions.solverMode.primary = 'command';
 				puzzle.removeAnchor();
 			}

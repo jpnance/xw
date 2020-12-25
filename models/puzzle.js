@@ -1090,7 +1090,8 @@ Puzzle.prototype.showSolverState = function(options) {
 	}
 
 	if (!options.title) {
-		let clueIndentation = Math.max(thisClue.number.toString().length, crossClue.number.toString().length) + 3;
+		let clueIndentation = Math.max(thisClue.number.toString().length, crossClue.number.toString().length);
+		let clueIndentationDifference = thisClue.number.toString().length - crossClue.number.toString().length;
 
 		console.log(Util.formatString(''));
 		console.log(Util.formatString(words.guess + ' (' + words.answer.length + ')'));
@@ -1098,16 +1099,16 @@ Puzzle.prototype.showSolverState = function(options) {
 
 		if (options.downsOnly) {
 			if (this.direction == 'down') {
-				console.log(BOLD + Util.formatString(thisClue.number + thisClue.direction + '. ' + thisClue.clue, this.width * 3, clueIndentation) + RESET);
+				console.log(BOLD + ' '.repeat(clueIndentationDifference < 0 ? Math.abs(clueIndentationDifference) : 0) + Util.formatString(thisClue.number.toString().padStart(clueIndentation, ' ') + thisClue.direction + '. ' + thisClue.clue, this.width * 3, clueIndentation + 3) + RESET);
 			}
 			else {
-				console.log(FOREGROUND_GRAY_58 + Util.formatString(crossClue.number + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation) + RESET);
+				console.log(FOREGROUND_GRAY_58 + ' '.repeat(clueIndentationDifference > 0 ? Math.abs(clueIndentationDifference) : 0) + Util.formatString(crossClue.number.toString().padStart(clueIndentation, ' ') + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation + 3) + RESET);
 			}
 		}
 		else {
-			console.log(BOLD + Util.formatString(thisClue.number + thisClue.direction + '. ' + thisClue.clue, this.width * 3, clueIndentation) + RESET);
+			console.log(BOLD + ' '.repeat(clueIndentationDifference < 0 ? Math.abs(clueIndentationDifference) : 0) + Util.formatString(thisClue.number.toString().padStart(clueIndentation, ' ') + thisClue.direction + '. ' + thisClue.clue, this.width * 3, clueIndentation + 3) + RESET);
 			console.log(Util.formatString(''));
-			console.log(FOREGROUND_GRAY_58 + Util.formatString(crossClue.number + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation) + RESET);
+			console.log(FOREGROUND_GRAY_58 + ' '.repeat(clueIndentationDifference > 0 ? Math.abs(clueIndentationDifference) : 0) + Util.formatString(crossClue.number.toString().padStart(clueIndentation, ' ') + crossClue.direction + '. ' + crossClue.clue, this.width * 3, clueIndentation + 3) + RESET);
 		}
 
 		console.log(CLEAR_REST_OF_SCREEN);

@@ -10,16 +10,23 @@ const CURSOR_UP = "\033[1A";
 
 const BACKGROUND_BLACK = "\033[48;5;0m";
 const BACKGROUND_WHITE = "\033[48;5;15m";
-const BACKGROUND_DARK_SLATE_GRAY = "\033[48;5;87m";
+const BACKGROUND_DARK_SLATE_GRAY_2 = "\033[48;5;87m";
+const BACKGROUND_LIGHT_SKY_BLUE_2 = "\033[48;5;110m";
+const BACKGROUND_DARK_SLATE_GRAY_1 = "\033[48;5;123m";
+const BACKGROUND_LIGHT_SKY_BLUE_1 = "\033[48;5;153m";
 const BACKGROUND_DARK_OLIVE_GREEN_2 = "\033[48;5;155m";
 const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
 const BACKGROUND_DARK_OLIVE_GREEN_1 = "\033[48;5;192m";
+const BACKGROUND_HONEYDEW_2 = "\033[48;5;194m";
 const BACKGROUND_LIGHT_CYAN = "\033[48;5;195m";
 const BACKGROUND_RED = "\033[48;5;196m";
 const BACKGROUND_LIGHT_PINK = "\033[48;5;217m";
 const BACKGROUND_GOLD = "\033[48;5;220m";
 const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
+const BACKGROUND_LIGHT_GOLDENROD_2 = "\033[48;5;222m";
+const BACKGROUND_NAVAJO_WHITE_1 = "\033[48;5;223m";
 const BACKGROUND_LIGHT_GOLDENROD = "\033[48;5;227m";
+const BACKGROUND_WHEAT_1 = "\033[48;5;229m";
 const BACKGROUND_CORN_SILK_1 = "\033[48;5;230m";
 const BACKGROUND_GRAY_79 = "\033[48;5;251m";
 const BACKGROUND_GRAY_85 = "\033[48;5;253m";
@@ -101,7 +108,8 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 				answer: String.fromCharCode(puzFile[0x34 + x + (y * this.width)]),
 				guess: String.fromCharCode(puzFile[0x34 + x + (y * this.width) + (this.width * this.height)]),
 				order: 0,
-				changes: 0
+				changes: 0,
+				percentile: -1
 			};
 		}
 	}
@@ -1004,8 +1012,8 @@ Puzzle.prototype.showSolverState = function(options) {
 							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 						}
 						else if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY
+							colorLine1 = BACKGROUND_DARK_SLATE_GRAY_2 + FOREGROUND_TEAL;
+							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY_2
 						}
 						else {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
@@ -1018,8 +1026,8 @@ Puzzle.prototype.showSolverState = function(options) {
 							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
 						}
 						else if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_DARK_SLATE_GRAY + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY;
+							colorLine1 = BACKGROUND_DARK_SLATE_GRAY_2 + FOREGROUND_TEAL;
+							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY_2;
 						}
 						else {
 							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
@@ -1174,11 +1182,17 @@ Puzzle.prototype.check = function() {
 
 Puzzle.prototype.tabulateStats = function() {
 	let guessOrders = [];
+	let totalSquares = 0;
 
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (this.grid[y][x].answer != '.' && this.grid[y][x].order != undefined) {
-				guessOrders.push(this.grid[y][x].order);
+
+			if (this.grid[y][x].answer != '.') {
+				totalSquares += 1;
+
+				if (this.grid[y][x].order != undefined && this.grid[y][x].order != 0) {
+					guessOrders.push(this.grid[y][x].order);
+				}
 			}
 		}
 	}
@@ -1201,7 +1215,7 @@ Puzzle.prototype.tabulateStats = function() {
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
 			if (this.grid[y][x].answer != '.' && this.grid[y][x].order != undefined) {
-				this.grid[y][x].percentile = guessOrders.indexOf(this.grid[y][x].order) / guessOrders.length;
+				this.grid[y][x].percentile = guessOrders.indexOf(this.grid[y][x].order) / totalSquares;
 			}
 		}
 	}
@@ -1247,11 +1261,17 @@ Puzzle.prototype.showMinimaps = function(options) {
 					changesLine += BACKGROUND_LIGHT_PINK;
 				}
 
-				if (!this.grid[y][x].percentile || this.grid[y][x].percentile < 0.67) {
+				if (this.grid[y][x].percentile == undefined || this.grid[y][x].percentile < 0) {
 					orderLine += BACKGROUND_WHITE;
 				}
-				else if (this.grid[y][x].percentile < 0.89) {
-					orderLine += BACKGROUND_MISTY_ROSE;
+				else if (this.grid[y][x].percentile < 0.25) {
+					orderLine += BACKGROUND_WHITE;
+				}
+				else if (this.grid[y][x].percentile < 0.50) {
+					orderLine += BACKGROUND_WHEAT_1;
+				}
+				else if (this.grid[y][x].percentile < 0.75) {
+					orderLine += BACKGROUND_NAVAJO_WHITE_1;
 				}
 				else {
 					orderLine += BACKGROUND_LIGHT_PINK;

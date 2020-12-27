@@ -25,18 +25,18 @@ Then, `xw nyt` will work just like the other short names. (I know this part is a
 Oh, yeah, and if you want to do a puzzle from a specific date, try something like `xw usa-today --date 2020-09-20`.
 
 ## IT WON'T LET ME TYPE... (15)
-Yeah, once you start it up, you may realize it acts a little strange. Think of it very much like you're in vi and, by default, you start in command mode.
+Yeah, once you start it up, you may realize it acts a little strange. Think of it very much like you're in vi and, by default, you start in normal mode.
 
 * Use `i` to go into insert mode and then you'll be able to start typing
-* `ESC` or `enter` will get you out of insert mode and back into command mode
-* `h`, `j`, `k`, and `l` will move the cursor around in command mode
+* `ESC` or `enter` will get you out of insert mode and back into normal mode
+* `h`, `j`, `k`, and `l` will move the cursor around in normal mode
 * `H`, `J`, `K`, and `L` will do the same in insert mode (very useful so you can navigate without having to leave insert mode)
 * The arrow keys work, too
 * `Spacebar` switches between across and down
-* `w` and `b` in command mode (and their uppercase counterparts in insert mode) will take you to the next and previous numerical clues, respectively
+* `w` and `b` in normal mode (and their uppercase counterparts in insert mode) will take you to the next and previous numerical clues, respectively
 * Start a rebus with `*` and commit it with `enter`
 * `/` in insert mode will drop an anchor at the current square; the next time you press `enter`, the cursor will automatically be warped to that anchor spot (this is a killer feature exclusive to xw)
-* In command mode, jump directly to clue 42-down by typing `/42d`
+* In normal mode, jump directly to clue 42-down by typing `/42d`
 * `:check` will show you any errors you have in your solution
 * `:reveal` will reveal all of the answers, marking the squares you had wrong
 
@@ -48,7 +48,7 @@ I know! Isn't it great being able to bang through crosswords at a humble termina
 ## NO, LIKE, LITERALLY (15)
 Oh, right. Well, it wouldn't be vi-like if it were easy to exit, ha ha!
 
-`:q` in command mode will do the trick (`:x` works, too). The ol' tried-and-true press-`ESC`-a-bunch-of-times-and-then-`:q` strategy works great.
+`:q` in normal mode will do the trick (`:x` works, too). The ol' tried-and-true press-`ESC`-a-bunch-of-times-and-then-`:q` strategy works great.
 
 Look, I know the vi-like schtick won't be for everybody. I'm considering making it optional but that'd be a bit into the future. This is the hacker's crossword solver and vi's two main modes of operation actually translate very well for crossword solving, in my opinion. xw works great for me and I really hope it'll work well for you, too.
 

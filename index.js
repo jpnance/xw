@@ -113,7 +113,7 @@ function launchPuzzle(puzzle) {
 		if (puzzleOptions.solverMode.primary == 'title-screen') {
 			switch (key) {
 				case '\r':
-					puzzleOptions.solverMode.primary = 'command';
+					puzzleOptions.solverMode.primary = 'normal';
 					timer = new Date();
 
 					if (puzzleOptions.downsOnly) {
@@ -128,7 +128,7 @@ function launchPuzzle(puzzle) {
 					break;
 			}
 		}
-		else if (puzzleOptions.solverMode.primary == 'command') {
+		else if (puzzleOptions.solverMode.primary == 'normal') {
 			switch (key) {
 				case '\r':
 					puzzle.cursorToNextClue();
@@ -231,20 +231,20 @@ function launchPuzzle(puzzle) {
 					break;
 
 				case ':':
-					puzzleOptions.solverMode.primary = 'last-line';
+					puzzleOptions.solverMode.primary = 'command';
 					lastLineCommand = ':';
 					process.stdout.write(key);
 					break;
 
 				case '/':
-					puzzleOptions.solverMode.primary = 'last-line';
+					puzzleOptions.solverMode.primary = 'command';
 					lastLineCommand = '/';
 					process.stdout.write(key);
 					break;
 
 				case '*':
-					puzzleOptions.solverMode.primary = 'last-line';
-					puzzleOptions.solverMode.tertiary = 'command';
+					puzzleOptions.solverMode.primary = 'command';
+					puzzleOptions.solverMode.tertiary = 'normal';
 					lastLineCommand = '*';
 					process.stdout.write(key);
 					break;
@@ -259,7 +259,7 @@ function launchPuzzle(puzzle) {
 				puzzle.logGuess(key);
 
 				if (puzzleOptions.solverMode.secondary == 'one-character') {
-					puzzleOptions.solverMode.primary = 'command';
+					puzzleOptions.solverMode.primary = 'normal';
 					puzzleOptions.solverMode.secondary = null;
 				}
 				else if (puzzleOptions.solverMode.secondary == 'overwrite') {
@@ -270,7 +270,7 @@ function launchPuzzle(puzzle) {
 				}
 			}
 			else if (key == '*') {
-					puzzleOptions.solverMode.primary = 'last-line';
+					puzzleOptions.solverMode.primary = 'command';
 					puzzleOptions.solverMode.tertiary = 'insert';
 					lastLineCommand = '*';
 			}
@@ -287,7 +287,7 @@ function launchPuzzle(puzzle) {
 			}
 			else if (key == '\x07' || key == '\x1b' || key == '\x03') {
 				// esc or ^C
-				puzzleOptions.solverMode.primary = 'command';
+				puzzleOptions.solverMode.primary = 'normal';
 				puzzle.removeAnchor();
 			}
 			else if (key == '\x7f') {
@@ -298,7 +298,7 @@ function launchPuzzle(puzzle) {
 			}
 			else if (key == '\r') {
 				// enter
-				puzzleOptions.solverMode.primary = 'command';
+				puzzleOptions.solverMode.primary = 'normal';
 
 				puzzle.weighAnchor();
 				puzzle.cursorToFirstBlank();
@@ -338,9 +338,9 @@ function launchPuzzle(puzzle) {
 				puzzle.cursorToLastSquare();
 			}
 		}
-		else if (puzzleOptions.solverMode.primary == 'last-line') {
+		else if (puzzleOptions.solverMode.primary == 'command') {
 			if (key == '\r') {
-				puzzleOptions.solverMode.primary = 'command';
+				puzzleOptions.solverMode.primary = 'normal';
 
 				if (lastLineCommand.startsWith('*')) {
 					let rebus = lastLineCommand.substring(1);
@@ -355,7 +355,7 @@ function launchPuzzle(puzzle) {
 					puzzle.logGuess(rebus);
 
 					if (puzzleOptions.solverMode.secondary == 'one-character') {
-						puzzleOptions.solverMode.primary = 'command';
+						puzzleOptions.solverMode.primary = 'normal';
 						puzzleOptions.solverMode.secondary = null;
 					}
 					else if (puzzleOptions.solverMode.secondary == 'overwrite') {
@@ -412,7 +412,7 @@ function launchPuzzle(puzzle) {
 			}
 		}
 
-		if (puzzleOptions.solverMode.primary != 'last-line') {
+		if (puzzleOptions.solverMode.primary != 'command') {
 			if (puzzle.isComplete()) {
 				if (puzzleOptions.solverMode.secondary != 'done') {
 					timer = (new Date()) - timer;
@@ -427,7 +427,7 @@ function launchPuzzle(puzzle) {
 				console.log(Util.formatString(''));
 				console.log('Completed in ' + Util.formatTimer(timer) + '!');
 
-				puzzleOptions.solverMode.primary = 'command';
+				puzzleOptions.solverMode.primary = 'normal';
 				puzzleOptions.solverMode.secondary = 'done';
 			}
 			else {

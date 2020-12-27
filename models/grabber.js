@@ -27,7 +27,7 @@ let puzzleServices = [
 		dateFormat: '%b%d%y',
 		strategy: 'puz',
 		headers: {
-			'Cookie': configFile.nytCookie
+			'Cookie': configFile && configFile.nytCookie ? configFile.nytCookie : ''
 		}
 	},
 	/*

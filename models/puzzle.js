@@ -1264,17 +1264,17 @@ Puzzle.prototype.showMinimaps = function(options) {
 				if (this.grid[y][x].percentile == undefined || this.grid[y][x].percentile < 0) {
 					orderLine += BACKGROUND_WHITE;
 				}
-				else if (this.grid[y][x].percentile < 0.25) {
-					orderLine += BACKGROUND_WHITE;
+				else if (this.grid[y][x].percentile < options.percentiles[0].value) {
+					orderLine += COLOR(0, options.percentiles[0].color);
 				}
-				else if (this.grid[y][x].percentile < 0.50) {
-					orderLine += BACKGROUND_WHEAT_1;
+				else if (this.grid[y][x].percentile < options.percentiles[1].value) {
+					orderLine += COLOR(0, options.percentiles[1].color);
 				}
-				else if (this.grid[y][x].percentile < 0.75) {
-					orderLine += BACKGROUND_NAVAJO_WHITE_1;
+				else if (this.grid[y][x].percentile < options.percentiles[2].value) {
+					orderLine += COLOR(0, options.percentiles[2].color);
 				}
-				else {
-					orderLine += BACKGROUND_LIGHT_PINK;
+				else if (this.grid[y][x].percentile < options.percentiles[3].value) {
+					orderLine += COLOR(0, options.percentiles[3].color);
 				}
 			}
 

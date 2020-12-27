@@ -101,7 +101,26 @@ function launchPuzzle(puzzle) {
 			primary: 'title-screen',
 			secondary: null,
 			tertiary: null
-		}
+		},
+
+		percentiles: [
+			{
+				value: 0.50,
+				color: 189
+			},
+			{
+				value: 0.75,
+				color: 147,
+			},
+			{
+				value: 0.875,
+				color: 105
+			},
+			{
+				value: 1.00,
+				color: 63
+			}
+		]
 	};
 
 	puzzleOptions.downsOnly = cliArgs.downsOnly;
@@ -391,6 +410,15 @@ function launchPuzzle(puzzle) {
 				else if (lastLineCommand == ':check') {
 					puzzle.check();
 				}
+				else if (lastLineCommand.startsWith(':set')) {
+					var commandParams = lastLineCommand.split(' ');
+					var percentileIndex = parseInt(commandParams[1]);
+					var percentileColor = parseInt(commandParams[2]);
+
+					if (puzzleOptions.percentiles[percentileIndex] && percentileColor != undefined) {
+						puzzleOptions.percentiles[percentileIndex].color = percentileColor;
+					}
+				}
 				else {
 					let lastLineMatch = lastLineCommand.match(/\/(\d\d?\d?)(a|d)?/);
 
@@ -410,7 +438,7 @@ function launchPuzzle(puzzle) {
 					}
 				}
 			}
-			else if ('0123456789abcdefghijklmnopqrstuvwxyz'.includes(key)) {
+			else if ('0123456789abcdefghijklmnopqrstuvwxyz '.includes(key)) {
 				lastLineCommand += key;
 				process.stdout.write(key);
 			}

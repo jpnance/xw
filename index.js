@@ -225,6 +225,10 @@ function launchPuzzle(puzzle) {
 					puzzle.moveCursor(null, true);
 					break;
 
+				case '?':
+					puzzle.markUnsure();
+					break;
+
 				case '^':
 					puzzle.cursorToFirstSquare();
 					break;
@@ -276,6 +280,9 @@ function launchPuzzle(puzzle) {
 					puzzleOptions.solverMode.primary = 'command';
 					puzzleOptions.solverMode.tertiary = 'insert';
 					lastLineCommand = '*';
+			}
+			else if (key == '?') {
+				puzzle.markUnsure();
 			}
 			else if (key == '/') {
 				if (puzzle.direction == 'across') {

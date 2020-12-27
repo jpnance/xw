@@ -890,6 +890,10 @@ Puzzle.prototype.logGuess = function(guess) {
 	}
 };
 
+Puzzle.prototype.markUnsure = function() {
+	this.grid[this.cursor.y][this.cursor.x].unsure = !this.grid[this.cursor.y][this.cursor.x].unsure;
+};
+
 Puzzle.prototype.showSolverState = function(options) {
 	options = options || {};
 

@@ -246,14 +246,14 @@ function launchPuzzle(puzzle) {
 				case '/':
 					puzzleOptions.solverMode.primary = 'command';
 					lastLineCommand = '/';
-					process.stdout.write(key);
+					process.stdout.write(CURSOR_TO_BOTTOM + SHOW_CURSOR + key);
 					break;
 
 				case '*':
 					puzzleOptions.solverMode.primary = 'command';
 					puzzleOptions.solverMode.tertiary = 'normal';
 					lastLineCommand = '*';
-					process.stdout.write(key);
+					process.stdout.write(CURSOR_TO_BOTTOM + SHOW_CURSOR + key);
 					break;
 
 				case ' ':

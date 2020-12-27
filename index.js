@@ -2,9 +2,12 @@
 
 const CURSOR_POSITION = (x, y) => { return "\033[" + x + ";" + y + "H"; };
 const CURSOR_LEFT = "\033[1D";
+const CURSOR_TO_BOTTOM = "\033[1000B";
 const CLEAR_SCREEN = "\033[2J";
 const SAVE_CURSOR = "\033[s";
 const RESTORE_CURSOR = "\033[u";
+const HIDE_CURSOR = "\033[?25l";
+const SHOW_CURSOR = "\033[?25h";
 
 const fs = require('fs');
 const path = require('path');
@@ -233,7 +236,7 @@ function launchPuzzle(puzzle) {
 				case ':':
 					puzzleOptions.solverMode.primary = 'command';
 					lastLineCommand = ':';
-					process.stdout.write(key);
+					process.stdout.write(CURSOR_TO_BOTTOM + SHOW_CURSOR + key);
 					break;
 
 				case '/':
@@ -404,7 +407,7 @@ function launchPuzzle(puzzle) {
 				lastLineCommand += key;
 				process.stdout.write(key);
 			}
-			else if (key.charCodeAt(0) == 127) {
+			else if (key.charCodeAt(0) == 127 && lastLineCommand.length > 1) {
 				lastLineCommand = lastLineCommand.substring(0, lastLineCommand.length - 1);
 				process.stdout.write(CURSOR_LEFT);
 				process.stdout.write(' ');
@@ -413,6 +416,8 @@ function launchPuzzle(puzzle) {
 		}
 
 		if (puzzleOptions.solverMode.primary != 'command') {
+			process.stdout.write(HIDE_CURSOR);
+
 			if (puzzle.isComplete()) {
 				if (puzzleOptions.solverMode.secondary != 'done') {
 					timer = (new Date()) - timer;
@@ -442,6 +447,7 @@ function launchPuzzle(puzzle) {
 	process.stdout.write(CLEAR_SCREEN);
 	process.stdout.write(CURSOR_POSITION(0, 0));
 	process.stdout.write(SAVE_CURSOR);
+	process.stdout.write(HIDE_CURSOR);
 
 	puzzle.showSolverState(puzzleOptions);
 	puzzle.showMinimaps(puzzleOptions);

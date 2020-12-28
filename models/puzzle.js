@@ -9,55 +9,19 @@ const RESTORE_CURSOR = "\033[u";
 const CURSOR_UP = "\033[1A";
 
 const BACKGROUND_BLACK = "\033[48;5;0m";
-const BACKGROUND_WHITE = "\033[48;5;15m";
-const BACKGROUND_DARK_SLATE_GRAY_2 = "\033[48;5;87m";
-const BACKGROUND_LIGHT_SKY_BLUE_2 = "\033[48;5;110m";
-const BACKGROUND_DARK_SLATE_GRAY_1 = "\033[48;5;123m";
-const BACKGROUND_LIGHT_SKY_BLUE_1 = "\033[48;5;153m";
-const BACKGROUND_DARK_OLIVE_GREEN_2 = "\033[48;5;155m";
-const BACKGROUND_PALE_TURQUOISE = "\033[48;5;159m";
-const BACKGROUND_DARK_OLIVE_GREEN_1 = "\033[48;5;192m";
-const BACKGROUND_HONEYDEW_2 = "\033[48;5;194m";
-const BACKGROUND_LIGHT_CYAN = "\033[48;5;195m";
-const BACKGROUND_RED = "\033[48;5;196m";
-const BACKGROUND_LIGHT_PINK = "\033[48;5;217m";
-const BACKGROUND_GOLD = "\033[48;5;220m";
-const BACKGROUND_MISTY_ROSE = "\033[48;5;224m";
-const BACKGROUND_LIGHT_GOLDENROD_2 = "\033[48;5;222m";
-const BACKGROUND_NAVAJO_WHITE_1 = "\033[48;5;223m";
-const BACKGROUND_LIGHT_GOLDENROD = "\033[48;5;227m";
-const BACKGROUND_WHEAT_1 = "\033[48;5;229m";
-const BACKGROUND_CORN_SILK_1 = "\033[48;5;230m";
-const BACKGROUND_GRAY_79 = "\033[48;5;251m";
-const BACKGROUND_GRAY_85 = "\033[48;5;253m";
-const BACKGROUND_GRAY_89 = "\033[48;5;254m";
-const BACKGROUND_GRAY_93 = "\033[48;5;255m";
 
 const FOREGROUND_BLACK = "\033[38;5;0m";
-const FOREGROUND_TEAL = "\033[38;5;6m";
-const FOREGROUND_WHITE = "\033[38;5;15m";
-const FOREGROUND_DARK_OLIVE_GREEN_3 = "\033[38;5;107m";
-const FOREGROUND_RED = "\033[38;5;196m";
-const FOREGROUND_DARK_ORANGE = "\033[38;5;208m";
-const FOREGROUND_ORANGE = "\033[38;5;214m";
-const FOREGROUND_GOLD = "\033[38;5;220m";
-const FOREGROUND_LIGHT_GOLDENROD = "\033[38;5;227m";
 const FOREGROUND_GRAY_58 = "\033[38;5;246m";
-const FOREGROUND_GRAY_74 = "\033[38;5;250m";
-const FOREGROUND_GRAY_89 = "\033[38;5;255m";
 
 const RESET = "\x1b[0m";
 const BOLD = "\x1b[1m";
 
-const COLOR = (foreground, background) => {
-	let foregroundColor = "\033[38;5;" + foreground + 'm';
-	let backgroundColor = '';
+const FOREGROUND = (foreground) => {
+	return "\033[38;5;" + foreground + 'm';
+};
 
-	if (background) {
-		backgroundColor = "\033[48;5;" + background + 'm';
-	}
-
-	return foregroundColor + backgroundColor;
+const BACKGROUND = (background) => {
+	return "\033[48;5;" + background + 'm';
 };
 
 const Util = require('./util');
@@ -939,141 +903,66 @@ Puzzle.prototype.showSolverState = function(options) {
 
 	let clues = 1;
 
+	let solverMode = options.solverMode.primary;
+	let squareType = 'standard';
+	let squareVariation = 'uncircled';
+
 	for (let y = 0; y < this.grid.length; y++) {
 		let outputLine1 = '';
 		let outputLine2 = '';
 
 		for (let x = 0; x < this.grid[y].length; x++) {
 			if (options.title) {
-				outputLine1 += BACKGROUND_WHITE + '   ' + RESET;
-				outputLine2 += BACKGROUND_WHITE + '   ' + RESET;
+				outputLine1 += BACKGROUND(options.colors.squares.standard.uncircled.normal.background) + '   ' + RESET;
+				outputLine2 += BACKGROUND(options.colors.squares.standard.uncircled.normal.background) + '   ' + RESET;
+			}
+			else if (this.grid[y][x].answer == '.') {
+				outputLine1 += BACKGROUND(options.colors.squares.empty) + '   ' + RESET;
+				outputLine2 += BACKGROUND(options.colors.squares.empty) + '   ' + RESET;
 			}
 			else {
-				if (options.solverMode.primary == 'normal') {
-					if (x == this.cursor.x && y == this.cursor.y) {
-						if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-							colorLine2 = BOLD + BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-						}
-						else {
-							colorLine1 = BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
-							colorLine2 = BOLD + BACKGROUND_CORN_SILK_1 + FOREGROUND_GOLD;
-						}
-					}
-					else if (mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) {
-						if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-						}
-						else {
-							colorLine1 = BACKGROUND_LIGHT_CYAN + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_LIGHT_CYAN;
-						}
-					}
-					else if (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length) {
-						if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-						}
-						else {
-							colorLine1 = BACKGROUND_LIGHT_CYAN + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_LIGHT_CYAN;
-						}
-					}
-					else {
-						if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-							colorLine2 = BOLD + BACKGROUND_GRAY_93;
-						}
-						else {
-							colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-							colorLine2 = BOLD + BACKGROUND_WHITE;
-						}
-					}
+				if (this.grid[y][x].circled) {
+					squareVariation = 'circled';
 				}
 				else {
-					if (x == this.cursor.x && y == this.cursor.y) {
-						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_2 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						}
-						else if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_GOLD + FOREGROUND_ORANGE;
-							colorLine2 = BOLD + BACKGROUND_GOLD + FOREGROUND_ORANGE;
-						}
-						else {
-							colorLine1 = BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-							colorLine2 = BOLD + BACKGROUND_LIGHT_GOLDENROD + FOREGROUND_ORANGE;
-						}
-					}
-					else if (mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) {
-						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						}
-						else if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_DARK_SLATE_GRAY_2 + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY_2
-						}
-						else {
-							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE;
-						}
-					}
-					else if (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length) {
-						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						}
-						else if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_DARK_SLATE_GRAY_2 + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_DARK_SLATE_GRAY_2;
-						}
-						else {
-							colorLine1 = BACKGROUND_PALE_TURQUOISE + FOREGROUND_TEAL;
-							colorLine2 = BOLD + BACKGROUND_PALE_TURQUOISE;
-						}
-					}
-					else {
-						if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
-							colorLine1 = BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-							colorLine2 = BOLD + BACKGROUND_DARK_OLIVE_GREEN_1 + FOREGROUND_DARK_OLIVE_GREEN_3;
-						}
-						else if (this.grid[y][x].circled) {
-							colorLine1 = BACKGROUND_GRAY_93 + FOREGROUND_GRAY_74;
-							colorLine2 = BOLD + BACKGROUND_GRAY_93;
-						}
-						else {
-							colorLine1 = BACKGROUND_WHITE + FOREGROUND_GRAY_74;
-							colorLine2 = BOLD + BACKGROUND_WHITE;
-						}
-					}
+					squareVariation = 'uncircled';
 				}
 
-				if (this.grid[y][x].answer == '.') {
-					outputLine1 += BACKGROUND_BLACK + FOREGROUND_WHITE + '   ' + RESET;
+				if (this.anchor && x == this.anchor.x && y == this.anchor.y) {
+					squareType = 'anchor';
+				}
+				else if (x == this.cursor.x && y == this.cursor.y) {
+					squareType = 'cursor';
+				}
+				else if ((mode == 'across' && y == thisClue.origin.y && x >= thisClue.origin.x && x < thisClue.origin.x + words.answer.length) || (mode == 'down' && x == thisClue.origin.x && y >= thisClue.origin.y && y < thisClue.origin.y + words.answer.length)) {
+					squareType = 'highlighted';
 				}
 				else {
-					if (this.grid[y][x].revealed) {
-						colorLine2 += FOREGROUND_RED;
-					}
-					else if (this.grid[y][x].incorrect) {
-						colorLine2 += FOREGROUND_DARK_ORANGE;
-					}
-					else if (this.grid[y][x].unsure) {
-						colorLine2 += FOREGROUND_ORANGE;
-					}
-					else {
-						colorLine2 += FOREGROUND_BLACK;
-					}
+					squareType = 'standard';
+				}
 
-					if (this.needsAcrossNumber(x, y) || this.needsDownNumber(x, y)) {
-						outputLine1 += colorLine1 + clues + (clues < 10 ? ' ' : '') + (clues < 100 ? ' ' : '') + RESET;
-						clues++;
-					}
-					else {
-						outputLine1 += colorLine1 + '   ' + RESET;
-					}
+				colorLine1 = BACKGROUND(options.colors.squares[squareType][squareVariation][solverMode].background) + FOREGROUND(options.colors.squares[squareType][squareVariation][solverMode].clueNumber);
+				colorLine2 = BOLD + BACKGROUND(options.colors.squares[squareType][squareVariation][solverMode].background);
+
+				if (this.grid[y][x].revealed) {
+					colorLine2 += FOREGROUND(options.colors.guesses.revealed);
+				}
+				else if (this.grid[y][x].incorrect) {
+					colorLine2 += FOREGROUND(options.colors.guesses.incorrect);
+				}
+				else if (this.grid[y][x].unsure) {
+					colorLine2 += FOREGROUND(options.colors.guesses.unsure);
+				}
+				else {
+					colorLine2 += FOREGROUND(options.colors.guesses.standard);
+				}
+
+				if (this.needsAcrossNumber(x, y) || this.needsDownNumber(x, y)) {
+					outputLine1 += colorLine1 + clues + (clues < 10 ? ' ' : '') + (clues < 100 ? ' ' : '') + RESET;
+					clues++;
+				}
+				else {
+					outputLine1 += colorLine1 + '   ' + RESET;
 				}
 
 				if (this.grid[y][x].guess.length > 1) {
@@ -1082,7 +971,7 @@ Puzzle.prototype.showSolverState = function(options) {
 				else {
 					switch (this.grid[y][x].guess) {
 						case '.':
-							outputLine2 += BACKGROUND_BLACK + '   ' + RESET;
+							outputLine2 += BACKGROUND(options.colors.squares.empty) + '   ' + RESET;
 							break;
 
 						case '-':
@@ -1239,42 +1128,42 @@ Puzzle.prototype.showMinimaps = function(options) {
 
 		for (let x = 0; x < this.grid[y].length; x++) {
 			if (options.solverMode.primary == 'title-screen') {
-				changesLine += BACKGROUND_WHITE;
-				orderLine += BACKGROUND_WHITE;
+				changesLine += BACKGROUND(options.colors.squares.standard.uncircled.normal.background);
+				orderLine += BACKGROUND(options.colors.squares.standard.uncircled.normal.background);
 			}
 			else if (this.grid[y][x].answer == '.') {
-				changesLine += BACKGROUND_BLACK;
-				orderLine += BACKGROUND_BLACK;
+				changesLine += BACKGROUND(options.colors.squares.empty);
+				orderLine += BACKGROUND(options.colors.squares.empty);
 			}
 			else if (this.grid[y][x].revealed) {
-				changesLine += BACKGROUND_RED;
-				orderLine += BACKGROUND_RED;
+				changesLine += BACKGROUND(options.colors.guesses.revealed);
+				orderLine += BACKGROUND(options.colors.guesses.revealed);
 			}
 			else {
 				if (this.grid[y][x].changes <= 1) {
-					changesLine += BACKGROUND_WHITE;
+					changesLine += BACKGROUND(options.colors.minimaps.changes[0]);
 				}
 				else if (this.grid[y][x].changes == 2) {
-					changesLine += BACKGROUND_MISTY_ROSE;
+					changesLine += BACKGROUND(options.colors.minimaps.changes[1]);
 				}
 				else {
-					changesLine += BACKGROUND_LIGHT_PINK;
+					changesLine += BACKGROUND(options.colors.minimaps.changes[2]);
 				}
 
 				if (this.grid[y][x].percentile == undefined || this.grid[y][x].percentile < 0) {
-					orderLine += BACKGROUND_WHITE;
+					orderLine += BACKGROUND(options.colors.squares.standard.uncircled.normal.background);
 				}
-				else if (this.grid[y][x].percentile < options.percentiles[0].value) {
-					orderLine += COLOR(0, options.percentiles[0].color);
+				else if (this.grid[y][x].percentile < options.colors.minimaps.solveOrder.percentiles[0].value) {
+					orderLine += BACKGROUND(options.colors.minimaps.solveOrder.percentiles[0].color);
 				}
-				else if (this.grid[y][x].percentile < options.percentiles[1].value) {
-					orderLine += COLOR(0, options.percentiles[1].color);
+				else if (this.grid[y][x].percentile < options.colors.minimaps.solveOrder.percentiles[1].value) {
+					orderLine += BACKGROUND(options.colors.minimaps.solveOrder.percentiles[1].color);
 				}
-				else if (this.grid[y][x].percentile < options.percentiles[2].value) {
-					orderLine += COLOR(0, options.percentiles[2].color);
+				else if (this.grid[y][x].percentile < options.colors.minimaps.solveOrder.percentiles[2].value) {
+					orderLine += BACKGROUND(options.colors.minimaps.solveOrder.percentiles[2].color);
 				}
-				else if (this.grid[y][x].percentile < options.percentiles[3].value) {
-					orderLine += COLOR(0, options.percentiles[3].color);
+				else if (this.grid[y][x].percentile < options.colors.minimaps.solveOrder.percentiles[3].value) {
+					orderLine += BACKGROUND(options.colors.minimaps.solveOrder.percentiles[3].color);
 				}
 			}
 

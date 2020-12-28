@@ -103,24 +103,134 @@ function launchPuzzle(puzzle) {
 			tertiary: null
 		},
 
-		percentiles: [
-			{
-				value: 0.50,
-				color: 189
+		colors: {
+			guesses: {
+				standard: 16,
+				unsure: 214,
+				incorrect: 208,
+				revealed: 196,
 			},
-			{
-				value: 0.75,
-				color: 147,
+			squares: {
+				empty: 16,
+				standard: {
+					uncircled: {
+						normal: {
+							background: 231,
+							clueNumber: 250
+						},
+						insert: {
+							background: 231,
+							clueNumber: 250
+						}
+					},
+					circled: {
+						normal: {
+							background: 255,
+							clueNumber: 250
+						},
+						insert: {
+							background: 255,
+							clueNumber: 250
+						}
+					}
+				},
+				highlighted: {
+					uncircled: {
+						normal: {
+							background: 195,
+							clueNumber: 74
+						},
+						insert: {
+							background: 159,
+							clueNumber: 30
+						}
+					},
+					circled: {
+						normal: {
+							background: 159,
+							clueNumber: 74
+						},
+						insert: {
+							background: 87,
+							clueNumber: 30
+						}
+					}
+				},
+				cursor: {
+					uncircled: {
+						normal: {
+							background: 230,
+							clueNumber: 220
+						},
+						insert: {
+							background: 227,
+							clueNumber: 214
+						}
+					},
+					circled: {
+						normal: {
+							background: 227,
+							clueNumber: 214
+						},
+						insert: {
+							background: 220,
+							clueNumber: 214
+						}
+					}
+				},
+				anchor: {
+					uncircled: {
+						normal: {
+							background: 192,
+							clueNumber: 107
+						},
+						insert: {
+							background: 192,
+							clueNumber: 107
+						}
+					},
+					circled: {
+						normal: {
+							background: 192,
+							clueNumber: 107
+						},
+						insert: {
+							background: 192,
+							clueNumber: 107
+						}
+					}
+				}
 			},
-			{
-				value: 0.875,
-				color: 105
-			},
-			{
-				value: 1.00,
-				color: 63
+
+			minimaps: {
+				changes: [
+					231,
+					224,
+					217
+				],
+				solveOrder: {
+					percentiles: [
+						{
+							value: 0.50,
+							color: 189
+						},
+						{
+							value: 0.75,
+							color: 147,
+						},
+						{
+							value: 0.875,
+							color: 105
+						},
+						{
+							value: 1.00,
+							color: 63
+
+						}
+					]
+				}
 			}
-		]
+		}
 	};
 
 	puzzleOptions.downsOnly = cliArgs.downsOnly;

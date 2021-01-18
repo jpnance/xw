@@ -62,35 +62,40 @@ process.argv.forEach((argument, i) => {
 	}
 });
 
-if (cliArgs.filename) {
-	let puzzleService = Grabber.findService(cliArgs.filename);
+findPuzzle(cliArgs);
 
-	if (puzzleService) {
-		puzzleService.date = cliArgs.date;
+function findPuzzle(cliArgs) {
+	if (cliArgs.filename) {
+		let puzzleService = Grabber.findService(cliArgs.filename);
 
-		Grabber.grabPuzzle(puzzleService).then(launchPuzzle).catch(displayError);
-	}
-	else if (cliArgs.filename.match(/https?:\/\//)) {
-		Grabber.grabPuzzle({ url: cliArgs.filename, strategy: 'puz' }).then(launchPuzzle).catch(displayError);
-	}
-	else {
-		let puzFilename = cliArgs.filename;
+		if (puzzleService) {
+			puzzleService.date = cliArgs.date;
 
-		try {
-			fs.accessSync(puzFilename);
-		} catch (error) {
-			console.log(error);
-			process.exit();
+			Grabber.grabPuzzle(puzzleService).then(launchPuzzle).catch(displayError);
 		}
+		else if (cliArgs.filename.match(/https?:\/\//)) {
+			Grabber.grabPuzzle({ url: cliArgs.filename, strategy: 'puz' }).then(launchPuzzle).catch(displayError);
+		}
+		else {
+			let puzFilename = cliArgs.filename;
 
-		let puzzle = new Puzzle();
+			try {
+				fs.accessSync(puzFilename);
 
-		puzzle.loadFromFile(puzFilename);
-		launchPuzzle(puzzle);
+				let puzzle = new Puzzle();
+
+				puzzle.loadFromFile(puzFilename);
+				launchPuzzle(puzzle);
+			} catch (error) {
+				displayError(error);
+			}
+		}
 	}
 }
 
 function launchPuzzle(puzzle) {
+	process.stdin.removeAllListeners();
+
 	let timer = null;
 
 	let puzzleOptions = {
@@ -514,6 +519,13 @@ function launchPuzzle(puzzle) {
 				else if (lastLineCommand == ':q') {
 					quit();
 				}
+				else if (lastLineCommand.startsWith(':e')) {
+					var commandParams = lastLineCommand.split(' ');
+					var newPuzzle = commandParams[1];
+
+					cliArgs.filename = newPuzzle;
+					findPuzzle(cliArgs);
+				}
 				else if (lastLineCommand == ':reveal') {
 					puzzle.reveal();
 				}
@@ -548,15 +560,15 @@ function launchPuzzle(puzzle) {
 					}
 				}
 			}
-			else if ('0123456789abcdefghijklmnopqrstuvwxyz '.includes(key)) {
-				lastLineCommand += key;
-				process.stdout.write(key);
-			}
 			else if (key.charCodeAt(0) == 127 && lastLineCommand.length > 1) {
 				lastLineCommand = lastLineCommand.substring(0, lastLineCommand.length - 1);
 				process.stdout.write(CURSOR_LEFT);
 				process.stdout.write(' ');
 				process.stdout.write(CURSOR_LEFT);
+			}
+			else {
+				lastLineCommand += key;
+				process.stdout.write(key);
 			}
 		}
 

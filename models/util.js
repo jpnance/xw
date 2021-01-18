@@ -207,7 +207,7 @@ Util.sanitizeClue = function(clue) {
 };
 
 Util.realLength = function(string) {
-	return string.replace(/\u001b\[24?m/, '').length;
+	return string.replace(UNDERLINE, '').replace(NO_UNDERLINE, '').length;
 };
 
 module.exports = Util;

@@ -560,11 +560,13 @@ function launchPuzzle(puzzle) {
 					}
 				}
 			}
-			else if (key.charCodeAt(0) == 127 && lastLineCommand.length > 1) {
-				lastLineCommand = lastLineCommand.substring(0, lastLineCommand.length - 1);
-				process.stdout.write(CURSOR_LEFT);
-				process.stdout.write(' ');
-				process.stdout.write(CURSOR_LEFT);
+			else if (key.charCodeAt(0) == 127) {
+				if (lastLineCommand.length > 1) {
+					lastLineCommand = lastLineCommand.substring(0, lastLineCommand.length - 1);
+					process.stdout.write(CURSOR_LEFT);
+					process.stdout.write(' ');
+					process.stdout.write(CURSOR_LEFT);
+				}
 			}
 			else {
 				lastLineCommand += key;

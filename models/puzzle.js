@@ -1208,7 +1208,10 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 
 		for (candidateX; candidateX >= 0; candidateX--) {
 			if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
-				this.cursorToFirstBlank();
+				if (jumpToBlank) {
+					this.cursorToFirstBlank();
+				}
+
 				return;
 			}
 
@@ -1223,7 +1226,9 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 			this.cursor.x = candidateX;
 		}
 		else {
-			this.cursorToFirstBlank();
+			if (jumpToBlank) {
+				this.cursorToFirstBlank();
+			}
 		}
 	}
 	else if (direction == 'right') {
@@ -1231,7 +1236,10 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 
 		for (candidateX; candidateX < this.grid[this.cursor.y].length; candidateX++) {
 			if (stopAtBlackCell && this.blackCellAt(candidateX, this.cursor.y)) {
-				this.cursorToFirstBlank();
+				if (jumpToBlank) {
+					this.cursorToFirstBlank();
+				}
+
 				return;
 			}
 
@@ -1246,7 +1254,9 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 			this.cursor.x = candidateX;
 		}
 		else {
-			this.cursorToFirstBlank();
+			if (jumpToBlank) {
+				this.cursorToFirstBlank();
+			}
 		}
 	}
 	else if (direction == 'up') {
@@ -1254,7 +1264,10 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 
 		for (candidateY; candidateY >= 0; candidateY--) {
 			if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
-				this.cursorToFirstBlank();
+				if (jumpToBlank) {
+					this.cursorToFirstBlank();
+				}
+
 				return;
 			}
 
@@ -1269,7 +1282,9 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 			this.cursor.y = candidateY;
 		}
 		else {
-			this.cursorToFirstBlank();
+			if (jumpToBlank) {
+				this.cursorToFirstBlank();
+			}
 		}
 	}
 	else if (direction == 'down') {
@@ -1277,7 +1292,10 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 
 		for (candidateY; candidateY < this.grid.length; candidateY++) {
 			if (stopAtBlackCell && this.blackCellAt(this.cursor.x, candidateY)) {
-				this.cursorToFirstBlank();
+				if (jumpToBlank) {
+					this.cursorToFirstBlank();
+				}
+
 				return;
 			}
 
@@ -1292,7 +1310,9 @@ Puzzle.prototype.moveCursor = function(direction, stopAtBlackCell, reverse, jump
 			this.cursor.y = candidateY;
 		}
 		else {
-			this.cursorToFirstBlank();
+			if (jumpToBlank) {
+				this.cursorToFirstBlank();
+			}
 		}
 	}
 };

@@ -407,7 +407,12 @@ function launchPuzzle(puzzle) {
 					puzzle.moveCursor(null, true, false, false);
 				}
 				else {
-					puzzle.moveCursor(null, true, false, true);
+					if (key == '-') {
+						puzzle.moveCursor(null, true, false, false);
+					}
+					else {
+						puzzle.moveCursor(null, true, false, true);
+					}
 				}
 			}
 			else if (key == '*') {

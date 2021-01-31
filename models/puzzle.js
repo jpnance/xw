@@ -1118,7 +1118,7 @@ Puzzle.prototype.showMinimaps = function(options) {
 
 	let notesLines = Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length;
 
-	if (notesLines > 1) {
+	if (notesLines >= 1) {
 		notesLines += 2;
 	}
 

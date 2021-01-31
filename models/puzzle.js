@@ -1116,11 +1116,7 @@ Puzzle.prototype.showMinimaps = function(options) {
 	let changesLine = '';
 	let orderLine = '';
 
-	let notesLines = Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length;
-
-	if (notesLines >= 1) {
-		notesLines += 2;
-	}
+	let notesLines = this.notes ? Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length + 2 : 1;
 
 	for (let y = 0; y < this.grid.length; y++) {
 		changesLine = '';

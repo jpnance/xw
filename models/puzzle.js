@@ -377,6 +377,90 @@ Puzzle.prototype.loadFromAmuseLabsJson = function(jsonPuzzle) {
 	this.loadFromPuzFile(this.generatePuzFileData());
 };
 
+Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
+	this.puzzleType = 1;
+
+	let publishDate = new Date(jsonPuzzle.puzzle_meta.printDate + ' 00:00:01');
+	let formattedDate = Util.dateFormat(publishDate, '%A, %B %-d, %Y');
+
+	this.title = jsonPuzzle.puzzle_meta.title || formattedDate;
+	this.author = jsonPuzzle.puzzle_meta.author;
+	this.copyright = jsonPuzzle.puzzle_meta.copyright;
+
+	this.grid = [];
+
+	this.width = jsonPuzzle.puzzle_meta.width;
+	this.height = jsonPuzzle.puzzle_meta.width;
+
+	let rebuses = [];
+
+	jsonPuzzle.puzzle_data.answers.forEach((answer, i) => {
+		let row = Math.floor(i / this.width);
+		let column = i % this.width;
+
+		if (!this.grid[row]) {
+			this.grid[row] = [];
+		}
+
+		if (!answer) {
+			this.grid[row].push({ answer: '.' });
+		}
+		else if (answer.length > 1) {
+			let mainAnswer = answer[0];
+
+			if (!rebuses.includes(mainAnswer)) {
+				rebuses.push(mainAnswer);
+			}
+
+			let rebusId = rebuses.indexOf(mainAnswer);
+
+			this.grid[row].push({ answer: mainAnswer, rebus: { id: rebusId, text: mainAnswer } });
+		}
+		else {
+			this.grid[row].push({ answer: answer });
+		}
+	});
+
+	this.clues = [];
+
+	let acrosses = [];
+	let downs = [];
+
+	let maxClueNumber = 0;
+
+	['A', 'D'].forEach((clueType) => {
+		jsonPuzzle.puzzle_data.clues[clueType].forEach((clue) => {
+			if (clue.clueNum > maxClueNumber) {
+				maxClueNumber = clue.clueNum;
+			}
+
+			if (clueType == 'A') {
+				acrosses.push(clue);
+			}
+			else if (clueType == 'D') {
+				downs.push(clue);
+			}
+		});
+	});
+
+	for (let i = 0; i <= maxClueNumber; i++) {
+		let acrossClue = acrosses.find(element => element.clueNum == i);
+		let downClue = downs.find(element => element.clueNum == i);
+
+		if (acrossClue) {
+			this.clues.push(acrossClue.value);
+		}
+
+		if (downClue) {
+			this.clues.push(downClue.value);
+		}
+	}
+
+	this.notes = jsonPuzzle.puzzle_meta.notes.length ? jsonPuzzle.puzzle_meta.notes.join(' ') : '';
+
+	this.loadFromPuzFile(this.generatePuzFileData());
+};
+
 Puzzle.prototype.loadFromUsaTodayJson = function(jsonPuzzle) {
 	this.puzzleType = 1;
 

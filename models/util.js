@@ -85,51 +85,86 @@ Util.dateFormat = function(date, format, adjustment) {
 		localDate.setDate(localDate.getDate() + adjustment);
 	}
 
+	if (output.includes('%a')) {
+		let day = localDate.getDay();
+		let dayString;
+
+		switch (day) {
+			case 0: dayString = 'Sun'; break;
+			case 1: dayString = 'Mon'; break;
+			case 2: dayString = 'Tue'; break;
+			case 3: dayString = 'Wed'; break;
+			case 4: dayString = 'Thu'; break;
+			case 5: dayString = 'Fri'; break;
+			case 6: dayString = 'Sat'; break;
+		}
+
+		output = output.replace('%a', dayString);
+	}
+
+	if (output.includes('%A')) {
+		let day = localDate.getDay();
+		let dayString;
+
+		switch (day) {
+			case 0: dayString = 'Sunday'; break;
+			case 1: dayString = 'Monday'; break;
+			case 2: dayString = 'Tuesday'; break;
+			case 3: dayString = 'Wednesday'; break;
+			case 4: dayString = 'Thursday'; break;
+			case 5: dayString = 'Friday'; break;
+			case 6: dayString = 'Saturday'; break;
+		}
+
+		output = output.replace('%A', dayString);
+	}
+
 	if (output.includes('%b')) {
 		let month = localDate.getMonth();
 		let monthString;
 
-		if (month == 0) {
-			monthString = 'Jan';
-		}
-		else if (month == 1) {
-			monthString = 'Feb';
-		}
-		else if (month == 2) {
-			monthString = 'Mar';
-		}
-		else if (month == 3) {
-			monthString = 'Apr';
-		}
-		else if (month == 4) {
-			monthString = 'May';
-		}
-		else if (month == 5) {
-			monthString = 'Jun';
-		}
-		else if (month == 6) {
-			monthString = 'Jul';
-		}
-		else if (month == 7) {
-			monthString = 'Aug';
-		}
-		else if (month == 8) {
-			monthString = 'Sep';
-		}
-		else if (month == 9) {
-			monthString = 'Oct';
-		}
-		else if (month == 10) {
-			monthString = 'Nov';
-		}
-		else if (month == 11) {
-			monthString = 'Dec';
+		switch (month) {
+			case 0: monthString = 'Jan'; break;
+			case 1: monthString = 'Feb'; break;
+			case 2: monthString = 'Mar'; break;
+			case 3: monthString = 'Apr'; break;
+			case 4: monthString = 'May'; break;
+			case 5: monthString = 'Jun'; break;
+			case 6: monthString = 'Jul'; break;
+			case 7: monthString = 'Aug'; break;
+			case 8: monthString = 'Sep'; break;
+			case 9: monthString = 'Oct'; break;
+			case 10: monthString = 'Nov'; break;
+			case 11: monthString = 'Dec'; break;
 		}
 
 		output = output.replace('%b', monthString);
 	}
 
+	if (output.includes('%B')) {
+		let month = localDate.getMonth();
+		let monthString;
+
+		switch (month) {
+			case 0: monthString = 'January'; break;
+			case 1: monthString = 'Febuary'; break;
+			case 2: monthString = 'March'; break;
+			case 3: monthString = 'April'; break;
+			case 4: monthString = 'May'; break;
+			case 5: monthString = 'June'; break;
+			case 6: monthString = 'July'; break;
+			case 7: monthString = 'August'; break;
+			case 8: monthString = 'September'; break;
+			case 9: monthString = 'October'; break;
+			case 10: monthString = 'November'; break;
+			case 11: monthString = 'December'; break;
+		}
+
+		output = output.replace('%B', monthString);
+	}
+
 	output = output.replace('%d', (localDate.getDate() < 10 ? '0' : '') + localDate.getDate());
+	output = output.replace('%-d', localDate.getDate());
 	output = output.replace('%m', (localDate.getMonth() < 9 ? '0' : '') + (localDate.getMonth() + 1));
 	output = output.replace('%y', localDate.getFullYear().toString().substring(2));
 	output = output.replace('%Y', localDate.getFullYear());

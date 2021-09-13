@@ -23,9 +23,9 @@ let puzzleServices = [
 	// puz files
 	{
 		shortName: 'nyt',
-		url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/#DATE#.puz',
-		dateFormat: '%b%d%y',
-		strategy: 'puz',
+		url: 'https://www.nytimes.com/svc/crosswords/v3/puzzles.json?status=published&order=published&sort=asc&pad=false&print_date_start=#DATE#&print_date_end=#DATE#&publish_type=daily',
+		dateFormat: '%Y-%m-%d',
+		strategy: 'nyt',
 		headers: {
 			'Cookie': configFile && configFile.nytCookie ? configFile.nytCookie : ''
 		}
@@ -256,7 +256,7 @@ let findService = function(shortName) {
 
 let grabPuzzle = function(puzzleService) {
 	return new Promise(function(resolve, reject) {
-		if (!['puz', 'amuselabs-json', 'amuselabs-widget', 'usa-today-json', 'rss', 'scrape'].includes(puzzleService.strategy)) {
+		if (!['puz', 'amuselabs-json', 'amuselabs-widget', 'usa-today-json', 'rss', 'scrape', 'nyt', 'nyt-json'].includes(puzzleService.strategy)) {
 			return;
 		}
 
@@ -277,7 +277,7 @@ let grabPuzzle = function(puzzleService) {
 		}
 
 		if (puzzleService.dateFormat) {
-			path = path.replace(/#DATE#/, Util.dateFormat(puzzleService.date, puzzleService.dateFormat));
+			path = path.replace(/#DATE#/g, Util.dateFormat(puzzleService.date, puzzleService.dateFormat));
 		}
 
 		let options = {
@@ -432,6 +432,23 @@ let grabPuzzle = function(puzzleService) {
 					}
 
 					puzzle.loadFromPuzFile(puzFile);
+				}
+				else if (puzzleService.strategy == 'nyt') {
+					let puzzleId = JSON.parse(body).results[0].puzzle_id;
+
+					grabPuzzle({
+						shortName: puzzleService.shortName,
+						url: 'https://www.nytimes.com/svc/crosswords/v2/puzzle/' + puzzleId + '.json',
+						headers: puzzleService.headers,
+						strategy: 'nyt-json',
+					}).then(function(puzzle) {
+						resolve(puzzle);
+					});
+
+					return;
+				}
+				else if (puzzleService.strategy == 'nyt-json') {
+					puzzle.loadFromNytJson(JSON.parse(body).results[0]);
 				}
 
 				resolve(puzzle);

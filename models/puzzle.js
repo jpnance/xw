@@ -390,7 +390,7 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 	this.grid = [];
 
 	this.width = jsonPuzzle.puzzle_meta.width;
-	this.height = jsonPuzzle.puzzle_meta.width;
+	this.height = jsonPuzzle.puzzle_meta.height;
 
 	let rebuses = [];
 

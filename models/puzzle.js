@@ -456,7 +456,13 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 		}
 	}
 
-	this.notes = jsonPuzzle.puzzle_meta.notes.length ? jsonPuzzle.puzzle_meta.notes.join(' ') : '';
+	this.notes = '';
+
+	if (jsonPuzzle.puzzle_meta.notes.length) {
+		let noteObject = jsonPuzzle.puzzle_meta.notes.find((note) => note.platforms.al);
+
+		this.notes = noteObject.txt;
+	}
 
 	this.loadFromPuzFile(this.generatePuzFileData());
 };
@@ -981,8 +987,10 @@ Puzzle.prototype.showSolverState = function(options) {
 	console.log(Util.formatString(''));
 
 	if (this.notes.length > 0) {
-		console.log(Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0));
-		console.log(Util.formatString(''));
+		this.notes.split(/\n\n/).forEach((paragraph) => {
+			console.log(Util.formatString(paragraph, this.width * 3 + 3 + this.width, 0));
+			console.log(Util.formatString(''));
+		});
 	}
 
 	let clues = 1;

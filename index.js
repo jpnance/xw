@@ -447,7 +447,10 @@ function launchPuzzle(puzzle) {
 			}
 			else if (key == '\r') {
 				// enter
-				puzzleOptions.solverMode.primary = 'normal';
+
+				if (!puzzle.anchor) {
+					puzzleOptions.solverMode.primary = 'normal';
+				}
 
 				puzzle.weighAnchor();
 				puzzle.cursorToFirstBlank();

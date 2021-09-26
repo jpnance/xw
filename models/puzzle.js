@@ -414,10 +414,10 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 
 			let rebusId = rebuses.indexOf(mainAnswer);
 
-			this.grid[row].push({ answer: mainAnswer, rebus: { id: rebusId, text: mainAnswer } });
+			this.grid[row].push({ answer: mainAnswer, rebus: { id: rebusId, text: mainAnswer }, circled: jsonPuzzle.puzzle_data.layout[i] == 3 });
 		}
 		else {
-			this.grid[row].push({ answer: answer });
+			this.grid[row].push({ answer: answer, circled: jsonPuzzle.puzzle_data.layout[i] == 3 });
 		}
 	});
 

@@ -56,13 +56,8 @@ let puzzleServices = [
 	// amuselabs json
 	{
 		shortName: 'lat',
-		parameters: {
-			id: 'tca#DATE#',
-			set: 'latimes'
-		},
-		dateFormat: '%y%m%d',
-		url: 'https://cdn4.amuselabs.com/lat/crossword',
-		strategy: 'amuselabs-json'
+		url: 'https://cdn4.amuselabs.com/lat/date-picker?set=latimes',
+		strategy: 'lat'
 	},
 	{
 		shortName: 'lat-mini',
@@ -256,7 +251,7 @@ let findService = function(shortName) {
 
 let grabPuzzle = function(puzzleService) {
 	return new Promise(function(resolve, reject) {
-		if (!['puz', 'amuselabs-json', 'amuselabs-widget', 'usa-today-json', 'rss', 'scrape', 'nyt', 'nyt-json'].includes(puzzleService.strategy)) {
+		if (!['puz', 'amuselabs-json', 'amuselabs-widget', 'usa-today-json', 'rss', 'scrape', 'nyt', 'nyt-json', 'lat'].includes(puzzleService.strategy)) {
 			return;
 		}
 
@@ -449,6 +444,25 @@ let grabPuzzle = function(puzzleService) {
 				}
 				else if (puzzleService.strategy == 'nyt-json') {
 					puzzle.loadFromNytJson(JSON.parse(body).results[0]);
+				}
+				else if (puzzleService.strategy == 'lat') {
+					let tokenParamsMatch = body.match(/pickerParams.rawsps = '(.*?)';/);
+					let tokenParams = JSON.parse(Buffer.from(tokenParamsMatch[1], 'base64').toString('utf-8'));
+
+					grabPuzzle({
+						shortName: puzzleService.shortName,
+						parameters: {
+							id: 'tca' + Util.dateFormat(puzzleService.date, '%y%m%d'),
+							set: 'latimes',
+							pickerToken: tokenParams.pickerToken
+						},
+						url: 'https://cdn4.amuselabs.com/lat/crossword',
+						strategy: 'amuselabs-json'
+					}).then(function(puzzle) {
+						resolve(puzzle);
+					});
+
+					return;
 				}
 
 				resolve(puzzle);

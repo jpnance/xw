@@ -1208,7 +1208,14 @@ Puzzle.prototype.showMinimaps = function(options) {
 	let changesLine = '';
 	let orderLine = '';
 
-	let notesLines = this.notes ? Util.formatString(this.notes, this.width * 3 + 3 + this.width, 0).split('\n').length + 2 : 1;
+	let notesLines = 1;
+
+	if (this.notes.length > 0) {
+		this.notes.split(/\n\n/).forEach((paragraph) => {
+			notesLines += Util.formatString(paragraph, this.width * 3 + 3 + this.width, 0).split('\n').length + 1;
+		});
+	}
+
 
 	for (let y = 0; y < this.grid.length; y++) {
 		changesLine = '';

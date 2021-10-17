@@ -398,6 +398,8 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 		let row = Math.floor(i / this.width);
 		let column = i % this.width;
 
+		let circled = jsonPuzzle.puzzle_data.layout[i] == 3 || jsonPuzzle.puzzle_data.layout[i] == 9;
+
 		if (!this.grid[row]) {
 			this.grid[row] = [];
 		}
@@ -414,10 +416,10 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 
 			let rebusId = rebuses.indexOf(mainAnswer);
 
-			this.grid[row].push({ answer: mainAnswer, rebus: { id: rebusId, text: mainAnswer }, circled: jsonPuzzle.puzzle_data.layout[i] == 3 });
+			this.grid[row].push({ answer: mainAnswer, rebus: { id: rebusId, text: mainAnswer }, circled: circled });
 		}
 		else {
-			this.grid[row].push({ answer: answer, circled: jsonPuzzle.puzzle_data.layout[i] == 3 });
+			this.grid[row].push({ answer: answer, circled: circled });
 		}
 	});
 

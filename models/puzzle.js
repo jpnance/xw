@@ -982,9 +982,9 @@ Puzzle.prototype.showSolverState = function(options) {
 	let colorLine1;
 	let colorLine2;
 
-	console.log(Util.formatString(this.title));
-	console.log(Util.formatString(this.author));
-	console.log(Util.formatString(this.copyright));
+	console.log(Util.formatString(decodeURIComponent(this.title)));
+	console.log(Util.formatString(decodeURIComponent(this.author)));
+	console.log(Util.formatString(decodeURIComponent(this.copyright)));
 
 	console.log(Util.formatString(''));
 

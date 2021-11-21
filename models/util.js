@@ -58,7 +58,7 @@ Util.formatString = function(string, width, indent, padLines) {
 		}
 	});
 
-	if (Util.realLength(line) > indent) {
+	if (Util.realLength(line) > 0) {
 		line += CLEAR_LINE;
 		lines.push(line);
 	}

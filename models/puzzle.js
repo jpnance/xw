@@ -1120,7 +1120,10 @@ Puzzle.prototype.showSolverState = function(options) {
 Puzzle.prototype.isComplete = function() {
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {
-			if (this.grid[y][x].guess != this.grid[y][x].answer) {
+			if (this.grid[y][x].rebus && this.grid[y][x].guess != '-') {
+				continue;
+			}
+			else if (this.grid[y][x].guess != this.grid[y][x].answer) {
 				return false;
 			}
 		}

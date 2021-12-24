@@ -48,9 +48,9 @@ let puzzleServices = [
 	},
 	{
 		shortName: 'universal',
-		url: 'http://herbach.dnsalias.com/uc/uc#DATE#.puz',
-		dateFormat: '%y%m%d',
-		strategy: 'puz'
+		url: 'https://gamedata.services.amuniversal.com/c/uucom/l/U2FsdGVkX12FXglTxChY2FQBAQx5LhOwZyN3P5Mb89g444wl4Gbcz3nPIsRLAC9Hd9fodCQI7rw7B0EB5lKa5qP3w1eNQgx3a22ODdertgM/g/fcx/d/#DATE#/data.json',
+		dateFormat: '%Y-%m-%d',
+		strategy: 'usa-today-json'
 	},
 
 	// amuselabs json

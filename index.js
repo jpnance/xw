@@ -542,12 +542,27 @@ function launchPuzzle(puzzle) {
 				}
 				else if (lastLineCommand.startsWith(':set')) {
 					var commandParams = lastLineCommand.split(' ');
+
+					switch (commandParams[1]) {
+						case 'downsOnly':
+							if (commandParams[2] == 'on') {
+								puzzleOptions.downsOnly = true;
+							}
+							else if (commandParams[2] == 'off') {
+								puzzleOptions.downsOnly = false;
+							}
+
+							break;
+					}
+
+					/*
 					var percentileIndex = parseInt(commandParams[1]);
 					var percentileColor = parseInt(commandParams[2]);
 
 					if (puzzleOptions.percentiles[percentileIndex] && percentileColor != undefined) {
 						puzzleOptions.percentiles[percentileIndex].color = percentileColor;
 					}
+					*/
 				}
 				else {
 					let lastLineMatch = lastLineCommand.match(/\/(\d\d?\d?)(a|d)?/);

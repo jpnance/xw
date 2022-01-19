@@ -461,7 +461,7 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 	this.notes = '';
 
 	if (jsonPuzzle.puzzle_meta.notes.length) {
-		let noteObject = jsonPuzzle.puzzle_meta.notes.find((note) => note.platforms.al);
+		let noteObject = jsonPuzzle.puzzle_meta.notes.find((note) => note.platforms.web);
 
 		this.notes = noteObject.txt;
 	}

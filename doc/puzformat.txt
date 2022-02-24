@@ -84,7 +84,7 @@ Clue Assignment
 ===============
 Nowhere in the file does it specify which cells get numbers or which clues correspond to which numbers. These are instead derived from the shape of the puzzle.
 
-Here's a sketch of one way to assign numbers and clues to cells. First, some helper functions:
+Here's a sketch of one way to assign numbers and clues to cells. First, some helper functions that assume that each answer is at least three characters in length (if this is not an acceptable assumption, you'll need to modify):
 
 	# Returns true if the cell at (x, y) gets an "across" clue number.
 

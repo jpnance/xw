@@ -885,7 +885,7 @@ Puzzle.prototype.blackCellAt = function(x, y) {
 
 Puzzle.prototype.needsAcrossNumber = function(x, y) {
 	if (x == 0 || this.blackCellAt(x - 1, y)) {
-		if (!this.blackCellAt(x + 1, y) && !this.blackCellAt(x + 2, y)) {
+		if (!this.blackCellAt(x + 1, y)) {
 			return true;
 		}
 	}
@@ -895,7 +895,7 @@ Puzzle.prototype.needsAcrossNumber = function(x, y) {
 
 Puzzle.prototype.needsDownNumber = function(x, y) {
 	if (y == 0 || this.blackCellAt(x, y - 1)) {
-		if (!this.blackCellAt(x, y + 1) && !this.blackCellAt(x, y + 2)) {
+		if (!this.blackCellAt(x, y + 1)) {
 			return true;
 		}
 	}

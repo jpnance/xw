@@ -883,6 +883,94 @@ Puzzle.prototype.blackCellAt = function(x, y) {
 	return this.grid[y][x].answer == '.';
 }
 
+Puzzle.prototype.guessAt = function(x, y) {
+	return this.grid[y][x].guess;
+}
+
+Puzzle.prototype.firstBlankIndexIn = function(clue) {
+	let firstBlankIndex;
+
+	if (clue.direction == 'A') {
+		for (let i = clue.origin.x; i < this.width; i++) {
+			if (this.blackCellAt(i, clue.origin.y)) {
+				return firstBlankIndex;
+			}
+			else if (this.guessAt(i, clue.origin.y) == '-') {
+				return i;
+			}
+		}
+	}
+	else if (clue.direction == 'D') {
+		for (let i = clue.origin.y; i < this.height; i++) {
+			if (this.blackCellAt(clue.origin.x, i)) {
+				return firstBlankIndex;
+			}
+			else if (this.guessAt(clue.origin.x, i) == '-') {
+				return i;
+			}
+		}
+	}
+
+	return firstBlankIndex;
+}
+
+Puzzle.prototype.firstIndexIn = function(clue) {
+	if (clue.direction == 'A') {
+		return clue.origin.x;
+	}
+	else if (clue.direction == 'D') {
+		return clue.origin.y;
+	}
+}
+
+Puzzle.prototype.lastBlankIndexIn = function(clue) {
+	let lastBlankIndex;
+
+	if (clue.direction == 'A') {
+		for (let i = clue.origin.x; i < this.width; i++) {
+			if (this.blackCellAt(i, clue.origin.y)) {
+				return lastBlankIndex;
+			}
+			else if (this.guessAt(i, clue.origin.y) == '-') {
+				lastBlankIndex = i;
+			}
+		}
+	}
+	else if (clue.direction == 'D') {
+		for (let i = clue.origin.y; i < this.height; i++) {
+			if (this.blackCellAt(clue.origin.x, i)) {
+				return lastBlankIndex;
+			}
+			else if (this.guessAt(clue.origin.x, i) == '-') {
+				lastBlankIndex = i;
+			}
+		}
+	}
+
+	return lastBlankIndex;
+}
+
+Puzzle.prototype.lastIndexIn = function(clue) {
+	if (clue.direction == 'A') {
+		for (let i = clue.origin.x; i < this.width; i++) {
+			if (this.blackCellAt(i, clue.origin.y)) {
+				return i - 1;
+			}
+		}
+
+		return this.width - 1;
+	}
+	else if (clue.direction == 'D') {
+		for (let i = clue.origin.y; i < this.height; i++) {
+			if (this.blackCellAt(clue.origin.x, i)) {
+				return i - 1;
+			}
+		}
+
+		return this.height - 1;
+	}
+}
+
 Puzzle.prototype.needsAcrossNumber = function(x, y) {
 	if (x == 0 || this.blackCellAt(x - 1, y)) {
 		if (!this.blackCellAt(x + 1, y)) {
@@ -1567,32 +1655,47 @@ Puzzle.prototype.cursorToClue = function(number, direction) {
 
 Puzzle.prototype.cursorToFirstSquare = function() {
 	let clue = this.getClueFor(this.cursor, this.direction);
+	let firstBlankIndexInClue = this.firstBlankIndexIn(clue);
+	let firstIndexInClue = this.firstIndexIn(clue);
 
-	this.moveCursorTo(clue.origin.x, clue.origin.y);
+	if (this.direction == 'across') {
+		if (this.cursor.x == firstBlankIndexInClue) {
+			this.moveCursorTo(firstIndexInClue, clue.origin.y)
+		}
+		else if (this.cursor.x != firstIndexInClue) {
+			this.moveCursorTo(firstBlankIndexInClue, clue.origin.y)
+		}
+	}
+	else if (this.direction == 'down') {
+		if (this.cursor.y == firstBlankIndexInClue) {
+			this.moveCursorTo(clue.origin.x, firstIndexInClue)
+		}
+		else if (this.cursor.y != firstIndexInClue) {
+			this.moveCursorTo(clue.origin.x, firstBlankIndexInClue)
+		}
+	}
 };
 
 Puzzle.prototype.cursorToLastSquare = function() {
 	let clue = this.getClueFor(this.cursor, this.direction);
+	let lastBlankIndexInClue = this.lastBlankIndexIn(clue);
+	let lastIndexInClue = this.lastIndexIn(clue);
 
 	if (this.direction == 'across') {
-		for (let i = this.cursor.x; i < this.width; i++) {
-			if (this.blackCellAt(i, clue.origin.y)) {
-				this.cursor.x = i - 1;
-				return;
-			}
+		if (this.cursor.x == lastBlankIndexInClue || !lastBlankIndexInClue) {
+			this.moveCursorTo(lastIndexInClue, clue.origin.y)
 		}
-
-		this.cursor.x = this.width - 1;
+		else if (this.cursor.x != lastIndexInClue) {
+			this.moveCursorTo(lastBlankIndexInClue, clue.origin.y)
+		}
 	}
 	else if (this.direction == 'down') {
-		for (let i = this.cursor.y; i < this.height; i++) {
-			if (this.blackCellAt(clue.origin.x, i)) {
-				this.cursor.y = i - 1;
-				return;
-			}
+		if (this.cursor.y == lastBlankIndexInClue || !lastBlankIndexInClue) {
+			this.moveCursorTo(clue.origin.x, lastIndexInClue)
 		}
-
-		this.cursor.y = this.height - 1;
+		else if (this.cursor.y != lastIndexInClue) {
+			this.moveCursorTo(clue.origin.x, lastBlankIndexInClue)
+		}
 	}
 };
 

@@ -1659,7 +1659,7 @@ Puzzle.prototype.cursorToFirstSquare = function() {
 	let firstIndexInClue = this.firstIndexIn(clue);
 
 	if (this.direction == 'across') {
-		if (this.cursor.x == firstBlankIndexInClue) {
+		if (this.cursor.x == firstBlankIndexInClue || !firstBlankIndexInClue) {
 			this.moveCursorTo(firstIndexInClue, clue.origin.y)
 		}
 		else if (this.cursor.x != firstIndexInClue) {
@@ -1667,7 +1667,7 @@ Puzzle.prototype.cursorToFirstSquare = function() {
 		}
 	}
 	else if (this.direction == 'down') {
-		if (this.cursor.y == firstBlankIndexInClue) {
+		if (this.cursor.y == firstBlankIndexInClue || !firstBlankIndexInClue) {
 			this.moveCursorTo(clue.origin.x, firstIndexInClue)
 		}
 		else if (this.cursor.y != firstIndexInClue) {

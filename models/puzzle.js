@@ -284,12 +284,18 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 
 	this.guessCount = 0;
 
-	this.cursor = { x: 0, y: 0 };
+	this.cursor = null;
 	this.direction = 'across';
 
-	for (let x = 0; x < this.grid[0].length; x++) {
-		if (!this.blackCellAt(x, 0)) {
-			this.cursor.x = x;
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (!this.blackCellAt(x, y)) {
+				this.cursor = { x: x, y: y };
+				break;
+			}
+		}
+
+		if (this.cursor) {
 			break;
 		}
 	}

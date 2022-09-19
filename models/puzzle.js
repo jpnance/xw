@@ -893,6 +893,10 @@ Puzzle.prototype.guessAt = function(x, y) {
 	return this.grid[y][x].guess;
 }
 
+Puzzle.prototype.guessAtCursor = function() {
+	return this.guessAt(this.cursor.x, this.cursor.y);
+};
+
 Puzzle.prototype.firstBlankIndexIn = function(clue) {
 	let firstBlankIndex;
 

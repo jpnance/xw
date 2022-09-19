@@ -442,8 +442,14 @@ function launchPuzzle(puzzle) {
 			else if (key == '\x7f') {
 				// backspace
 				puzzleOptions.solverMode.secondary = 'overwrite';
-				puzzle.moveCursor(null, true, true);
-				puzzle.logGuess('-');
+
+				if (puzzle.guessAtCursor() != '-') {
+					puzzle.logGuess('-');
+				}
+				else {
+					puzzle.moveCursor(null, true, true);
+					puzzle.logGuess('-');
+				}
 			}
 			else if (key == '\r') {
 				// enter

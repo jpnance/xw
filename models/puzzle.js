@@ -1220,6 +1220,16 @@ Puzzle.prototype.showSolverState = function(options) {
 	}
 };
 
+Puzzle.prototype.mostlyFillIn = function() {
+	for (let y = 0; y < this.grid.length; y++) {
+		for (let x = 0; x < this.grid[y].length; x++) {
+			if (!this.grid[y][x].rebus) {
+				this.grid[y][x].guess = this.grid[y][x].answer;
+			}
+		}
+	}
+};
+
 Puzzle.prototype.isComplete = function() {
 	for (let y = 0; y < this.grid.length; y++) {
 		for (let x = 0; x < this.grid[y].length; x++) {

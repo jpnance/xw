@@ -546,6 +546,9 @@ function launchPuzzle(puzzle) {
 				else if (lastLineCommand == ':check') {
 					puzzle.check();
 				}
+				else if (lastLineCommand == ':debug') {
+					puzzle.mostlyFillIn();
+				}
 				else if (lastLineCommand.startsWith(':set')) {
 					var commandParams = lastLineCommand.split(' ');
 

@@ -220,7 +220,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 				this.acrosses.push({
 					number: clueNumber,
 					direction: 'A',
-					clue: clue,
+					clue: Util.sanitizeClue(clue),
 					origin: { x: x, y: y }
 				});
 
@@ -233,7 +233,7 @@ Puzzle.prototype.loadFromPuzFile = function(puzFile) {
 				this.downs.push({
 					number: clueNumber,
 					direction: 'D',
-					clue: clue,
+					clue: Util.sanitizeClue(clue),
 					origin: { x: x, y: y }
 				});
 

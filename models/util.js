@@ -213,11 +213,12 @@ Util.saveJsonFile = function(filename, data) {
 };
 
 Util.sanitizeClue = function(clue) {
+	clue = clue.replace("\n", '');
 	clue = clue.replace('‘', '\'');
 	clue = clue.replace('’', '\'');
 	clue = clue.replace('“', '"');
 	clue = clue.replace('”', '"');
-	clue = clue.replace('\'\'', '"');
+	clue = clue.replace("''", '"');
 
 	let italicizations = clue.match(/<i>(.*?)<\/i>/g);
 

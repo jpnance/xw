@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+	"incremental": true,
+	"resolveJsonModule": true,
+    "isolatedModules": true,
+	"noUnusedLocals": true,
+	"outDir": "built"
+  }
+}

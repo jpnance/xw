@@ -469,7 +469,9 @@ Puzzle.prototype.loadFromNytJson = function(jsonPuzzle) {
 	if (jsonPuzzle.puzzle_meta.notes.length) {
 		let noteObject = jsonPuzzle.puzzle_meta.notes.find((note) => note.platforms.web);
 
-		this.notes = noteObject.txt;
+		if (noteObject) {
+			this.notes = noteObject.txt;
+		}
 	}
 
 	this.loadFromPuzFile(this.generatePuzFileData());
